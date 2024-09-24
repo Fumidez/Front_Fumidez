@@ -117,6 +117,10 @@
                   </li>
                 </ul>
               </td>
+              <td>
+                <button @click="generatePDF(informe)">Generar PDF</button>
+
+              </td>
             </tr>
           </tbody>
         </table>
@@ -126,7 +130,8 @@
   
   <script>
   import { crearInformeFachada, consultarInformeFachada } from '../helpers/InformeHelper';
-  
+  import jsPDF from 'jspdf';
+
   export default {
     name: "InformeIpm",
     data() {
@@ -198,7 +203,35 @@
           procediminetos: [{ tipoProcedimineto: '' }],
           plagas: [{ tipoPlaga: '' }]
         };
-      }
+      },
+      generatePDF(informe) {
+      const doc = new jsPDF();
+
+      // Agregar contenido al PDF con datos del informe
+      doc.text(`Número de Factura: ${informe.numFactura}`, 10, 10);
+      doc.text(`Observación: ${informe.observacion}`, 10, 20);
+      doc.text(`Procedimiento: ${informe.procedimineto}`, 10, 30);
+      doc.text(`Recomendaciones: ${informe.recomendaciones}`, 10, 40);
+      doc.text(`Concurrencia: ${informe.concurrencia}`, 10, 50);
+      doc.text(`Frecuencia: ${informe.frecuencia}`, 10, 60);
+      doc.text(`Precio: ${informe.precio}`, 10, 70);
+      doc.text(`Cliente: ${informe.ordenDto.cliente.nombre}`, 10, 80);
+
+      // Procedimientos
+      doc.text('Procedimientos:', 10, 90);
+      informe.procediminetoDtos.forEach((proc, index) => {
+        doc.text(`${index + 1}. ${proc.tipoProcedimineto}`, 10, 100 + index * 10);
+      });
+
+      // Plagas
+      doc.text('Plagas:', 10, 110 + informe.procediminetoDtos.length * 10);
+      informe.plagaDtos.forEach((plaga, index) => {
+        doc.text(`${index + 1}. ${plaga.tipoPlaga}`, 10, 120 + (informe.procediminetoDtos.length * 10) + index * 10);
+      });
+
+      // Descargar el PDF
+      doc.save(`informe_${informe.numFactura}.pdf`);
+    }
     }
   };
   </script>
