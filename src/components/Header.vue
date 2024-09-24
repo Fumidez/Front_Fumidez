@@ -3,7 +3,7 @@
       <div class="header-content">
         <!-- Logo -->
         <div class="logo">
-          <img src="C:\Users\User\Desktop\Fumidez_Front\Fumidez_Front\src\assets\fumidez_logo.png" alt="Logo" />
+          <img src="../assets/fumidez_logo.png" alt="Logo" />
         </div>
   
         <!-- Navbar -->
