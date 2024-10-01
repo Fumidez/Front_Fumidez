@@ -33,16 +33,26 @@
           <input type="text" id="area" v-model="ordenTrabajo.area" placeholder="Área" />
         </div>
 
-        <!-- Usuario ID -->
+        <!-- Selección de Usuario -->
         <div class="form-group">
-          <label for="idUsuarios">ID del Usuario</label>
-          <input type="number" id="idUsuarios" v-model="ordenTrabajo.idUsuarios" placeholder="ID del Usuario" />
+          <label for="idUsuarios">Usuario</label>
+          <select id="idUsuarios" v-model="ordenTrabajo.idUsuarios">
+            <option disabled value="">Seleccione un usuario</option>
+            <option v-for="usuario in usuarios" :key="usuario.id" :value="usuario.id">
+              {{ usuario.nombre }}
+            </option>
+          </select>
         </div>
 
-        <!-- Cliente ID -->
+        <!-- Selección de Cliente -->
         <div class="form-group">
-          <label for="idClientes">ID del Cliente</label>
-          <input type="number" id="idClientes" v-model="ordenTrabajo.idClientes" placeholder="ID del Cliente" />
+          <label for="idClientes">Cliente</label>
+          <select id="idClientes" v-model="ordenTrabajo.idClientes">
+            <option disabled value="">Seleccione un cliente</option>
+            <option v-for="cliente in  clientes" :key="cliente.id" :value="cliente.id">
+              {{ cliente.nombre }}
+            </option>
+          </select>
         </div>
 
         <!-- Servicios -->
@@ -74,13 +84,14 @@
             <th>Usuario</th>
             <th>Cliente</th>
             <th>Servicios</th>
+            <th>Acciones</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="(orden, index) in ordenesTrabajo" :key="orden.id">
             <td>{{ index + 1 }}</td>
-            <td>{{ (orden.fecha) }}</td>
-            <td>{{ (orden.hora) }}</td>
+            <td>{{ orden.fecha }}</td>
+            <td>{{ orden.hora }}</td>
             <td>{{ orden.numeroOrden }}</td>
             <td>{{ orden.descripcion }}</td>
             <td>{{ orden.area }}</td>
@@ -95,7 +106,6 @@
             </td>
             <td>
               <button @click="generatePDF(orden)">Generar PDF</button>
-
             </td>
           </tr>
         </tbody>
@@ -106,6 +116,11 @@
 <script>
 // Importamos el helper para manejar la creación y obtención de órdenes de trabajo
 import { crearOrdenFachada, consultarOrdenFachada } from '../helpers/OrdenTrabajoHelper';
+
+import { consultarUsuarioFachada } from '../../Usuario/helpers/UsuarioHelper';
+
+import { consultarClienteFachada } from '../../Cliente/helpers/ClienteHelper';
+
 import jsPDF from 'jspdf';
 
 export default {
@@ -125,16 +140,22 @@ export default {
         ]
       },
       ordenesTrabajo: [] ,// Array para almacenar las órdenes existentes
+      usuarios:[],
+      clientes:[],
     };
     
       
   },
   mounted() {
     this.cargarOrdenesTrabajo(); // Cargamos las órdenes al montar el componente
+    this.cargarClientes();
+    this.cargarUsuarios();
   },
   methods: {
     async submitForm() {
       try {
+        console.log('Orden de trabajo creada con éxito:', this.ordenTrabajo);
+
         const nuevaOrden = await crearOrdenFachada(this.ordenTrabajo);
         console.log('Orden de trabajo creada con éxito:', nuevaOrden);
         this.limpiarFormulario();
@@ -168,6 +189,25 @@ export default {
         servicios: [{ tipoServicio: '' }]
       };
     },
+    async cargarUsuarios() {
+      try {
+        this.usuarios = await consultarUsuarioFachada();
+      } catch (error) {
+        console.error('Error al cargar los usuarios:', error);
+        alert('Hubo un error al cargar los usuarios.');
+      }
+    },
+
+    // Método para cargar la lista de clientes
+    async cargarClientes() {
+      try {
+        this.clientes = await consultarClienteFachada();
+      } catch (error) {
+        console.error('Error al cargar los clientes:', error);
+        alert('Hubo un error al cargar los clientes.');
+      }
+    },
+
     generatePDF(ordenTrabajo) {
       const doc = new jsPDF('portrait', 'pt', 'a4'); // Orientación vertical
 

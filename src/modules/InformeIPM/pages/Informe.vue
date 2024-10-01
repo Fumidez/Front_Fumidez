@@ -62,12 +62,37 @@
         </div>
         <div class="form-group">
           <label>Plagas</label>
-          <div v-for="(plaga, index) in informe.plagas" :key="index" class="procedimiento-group">
-            <input type="text" v-model="plaga.tipoPlaga" placeholder="Tipo de Plaga" />
-            <button type="button" @click="removePlaga(index)">Eliminar</button>
+          <div v-for="(plaga, plagaIndex) in informe.plagas" :key="plagaIndex" class="plaga-group">
+            <div class="plaga-header">
+              <input type="text" v-model="plaga.tipoPlaga" placeholder="Tipo de Plaga" class="plaga-input" />
+              <button type="button" @click="removePlaga(plagaIndex)">Eliminar Plaga</button>
+            </div>
+
+            <!-- Productos dentro de la Plaga -->
+            <div v-for="(producto, productoIndex) in plaga.cantidadProductoDtos" :key="productoIndex"
+              class="producto-group">
+
+              <!-- Selección de producto -->
+              <select id="idProductos" v-model="producto.productoDto">
+                <option disabled value="">Seleccione un producto</option>
+                <option v-for="producto in productos" :key="producto.id" :value="producto.id">
+                  {{ producto.nombre }}
+                </option>
+              </select>
+
+
+              <input type="number" v-model="producto.cantidad" placeholder="Cantidad" class="cantidad-input" min="0" />
+              <button type="button" @click="removeProducto(plagaIndex, productoIndex)">Eliminar Producto</button>
+            </div>
+
+            <!-- Botón para añadir un nuevo Producto a la Plaga -->
+            <button type="button" @click="addProducto(plagaIndex)">Añadir Producto</button>
           </div>
+          <!-- Botón para añadir una nueva Plaga -->
           <button type="button" @click="addPlaga">Añadir Plaga</button>
         </div>
+
+        <!-- Botón de Guardar -->
         <button type="submit">Guardar</button>
       </form>
     </div>
@@ -129,9 +154,14 @@
 </template>
 
 <script>
-import { crearInformeFachada, consultarInformeFachada, crearInformePlagaFachada } from '../helpers/InformeHelper';
-import jsPDF from 'jspdf';
+import {
+  crearInformeFachada,
+  consultarInformeFachada,
+  crearInformePlagaFachada
 
+} from '../helpers/InformeHelper';
+import jsPDF from 'jspdf';
+import { obtenerTodosLosProductosFachada } from '../../Producto/helpers/productosHelpers';
 export default {
   name: "InformeIpm",
   data() {
@@ -146,31 +176,29 @@ export default {
         precio: '',
         idOrden: '',
         plagas: [
-          { tipoPlaga: '' }  // Inicialmente un procedimiento
+          {
+            tipoPlaga: '',
+            cantidadProductoDtos: [
+              {
+                cantidad: 0,
+                productoDto: ''
+              }
+            ]
+          }
         ],
         procediminetos: [
-          { tipoProcedimineto: '' }  // Inicialmente un procedimiento
+          { tipoProcedimineto: '' } // Inicialmente un procedimiento
         ]
       },
+      productos: [],
       informes: [] // Array para almacenar los informes existentes
     };
   },
   mounted() {
     this.cargarInformes(); // Cargamos los informes al montar el componente
+    this.cargarProductos();
   },
   methods: {
-    async submitForm() {
-      try {
-        console.log('Informe IPM creado con éxito:', this.informe);
-
-        const nuevoInforme = await crearInformePlagaFachada(this.informe);
-        console.log('Informe IPM creado con éxito:', nuevoInforme);
-        this.limpiarFormulario();
-        this.cargarInformes(); // Recargamos los informes después de crear uno nuevo
-      } catch (error) {
-        console.error('Error al crear el informe IPM:', error);
-      }
-    },
     async submitForm2() {
       try {
         console.log('Informe IPM creado con éxito 2:', this.informe);
@@ -188,8 +216,12 @@ export default {
           procediminetoDtos: this.informe.procediminetos.map(p => ({
             tipoProcedimineto: p.tipoProcedimineto
           })),
-          plagaDtos: this.informe.plagas.map(p => ({
-            tipoPlaga: p.tipoPlaga
+          plagaDtos: this.informe.plagas.map(plaga => ({
+            tipoPlaga: plaga.tipoPlaga,
+            cantidadProductoDtos: plaga.cantidadProductoDtos.map(cp => ({
+              productoDto: cp.productoDto,
+              cantidad: cp.cantidad
+            }))
           }))
         };
         const nuevoInforme = await crearInformePlagaFachada(informeDto);
@@ -214,10 +246,27 @@ export default {
       this.informe.procediminetos.splice(index, 1);
     },
     addPlaga() {
-      this.informe.plagas.push({ tipoPlaga: '' });
+      this.informe.plagas.push({
+        tipoPlaga: '',
+        cantidadProductoDtos: [
+          {
+            cantidad: 0,
+            productoDto: ''
+          }
+        ]
+      });
     },
-    removePlaga(index) {
-      this.informe.plagas.splice(index, 1);
+    removePlaga(plagaIndex) {
+      this.informe.plagas.splice(plagaIndex, 1);
+    },
+    addProducto(plagaIndex) {
+      this.informe.plagas[plagaIndex].cantidadProductoDtos.push({
+        cantidad: 0,
+        productoDto: ''
+      });
+    },
+    removeProducto(plagaIndex, productoIndex) {
+      this.informe.plagas[plagaIndex].cantidadProductoDtos.splice(productoIndex, 1);
     },
     limpiarFormulario() {
       this.informe = {
@@ -230,32 +279,80 @@ export default {
         precio: '',
         idOrden: '',
         procediminetos: [{ tipoProcedimineto: '' }],
-        plagas: [{ tipoPlaga: '' }]
+        plagas: [
+          {
+            tipoPlaga: '',
+            cantidadProductoDtos: [
+              {
+                cantidad: 0,
+                productoDto: ''
+              }
+            ]
+          }
+        ],
       };
+    },
+
+    async cargarProductos() {
+      try {
+        this.productos = await obtenerTodosLosProductosFachada();
+      } catch (error) {
+        console.error('Error al cargar los productos:', error);
+        alert('Hubo un error al cargar los productos.');
+      }
     },
     generatePDF(informe) {
       const doc = new jsPDF();
 
+      // Configuración inicial del PDF
+      let yPosition = 10;
+
       // Agregar contenido al PDF con datos del informe
-      doc.text(`Número de Factura: ${informe.numFactura}`, 10, 10);
-      doc.text(`Observación: ${informe.observacion}`, 10, 20);
-      doc.text(`Procedimiento: ${informe.procedimineto}`, 10, 30);
-      doc.text(`Recomendaciones: ${informe.recomendaciones}`, 10, 40);
-      doc.text(`Concurrencia: ${informe.concurrencia}`, 10, 50);
-      doc.text(`Frecuencia: ${informe.frecuencia}`, 10, 60);
-      doc.text(`Precio: ${informe.precio}`, 10, 70);
-      doc.text(`Cliente: ${informe.ordenDto.cliente.nombre}`, 10, 80);
+      doc.setFontSize(12);
+      doc.text(`Número de Factura: ${informe.numFactura}`, 10, yPosition);
+      yPosition += 10;
+      doc.text(`Observación: ${informe.observacion}`, 10, yPosition);
+      yPosition += 10;
+      doc.text(`Procedimiento: ${informe.procedimineto}`, 10, yPosition);
+      yPosition += 10;
+      doc.text(`Recomendaciones: ${informe.recomendaciones}`, 10, yPosition);
+      yPosition += 10;
+      doc.text(`Concurrencia: ${informe.concurrencia}`, 10, yPosition);
+      yPosition += 10;
+      doc.text(`Frecuencia: ${informe.frecuencia}`, 10, yPosition);
+      yPosition += 10;
+      doc.text(`Precio: ${informe.precio}`, 10, yPosition);
+      yPosition += 10;
+      doc.text(`Cliente: ${informe.ordenDto.cliente.nombre}`, 10, yPosition);
+      yPosition += 15;
 
       // Procedimientos
-      doc.text('Procedimientos:', 10, 90);
+      doc.setFontSize(14);
+      doc.text('Procedimientos:', 10, yPosition);
+      yPosition += 10;
+      doc.setFontSize(12);
       informe.procediminetoDtos.forEach((proc, index) => {
-        doc.text(`${index + 1}. ${proc.tipoProcedimineto}`, 10, 100 + index * 10);
+        doc.text(`${index + 1}. ${proc.tipoProcedimineto}`, 15, yPosition);
+        yPosition += 10;
       });
+      yPosition += 5;
 
       // Plagas
-      doc.text('Plagas:', 10, 110 + informe.procediminetoDtos.length * 10);
+      doc.setFontSize(14);
+      doc.text('Plagas:', 10, yPosition);
+      yPosition += 10;
+      doc.setFontSize(12);
       informe.plagaDtos.forEach((plaga, index) => {
-        doc.text(`${index + 1}. ${plaga.tipoPlaga}`, 10, 120 + (informe.procediminetoDtos.length * 10) + index * 10);
+        doc.text(`${index + 1}. ${plaga.tipoPlaga}`, 15, yPosition);
+        yPosition += 10;
+
+        // Productos dentro de la Plaga
+        plaga.cantidadProductoDtos.forEach((cp, cpIndex) => {
+          doc.text(`   - Producto: ${cp.productoDto}`, 20, yPosition);
+          yPosition += 7;
+          doc.text(`     Cantidad: ${cp.cantidad}`, 20, yPosition);
+          yPosition += 10;
+        });
       });
 
       // Descargar el PDF
@@ -264,6 +361,7 @@ export default {
   }
 };
 </script>
+
 
 <style scoped>
 .informe-container {
@@ -289,13 +387,13 @@ h1 {
 }
 
 .form-group {
-  margin-bottom: 0.75rem;
+  margin-bottom: 1rem;
 }
 
 label {
   display: block;
   font-weight: bold;
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.5rem;
 }
 
 input,
@@ -308,7 +406,7 @@ textarea {
 }
 
 button {
-  padding: 0.6rem;
+  padding: 0.6rem 1rem;
   background-color: #181C71;
   color: white;
   font-size: 0.9rem;
@@ -350,19 +448,74 @@ ul {
   padding-left: 20px;
 }
 
-.procedimiento-group {
+.procedimiento-group,
+.plaga-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.plaga-header {
   display: flex;
   align-items: center;
-  margin-bottom: 0.5rem;
+  gap: 0.5rem;
 }
 
-.procedimiento-group input {
+.plaga-group .plaga-header .plaga-input {
+  flex: 2;
+}
+
+.plaga-group .plaga-header button {
+  background-color: #d9534f;
+}
+
+.producto-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: 1rem;
+}
+
+.producto-group input {
+  flex: 2;
+}
+
+.cantidad-input {
   flex: 1;
-  margin-right: 0.5rem;
 }
 
-.procedimiento-group button {
-  background-color: red;
-  padding: 0.4rem;
+.producto-group button {
+  background-color: #d9534f;
+}
+
+.plaga-group button {
+  background-color: #5bc0de;
+  margin-top: 0.5rem;
+}
+
+.procedimiento-group button,
+.plaga-group button {
+  padding: 0.4rem 0.8rem;
+}
+
+@media (max-width: 768px) {
+  .producto-group {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .producto-group input {
+    width: 100%;
+  }
+
+  .plaga-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .plaga-group button {
+    align-self: flex-end;
+  }
 }
 </style>

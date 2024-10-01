@@ -16,6 +16,8 @@
             <li><router-link to="/usuarios">Usuarios</router-link></li>
             <li><router-link to="/orden-trabajo">Orden Trabajo</router-link></li>
             <li><router-link to="/informe">Informe</router-link></li>
+            <li><router-link to="/login">Login</router-link></li>
+
           </ul>
         </nav>
       </div>
