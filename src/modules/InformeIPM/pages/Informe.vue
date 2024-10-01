@@ -69,19 +69,19 @@
             </div>
 
             <!-- Productos dentro de la Plaga -->
-            <div v-for="(producto, productoIndex) in plaga.cantidadProductoDtos" :key="productoIndex"
+            <div v-for="(producto, productoIndex) in plaga.cantidadProductoPlaga" :key="productoIndex"
               class="producto-group">
 
               <!-- Selección de producto -->
               <select id="idProductos" v-model="producto.productoDto">
                 <option disabled value="">Seleccione un producto</option>
-                <option v-for="producto in productos" :key="producto.id" :value="producto.id">
+                <option v-for="producto in productos" :key="producto.id" :value="producto">
                   {{ producto.nombre }}
                 </option>
               </select>
 
 
-              <input type="number" v-model="producto.cantidad" placeholder="Cantidad" class="cantidad-input" min="0" />
+              <input type="number" v-model="producto.cantidadProducto" placeholder="Cantidad" class="cantidad-input" min="0" />
               <button type="button" @click="removeProducto(plagaIndex, productoIndex)">Eliminar Producto</button>
             </div>
 
@@ -178,10 +178,12 @@ export default {
         plagas: [
           {
             tipoPlaga: '',
-            cantidadProductoDtos: [
+            cantidadProductoPlaga: [
               {
-                cantidad: 0,
-                productoDto: ''
+                cantidadProducto: 0,
+                productoDto :{
+                  'id':0
+                }
               }
             ]
           }
@@ -199,6 +201,17 @@ export default {
     this.cargarProductos();
   },
   methods: {
+    async submitForm() {
+      try {
+        console.log('Informe IPM creado con éxito:', this.informe);
+        const nuevoInforme = await crearInformePlagaFachada(this.informe);
+        console.log('Informe IPM creado con éxito:', nuevoInforme);
+        this.limpiarFormulario();
+        this.cargarInformes(); // Recargamos los informes después de crear uno nuevo
+      } catch (error) {
+        console.error('Error al crear el informe IPM:', error);
+      }
+    },
     async submitForm2() {
       try {
         console.log('Informe IPM creado con éxito 2:', this.informe);
@@ -218,9 +231,9 @@ export default {
           })),
           plagaDtos: this.informe.plagas.map(plaga => ({
             tipoPlaga: plaga.tipoPlaga,
-            cantidadProductoDtos: plaga.cantidadProductoDtos.map(cp => ({
+            cantidadProductoPlaga: plaga.cantidadProductoPlaga.map(cp => ({
               productoDto: cp.productoDto,
-              cantidad: cp.cantidad
+              cantidadProducto: cp.cantidadProducto
             }))
           }))
         };
@@ -248,7 +261,7 @@ export default {
     addPlaga() {
       this.informe.plagas.push({
         tipoPlaga: '',
-        cantidadProductoDtos: [
+        cantidadProductoPlaga: [
           {
             cantidad: 0,
             productoDto: ''
@@ -260,13 +273,13 @@ export default {
       this.informe.plagas.splice(plagaIndex, 1);
     },
     addProducto(plagaIndex) {
-      this.informe.plagas[plagaIndex].cantidadProductoDtos.push({
+      this.informe.plagas[plagaIndex].cantidadProductoPlaga.push({
         cantidad: 0,
         productoDto: ''
       });
     },
     removeProducto(plagaIndex, productoIndex) {
-      this.informe.plagas[plagaIndex].cantidadProductoDtos.splice(productoIndex, 1);
+      this.informe.plagas[plagaIndex].cantidadProductoPlaga.splice(productoIndex, 1);
     },
     limpiarFormulario() {
       this.informe = {
@@ -282,7 +295,7 @@ export default {
         plagas: [
           {
             tipoPlaga: '',
-            cantidadProductoDtos: [
+            cantidadProductoPlaga: [
               {
                 cantidad: 0,
                 productoDto: ''
