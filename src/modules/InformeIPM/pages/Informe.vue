@@ -55,7 +55,14 @@
         <div class="form-group">
           <label>Procedimientos</label>
           <div v-for="(procedimineto, index) in informe.procediminetos" :key="index" class="procedimiento-group">
-            <input type="text" v-model="procedimineto.tipoProcedimineto" placeholder="Tipo de Procedimiento" />
+
+            <select id="idProcedimientos" v-model="procedimineto.tipoProcedimineto">
+              <option disabled value="">Procesdimientos</option>
+              <option v-for="(proc, index) in procedimientos" :key="proc.id" :value="index">
+                {{ proc }}
+              </option>
+            </select>
+
             <button type="button" @click="removeProcedimiento(index)">Eliminar</button>
           </div>
           <button type="button" @click="addProcedimiento">Añadir Procedimiento</button>
@@ -69,19 +76,19 @@
             </div>
 
             <!-- Productos dentro de la Plaga -->
-            <div v-for="(producto, productoIndex) in plaga.cantidadProductoPlaga" :key="productoIndex"
+            <div v-for="(producto, productoIndex) in plaga.cantidadProductoDtos" :key="productoIndex"
               class="producto-group">
 
               <!-- Selección de producto -->
               <select id="idProductos" v-model="producto.productoDto">
                 <option disabled value="">Seleccione un producto</option>
-                <option v-for="producto in productos" :key="producto.id" :value="producto">
+                <option v-for="producto in productos" :key="producto.id" :value="producto.id">
                   {{ producto.nombre }}
                 </option>
               </select>
 
 
-              <input type="number" v-model="producto.cantidadProducto" placeholder="Cantidad" class="cantidad-input" min="0" />
+              <input type="number" v-model="producto.cantidad" placeholder="Cantidad" class="cantidad-input" min="0" />
               <button type="button" @click="removeProducto(plagaIndex, productoIndex)">Eliminar Producto</button>
             </div>
 
@@ -161,6 +168,7 @@ import {
 
 } from '../helpers/InformeHelper';
 import jsPDF from 'jspdf';
+import JsPDFAutotable from 'jspdf-autotable'
 import { obtenerTodosLosProductosFachada } from '../../Producto/helpers/productosHelpers';
 export default {
   name: "InformeIpm",
@@ -169,21 +177,18 @@ export default {
       informe: {
         numFactura: '',
         observacion: '',
-        procedimineto: '',
         recomendaciones: '',
-        concurrencia: '',
+        tiempo: '',
         frecuencia: '',
         precio: '',
         idOrden: '',
         plagas: [
           {
             tipoPlaga: '',
-            cantidadProductoPlaga: [
+            cantidadProductoDtos: [
               {
-                cantidadProducto: 0,
-                productoDto :{
-                  'id':0
-                }
+                cantidad: 0,
+                productoDto: ''
               }
             ]
           }
@@ -192,6 +197,18 @@ export default {
           { tipoProcedimineto: '' } // Inicialmente un procedimiento
         ]
       },
+      procedimientos: ['NEBULIZADOR TÉRMICO',
+        'ASPERSOR MANUAL',
+        'NEBULIZADOR UVL ELÉCTRICO DIINA FOG',
+        'NEBULIZADOR MECÁNICO',
+        'LÁMPARAS ELECTROCUTADORAS/ATRAPADORAS',
+        'BIOMONITORES PEGABLES',
+        'ESTACIONES DE CEBADO',
+        'CORDÓN SANITARIO PERIMETRAL',
+        'NEBULIZADOR UVL ELECTRICO',
+        'NEBULIZADOR MECÁNICO',
+        'SANITIZACIÓN'],
+
       productos: [],
       informes: [] // Array para almacenar los informes existentes
     };
@@ -201,17 +218,6 @@ export default {
     this.cargarProductos();
   },
   methods: {
-    async submitForm() {
-      try {
-        console.log('Informe IPM creado con éxito:', this.informe);
-        const nuevoInforme = await crearInformePlagaFachada(this.informe);
-        console.log('Informe IPM creado con éxito:', nuevoInforme);
-        this.limpiarFormulario();
-        this.cargarInformes(); // Recargamos los informes después de crear uno nuevo
-      } catch (error) {
-        console.error('Error al crear el informe IPM:', error);
-      }
-    },
     async submitForm2() {
       try {
         console.log('Informe IPM creado con éxito 2:', this.informe);
@@ -231,9 +237,9 @@ export default {
           })),
           plagaDtos: this.informe.plagas.map(plaga => ({
             tipoPlaga: plaga.tipoPlaga,
-            cantidadProductoPlaga: plaga.cantidadProductoPlaga.map(cp => ({
+            cantidadProductoDtos: plaga.cantidadProductoDtos.map(cp => ({
               productoDto: cp.productoDto,
-              cantidadProducto: cp.cantidadProducto
+              cantidad: cp.cantidad
             }))
           }))
         };
@@ -261,7 +267,7 @@ export default {
     addPlaga() {
       this.informe.plagas.push({
         tipoPlaga: '',
-        cantidadProductoPlaga: [
+        cantidadProductoDtos: [
           {
             cantidad: 0,
             productoDto: ''
@@ -273,21 +279,20 @@ export default {
       this.informe.plagas.splice(plagaIndex, 1);
     },
     addProducto(plagaIndex) {
-      this.informe.plagas[plagaIndex].cantidadProductoPlaga.push({
+      this.informe.plagas[plagaIndex].cantidadProductoDtos.push({
         cantidad: 0,
         productoDto: ''
       });
     },
     removeProducto(plagaIndex, productoIndex) {
-      this.informe.plagas[plagaIndex].cantidadProductoPlaga.splice(productoIndex, 1);
+      this.informe.plagas[plagaIndex].cantidadProductoDtos.splice(productoIndex, 1);
     },
     limpiarFormulario() {
       this.informe = {
         numFactura: '',
         observacion: '',
-        procedimineto: '',
         recomendaciones: '',
-        concurrencia: '',
+        tiempo: '',
         frecuencia: '',
         precio: '',
         idOrden: '',
@@ -295,7 +300,7 @@ export default {
         plagas: [
           {
             tipoPlaga: '',
-            cantidadProductoPlaga: [
+            cantidadProductoDtos: [
               {
                 cantidad: 0,
                 productoDto: ''
@@ -403,24 +408,284 @@ export default {
       doc.text(`AREA TRATADA: ${informe.ordenDto.area}`, divisionX + 10, headerHeight + 60);
       doc.text(`FECHA: ${informe.ordenDto.fecha}`, divisionX + 10, headerHeight + 80);
 
-      doc.text(`Observación: ${informe.observacion}`, divisionX + 10, headerHeight +100);
-      doc.text(`Procedimiento: ${informe.procedimineto}`, divisionX + 10, headerHeight +130);
-      doc.text(`Recomendaciones: ${informe.recomendaciones}`, divisionX + 10, headerHeight +170);
-      doc.text(`Concurrencia: ${informe.concurrencia}`, divisionX + 10, headerHeight +220);
-      doc.text(`Frecuencia: ${informe.frecuencia}`, divisionX + 10, headerHeight +280);
-      doc.text(`Precio: ${informe.precio}`, divisionX + 10, headerHeight +350);
-      // Procedimientos
-      doc.text('Procedimientos:', divisionX + 10, headerHeight + 400);
-      informe.procediminetoDtos.forEach((proc, index) => {
-        doc.text(`${proc.tipoProcedimineto}`, divisionX + 10, headerHeight + 410 + index * 10);
-      });
-      // Plagas
-      doc.text('Plagas:', divisionX + 10, headerHeight + 440 + informe.procediminetoDtos.length * 10);
-      informe.plagaDtos.forEach((plaga, index) => {
-        doc.text(`${plaga.tipoPlaga}`, divisionX + 10, headerHeight + 450 + (informe.procediminetoDtos.length * 10) + index * 10);
+      // --- Agregar Cuadro "SANITIZACION CONFIDENCIAL" ---
+
+      // Definir posiciones y dimensiones
+      const cuadroX = divisionX + 10; // Margen a la derecha de la línea divisoria
+      const cuadroY = headerHeight + 90; // Posición Y ajustada hacia arriba
+      const cuadroWidth = (pageWidth - divisionX) * 0.45; // Aproximadamente 45% del ancho restante
+      const cuadroHeight = 130; // Altura ligeramente reducida
+      const tablaWidth = pageWidth - cuadroX - 250; // Ancho definido para el cuadro
+
+      doc.autoTable({
+    head: [['SANITIZACION CONFIDENCIAL']],  // Título principal
+    body: [
+        ['1. EXCELENTE  2. BUENO  3. REGULAR  4. CRÍTICO']
+    ],
+    startY: cuadroY,  // Posición Y donde empieza la tabla
+    margin: { left: cuadroX },
+    theme: 'grid',
+    headStyles: {
+        fillColor: [255, 255, 255],  // Color de la cabecera
+        textColor: [0, 0, 0],        // Color del texto de la cabecera
+        halign: 'center',
+        fontSize: 8  // Tamaño de la fuente para la cabecera
+    },
+    bodyStyles: {
+        fontSize: 6,  // Tamaño de la fuente para el contenido
+        cellPadding: 3,  // Espacio interno de las celdas
+        halign: 'center',  // Alineación horizontal del contenido
+    },
+    styles: {
+        cellWidth: 'wrap',  // Ajusta el ancho de las celdas al contenido
+        overflow: 'linebreak',  // Permitir saltos de línea en las celdas
+    },
+    columnStyles: {
+        0: { cellWidth: tablaWidth },  // Ancho de la primera columna (título de las áreas)
+
+    },
+    tableWidth: 'wrap',  // Ajusta la tabla al contenido
+});
+
+doc.autoTable({
+    body: [
+        ['AREAS INTERNAS', '1', '2', '3', '4'],  // Primera fila
+        ['AREAS EXTERNAS', '1', '2', '3', '4'],  // Segunda fila
+        ['AREA ', '1', '2', '3', '4'],  // Tercera fila
+        ['AREA ', '1', '2', '3', '4']   // Cuarta fila
+    ],
+    startY: cuadroY+30,  // Posición Y donde empieza la tabla
+    margin: { left: cuadroX },
+    theme: 'grid',
+ 
+    bodyStyles: {
+        fontSize: 6,  // Tamaño de la fuente para el contenido
+        cellPadding: 3,  // Espacio interno de las celdas
+        halign: 'center',  // Alineación horizontal del contenido
+    },
+    styles: {
+        cellWidth: 'wrap',  // Ajusta el ancho de las celdas al contenido
+        overflow: 'linebreak',  // Permitir saltos de línea en las celdas
+    },
+    columnStyles: {
+        0: { cellWidth: tablaWidth*0.6 },  // Ancho de la primera columna (título de las áreas)
+        1: { cellWidth: tablaWidth*0.1 },  // Ancho de las columnas de calificación
+        2: { cellWidth: tablaWidth*0.1 },
+        3: { cellWidth: tablaWidth*0.1 },
+        4: { cellWidth: tablaWidth*0.1 },
+
+      },
+    tableWidth: 'wrap',  // Ajusta la tabla al contenido
+});
+      // --- Agregar Cuadro "Observaciones" ---
+
+      // Definir posiciones y dimensiones para el nuevo cuadro
+      const observacionesY = cuadroY  + 95; // 10 puntos de margen debajo del cuadro anterior
+      const observacionesHeight = 130; // Altura definida para el cuadro
+
+      // Añade la tabla dentro del cuadro
+      const cabeceraObservacion = [{ title: 'OBSERVACIONES', dataKey: 'observacion' }];
+      const textObservacion = [{ observacion: informe.observacion }];
+      doc.autoTable({
+        head: [cabeceraObservacion.map(col => col.title)],  // Título de la cabecera
+        body: textObservacion.map(item => [item.observacion]),  // Datos del cuerpo de la tabla
+        startY: observacionesY,  // Posición Y donde empieza la tabla
+        margin: { left: cuadroX },
+        theme: 'grid',
+        headStyles: {
+          fillColor: [0, 255, 0],  // Color de la cabecera
+          halign: 'center',
+          fontSize: 12  // Tamaño de la fuente para la cabecera
+        },
+        styles: {
+          fontSize: 7,  // Tamaño de la fuente para el contenido
+          cellPadding: 5,
+          overflow: 'linebreak',  // Permitir saltos de línea en las celdas
+        },
+        columnStyles: {
+          0: {  // Define las propiedades de la primera columna
+            cellWidth: tablaWidth,  // Limita el ancho de la columna
+            maxCellHeight: observacionesHeight,  // Limita la altura de las celdas para no exceder el cuadro
+          }
+        },
+        tableWidth: 'wrap',  // Ajusta la tabla al contenido
       });
 
-      // Pie de página con degradado (blanco -> azul -> blanco)
+      // --- Agregar Cuadro "Procedimientos" ---
+
+      // Definir posiciones y dimensiones para el cuadro "Procedimientos"
+      let procedimientosY = observacionesY + observacionesHeight + 10; // 10 puntos de margen debajo del cuadro de observaciones
+      const procedimientosHeight = 180; // Altura ajustada para acomodar las categorías y procedimientos
+
+      // Añade la tabla dentro del cuadro
+      let cabeceraProcedimiento = [{ title: 'PROCEDIMIENTOS', dataKey: 'procedimiento' }];
+      const textProcedimiento  = [{ procedimiento: informe.procedimientos }];
+      doc.autoTable({
+        head: [cabeceraProcedimiento.map(col => col.title)],  // Título de la cabecera
+
+        startY: procedimientosY,  // Posición Y donde empieza la tabla
+        margin: { left: cuadroX },
+        theme: 'grid',
+        headStyles: {
+          fillColor: [0, 255, 0],  // Color de la cabecera
+          halign: 'center',
+          cellWidth: tablaWidth ,
+          fontSize: 7  // Tamaño de la fuente para la cabecera
+        },
+        styles: {
+          fontSize: 5,  // Tamaño de la fuente para el contenido
+          cellPadding: 5,
+          overflow: 'linebreak',  // Permitir saltos de línea en las celdas
+        },
+
+        tableWidth: 'wrap',  // Ajusta la tabla al contenido
+      });
+      procedimientosY = procedimientosY + 15;
+      cabeceraProcedimiento = [{ title: 'DESINSECTACION/FUMIGACION', dataKey: 'procedimiento' }];
+      doc.autoTable({
+        head: [cabeceraProcedimiento.map(col => col.title)],  // Título de la cabecera
+        body: [
+        ['NEBULIZADOR TÉRMICO'],  // Primera fila
+        ['ASPERSOR MANUAL'],  // Segunda fila
+        ['NEBULIZADOR UVL ELÉCTRICO DIINA FOG'],  // Tercera fila
+        ['NEBULIZADOR MECÁNICO'],   // Cuarta fila
+        ['LÁMPARAS ELECTROCUTADORAS/ATRAPADORAS'],  // Quinta fila
+    ],
+        startY: procedimientosY,  // Posición Y donde empieza la tabla
+        margin: { left: cuadroX },
+        theme: 'grid',
+        headStyles: {
+          fillColor: [0, 255, 0],  // Color de la cabecera
+          halign: 'center',
+          fontSize: 7  // Tamaño de la fuente para la cabecera
+        },
+        styles: {
+          fontSize: 5,  // Tamaño de la fuente para el contenido
+          cellPadding: 5,
+          overflow: 'linebreak',  // Permitir saltos de línea en las celdas
+        },
+        columnStyles: {
+        0: { cellWidth: tablaWidth }, 
+
+      },
+        tableWidth: 'wrap',  // Ajusta la tabla al contenido
+      });
+    
+      procedimientosY = procedimientosY + 95;
+      cabeceraProcedimiento = [{ title: 'DESRATIZACIÓN', dataKey: 'procedimiento' }];
+      doc.autoTable({
+        head: [cabeceraProcedimiento.map(col => col.title)],  // Título de la cabecera
+        body: [
+
+        ['BIOMONITORES PEGABLES'],  // Sexta fila
+        ['ESTACIONES DE CEBADO'],  // Séptima fila
+        ['CORDÓN SANITARIO PERIMETRAL'],  // Octava fila
+      
+    ],
+        startY: procedimientosY,  // Posición Y donde empieza la tabla
+        margin: { left: cuadroX },
+        theme: 'grid',
+        headStyles: {
+          fillColor: [0, 255, 0],  // Color de la cabecera
+          halign: 'center',
+          fontSize: 7  // Tamaño de la fuente para la cabecera
+        },
+        styles: {
+          fontSize: 5,  // Tamaño de la fuente para el contenido
+          cellPadding: 5,
+          overflow: 'linebreak',  // Permitir saltos de línea en las celdas
+        },
+        columnStyles: {
+        0: { cellWidth: tablaWidth }, 
+
+      },
+        tableWidth: 'wrap',  // Ajusta la tabla al contenido
+      });
+
+      
+      procedimientosY = procedimientosY + 65;
+      cabeceraProcedimiento = [{ title: 'DESINFECCIÓN', dataKey: 'procedimiento' }];
+      doc.autoTable({
+        head: [cabeceraProcedimiento.map(col => col.title)],  // Título de la cabecera
+        body: [
+
+        ['NEBULIZADOR UVL ELECTRICO'],  // Novena fila
+        ['NEBULIZADOR MECÁNICO'],  // Décima fila
+        ['SANITIZACIÓN']  // Undécima fila
+    ],
+        startY: procedimientosY,  // Posición Y donde empieza la tabla
+        margin: { left: cuadroX },
+        theme: 'grid',
+        headStyles: {
+          fillColor: [0, 255, 0],  // Color de la cabecera
+          halign: 'center',
+          fontSize: 7  // Tamaño de la fuente para la cabecera
+        },
+        styles: {
+          fontSize: 5,  // Tamaño de la fuente para el contenido
+          cellPadding: 5,
+          overflow: 'linebreak',  // Permitir saltos de línea en las celdas
+        },
+        columnStyles: {
+        0: { cellWidth: tablaWidth }, 
+
+      },
+        tableWidth: 'wrap',  // Ajusta la tabla al contenido
+      });
+    
+    
+      // --- Agregar Cuadro "Recomendaciones" ---
+
+      // Definir posiciones y dimensiones para el nuevo cuadro "Recomendaciones"
+      const recomendacionesY = procedimientosY  + 70; // 10 puntos de margen debajo del cuadro de procedimientos
+      const recomendacionesHeight = 60; // Altura del nuevo cuadro
+
+
+      const cabecera = [{ title: 'RECOMENDACIONES', dataKey: 'recomendacion' }];
+      const text = [{ recomendacion: informe.recomendaciones }];
+      doc.autoTable({
+        head: [cabecera.map(col => col.title)],  // Título de la cabecera
+        body: text.map(item => [item.recomendacion]),  // Datos del cuerpo de la tabla
+        startY: recomendacionesY + 10,
+        margin: { left: cuadroX },
+        theme: 'grid',
+        headStyles: {
+          fillColor: [0, 255, 0],
+          halign: 'center',
+          fontSize: 12  // Tamaño de la fuente para la cabecera
+        },
+        styles: {
+          fontSize: 7,  // Tamaño de la fuente para el contenido
+          cellPadding: 5,
+          overflow: 'linebreak',  // Permitir saltos de línea en las celdas
+        },
+        columnStyles: {
+          0: {  // Define las propiedades de la primera columna
+            cellWidth: pageWidth - cuadroX - 20, // Limita el ancho de la columna
+          }
+        },
+        tableWidth: 'wrap',  // Ajusta la tabla al contenido
+      });
+
+      // --- Agregar Sección "Firma Supervisor" ---
+
+      // Definir posiciones y dimensiones para la firma
+      const firmaY = recomendacionesY + recomendacionesHeight +60; // 20 puntos de margen debajo del cuadro de recomendaciones
+      const firmaLineWidth = 170; // Ancho de la línea de firma
+      const firmaLineX = (pageWidth - firmaLineWidth) / 2; // Centrar la línea horizontalmente
+      const firmaLineY = firmaY; // Posición Y de la línea
+
+      // Dibujar la línea para la firma
+      doc.setLineWidth(1);
+      doc.line(firmaLineX + 100, firmaLineY, firmaLineX + firmaLineWidth, firmaLineY); // Línea horizontal
+
+      // Agregar el texto "Firma Supervisor" debajo de la línea
+      doc.setFont('cambria', 'normal');
+      doc.setFontSize(12);
+      doc.text('Firma Supervisor', (pageWidth) / 2, firmaLineY + 15, { align: 'center' });
+
+
+      // --- Pie de página con degradado (blanco -> azul -> blanco) ---
       drawGradient(doc, 0, doc.internal.pageSize.height - footerHeight, sectionWidth * 2, footerHeight, white, white, 50); // 20% blanco
       drawGradient(doc, sectionWidth * 2, doc.internal.pageSize.height - footerHeight, sectionWidth * 2.9, footerHeight, white, blue, 50); // 29% blanco a azul
       drawGradient(doc, sectionWidth * 4.9, doc.internal.pageSize.height - footerHeight, sectionWidth * 0.2, footerHeight, blue, blue, 50); // 2% azul
@@ -429,8 +694,8 @@ export default {
       const webIcon = 'src/assets/web.png'; // Ruta al icono del sitio web
       const emailIcon = 'src/assets/mail.png'; // Ruta al icono de correo
       const locationIcon = 'src/assets/home.png'; // Ruta al icono de ubicación
-      const phoneIcon = 'src/assets/phone.png'; // Ruta al icono de ubicación
-      const whatsappIcon = 'src/assets/whatsapp.png'; // Ruta al icono de ubicación
+      const phoneIcon = 'src/assets/phone.png'; // Ruta al icono de teléfono
+      const whatsappIcon = 'src/assets/whatsapp.png'; // Ruta al icono de WhatsApp
 
       // Añadir textos con iconos
       const footerY = doc.internal.pageSize.height - footerHeight + 20;
@@ -451,13 +716,13 @@ export default {
       doc.addImage(phoneIcon, 'PNG', doc.internal.pageSize.width - 80 - 15, footerY - 5, 10, 10);
       doc.text('02 262 0298', doc.internal.pageSize.width - 80, footerY);
 
+      // WhatsApp
       doc.addImage(whatsappIcon, 'PNG', doc.internal.pageSize.width - 80 - 15, footerY + 15 - 5, 10, 10);
       doc.text('099 995 4079', doc.internal.pageSize.width - 80, footerY + 15);
 
       // Guardar PDF
       doc.save(`informe_${informe.numFactura}.pdf`);
     }
-
   }
 };
 </script>
