@@ -407,9 +407,6 @@ export default {
       doc.text(`FACTURA Nº: ${informe.numFactura}`, divisionX + 10, headerHeight + 40);
       doc.text(`AREA TRATADA: ${informe.ordenDto.area}`, divisionX + 10, headerHeight + 60);
       doc.text(`FECHA: ${informe.ordenDto.fecha}`, divisionX + 10, headerHeight + 80);
-
-      // --- Agregar Cuadro "SANITIZACION CONFIDENCIAL" ---
-
       // Definir posiciones y dimensiones
       const cuadroX = divisionX + 10; // Margen a la derecha de la línea divisoria
       const cuadroY = headerHeight + 90; // Posición Y ajustada hacia arriba
@@ -417,99 +414,277 @@ export default {
       const cuadroHeight = 130; // Altura ligeramente reducida
       const tablaWidth = pageWidth - cuadroX - 250; // Ancho definido para el cuadro
 
+
+      // --- Agregar Cuadro "Tipo de servicio" ---
+
+      let serviciosY = headerHeight + 30;
+      let cabeceraTipoServicio = [{ title: 'TIPO DE SERVICIO', dataKey: 'servicio' }];
+      let distanciaDerecha = cuadroX + 228;
+
+      // Tabla para la cabecera (se mantiene en su posición)
       doc.autoTable({
-    head: [['SANITIZACION CONFIDENCIAL']],  // Título principal
-    body: [
-        ['1. EXCELENTE  2. BUENO  3. REGULAR  4. CRÍTICO']
-    ],
-    startY: cuadroY,  // Posición Y donde empieza la tabla
-    margin: { left: cuadroX },
-    theme: 'grid',
-    headStyles: {
-        fillColor: [255, 255, 255],  // Color de la cabecera
-        textColor: [0, 0, 0],        // Color del texto de la cabecera
-        halign: 'center',
-        fontSize: 8  // Tamaño de la fuente para la cabecera
-    },
-    bodyStyles: {
-        fontSize: 6,  // Tamaño de la fuente para el contenido
-        cellPadding: 3,  // Espacio interno de las celdas
-        halign: 'center',  // Alineación horizontal del contenido
-    },
-    styles: {
-        cellWidth: 'wrap',  // Ajusta el ancho de las celdas al contenido
-        overflow: 'linebreak',  // Permitir saltos de línea en las celdas
-    },
-    columnStyles: {
-        0: { cellWidth: tablaWidth },  // Ancho de la primera columna (título de las áreas)
+        head: [cabeceraTipoServicio.map(col => col.title)],  // Título de la cabecera
+        startY: serviciosY,  // Posición Y donde empieza la tabla
+        margin: { left: distanciaDerecha },  // La cabecera se queda en la posición original
+        theme: 'grid',
+        headStyles: {
+          font: 'Cambria',
+          fillColor: [255, 255, 255],
+          textColor: [37, 123, 205],
+          halign: 'center',  // Alineación a la izquierda
+          fontSize: 12, // Tamaño de la fuente para la cabecera
+          lineColor: [37, 123, 205],
+          cellWidth: tablaWidth
+        },
+        styles: {
+          lineColor: [37, 123, 205],
+          lineWidth: 0.5, // Ancho de las líneas
 
-    },
-    tableWidth: 'wrap',  // Ajusta la tabla al contenido
-});
+        },
+        columnStyles: {
+          0: { cellWidth: tablaWidth },  // Mantiene el ancho de la cabecera
+        },
+        tableWidth: 'wrap',
+      });
 
-doc.autoTable({
-    body: [
-        ['AREAS INTERNAS', '1', '2', '3', '4'],  // Primera fila
-        ['AREAS EXTERNAS', '1', '2', '3', '4'],  // Segunda fila
-        ['AREA ', '1', '2', '3', '4'],  // Tercera fila
-        ['AREA ', '1', '2', '3', '4']   // Cuarta fila
-    ],
-    startY: cuadroY+30,  // Posición Y donde empieza la tabla
-    margin: { left: cuadroX },
-    theme: 'grid',
- 
-    bodyStyles: {
-        fontSize: 6,  // Tamaño de la fuente para el contenido
-        cellPadding: 3,  // Espacio interno de las celdas
-        halign: 'center',  // Alineación horizontal del contenido
-    },
-    styles: {
-        cellWidth: 'wrap',  // Ajusta el ancho de las celdas al contenido
-        overflow: 'linebreak',  // Permitir saltos de línea en las celdas
-    },
-    columnStyles: {
-        0: { cellWidth: tablaWidth*0.6 },  // Ancho de la primera columna (título de las áreas)
-        1: { cellWidth: tablaWidth*0.1 },  // Ancho de las columnas de calificación
-        2: { cellWidth: tablaWidth*0.1 },
-        3: { cellWidth: tablaWidth*0.1 },
-        4: { cellWidth: tablaWidth*0.1 },
-
-      },
-    tableWidth: 'wrap',  // Ajusta la tabla al contenido
-});
-      // --- Agregar Cuadro "Observaciones" ---
-
-      // Definir posiciones y dimensiones para el nuevo cuadro
-      const observacionesY = cuadroY  + 95; // 10 puntos de margen debajo del cuadro anterior
-      const observacionesHeight = 130; // Altura definida para el cuadro
-
-      // Añade la tabla dentro del cuadro
-      const cabeceraObservacion = [{ title: 'OBSERVACIONES', dataKey: 'observacion' }];
-      const textObservacion = [{ observacion: informe.observacion }];
       doc.autoTable({
-        head: [cabeceraObservacion.map(col => col.title)],  // Título de la cabecera
-        body: textObservacion.map(item => [item.observacion]),  // Datos del cuerpo de la tabla
-        startY: observacionesY,  // Posición Y donde empieza la tabla
+        body: [
+          [' ', ' ', ' ', ' ', ' '],  // Primera fila
+          ['MENSUAL', 'BIMENSUAL', 'TRIMESTRAL', 'OCASIONAL', '____'],  // Segunda fila
+
+        ],
+        startY: serviciosY + 20,  // Posición Y donde empieza la tabla
+        margin: { left: distanciaDerecha },
+        theme: 'grid',
+
+        bodyStyles: {
+          textColor: [37, 123, 205],
+          font: 'Cambria',
+          fontSize: 6,  // Tamaño de la fuente para el contenido
+          cellPadding: 3,  // Espacio interno de las celdas
+          halign: 'center',  // Alineación horizontal del contenido
+        },
+        styles: {
+          cellWidth: 'wrap',  // Ajusta el ancho de las celdas al contenido
+          overflow: 'linebreak',  // Permitir saltos de línea en las celdas
+          lineColor: [37, 123, 205],
+          lineWidth: 0.5, // Ancho de las líneas
+        },
+        columnStyles: {
+          0: { cellWidth: tablaWidth * 0.2 },  // Ancho de la primera columna (título de las áreas)
+          1: { cellWidth: tablaWidth * 0.2 },  // Ancho de las columnas de calificación
+          2: { cellWidth: tablaWidth * 0.2 },
+          3: { cellWidth: tablaWidth * 0.2 },
+          4: { cellWidth: tablaWidth * 0.2 },
+
+        },
+        tableWidth: 'wrap',  // Ajusta la tabla al contenido
+      });
+
+      // --- Agregar Cuadro "PLAGAS" ---
+      let cabeceraPlagas = [{ title: 'Plagas', dataKey: 'plagas' },
+      { title: 'Producto', dataKey: 'producto' },
+      { title: 'Cantidad', dataKey: 'cantidad' },
+      { title: 'Tiempo', dataKey: 'tiempo' }];
+
+      let filasPlagas = [];
+
+if (Array.isArray(informe.plagaDtos)) {
+
+  informe.plagaDtos.forEach(plaga => {
+ /*   filasPlagas.push([
+          plaga.tipoPlaga,
+          
+          informe.tiempo  
+        ]); */
+   if (Array.isArray(plaga.cantidadProductoPlaga)) {
+      plaga.cantidadProductoPlaga.forEach(producto => {
+        filasPlagas.push([
+          plaga.tipoPlaga,
+          producto.productoDto,
+          producto.cantidadProducto,
+          informe.tiempo  // Usando el tiempo del informe para cada fila
+        ]);
+      });
+    }
+  });
+} else {
+  console.error("El informe no tiene plagas o no es un arreglo.");
+}
+
+console.log(informe.plagaDtos);
+console.log(informe.plagaDtos.cantidadProductoPlaga);
+
+      doc.autoTable({
+        head: [cabeceraPlagas.map(col => col.title)],  // Título de la cabecera
+        body: filasPlagas,
+        
+        startY: serviciosY + 60,  // Posición Y donde empieza la tabla
+        margin: { left: distanciaDerecha },
+        theme: 'grid',
+        headStyles: {
+          font: 'Cambria',
+          fillColor: [255, 255, 255],
+          textColor: [37, 123, 205],
+          halign: 'center',  // Alineación a la izquierda
+          fontSize: 10, // Tamaño de la fuente para la cabecera
+          lineColor: [37, 123, 205],
+        },
+        bodyStyles: {
+          textColor: [37, 123, 205],
+          font: 'Cambria',
+          fontSize: 6,  // Tamaño de la fuente para el contenido
+          cellPadding: 3,  // Espacio interno de las celdas
+          halign: 'center',  // Alineación horizontal del contenido
+        },
+        styles: {
+          cellWidth: 'wrap',  // Ajusta el ancho de las celdas al contenido
+          overflow: 'linebreak',  // Permitir saltos de línea en las celdas
+          lineColor: [37, 123, 205],
+          lineWidth: 0.5, // Ancho de las líneas
+        },
+        columnStyles: {
+          0: { cellWidth: tablaWidth * 0.25 },  // Ancho de la primera columna (título de las áreas)
+          1: { cellWidth: tablaWidth * 0.25 },  // Ancho de las columnas de calificación
+          2: { cellWidth: tablaWidth * 0.25 },
+          3: { cellWidth: tablaWidth * 0.25 },
+         
+
+        },
+        tableWidth: 'wrap',  // Ajusta la tabla al contenido
+      });
+
+
+
+      // --- Agregar Cuadro "SANITIZACION CONFIDENCIAL" ---
+
+
+      doc.autoTable({
+        head: [['SANITIZACION CONFIDENCIAL']],  // Título principal
+        body: [
+          ['1. EXCELENTE  2. BUENO  3. REGULAR  4. CRÍTICO']
+        ],
+        startY: cuadroY,  // Posición Y donde empieza la tabla
         margin: { left: cuadroX },
         theme: 'grid',
         headStyles: {
-          fillColor: [0, 255, 0],  // Color de la cabecera
+          font: 'Cambria',
+          fillColor: [255, 255, 255],  // Color de la cabecera
+          textColor: [37, 123, 205],
           halign: 'center',
-          fontSize: 12  // Tamaño de la fuente para la cabecera
+          fontSize: 10  // Tamaño de la fuente para la cabecera
+        },
+        bodyStyles: {
+          textColor: [37, 123, 205],
+          font: 'Cambria',
+          fontSize: 6,  // Tamaño de la fuente para el contenido
+          cellPadding: 3,  // Espacio interno de las celdas
+          halign: 'center',  // Alineación horizontal del contenido
         },
         styles: {
+          cellWidth: 'wrap',  // Ajusta el ancho de las celdas al contenido
+          overflow: 'linebreak',  // Permitir saltos de línea en las celdas
+        },
+        columnStyles: {
+          0: { cellWidth: tablaWidth },  // Ancho de la primera columna (título de las áreas)
+
+        },
+        tableWidth: 'wrap',  // Ajusta la tabla al contenido
+      });
+
+      doc.autoTable({
+        body: [
+          ['AREAS INTERNAS', '1', '2', '3', '4'],  // Primera fila
+          ['AREAS EXTERNAS', '1', '2', '3', '4'],  // Segunda fila
+          ['AREA ', '1', '2', '3', '4'],  // Tercera fila
+          ['AREA ', '1', '2', '3', '4']   // Cuarta fila
+        ],
+        startY: cuadroY + 32,  // Posición Y donde empieza la tabla
+        margin: { left: cuadroX },
+        theme: 'grid',
+
+        bodyStyles: {
+          textColor: [37, 123, 205],
+          font: 'Cambria',
+          fontSize: 6,  // Tamaño de la fuente para el contenido
+          cellPadding: 3,  // Espacio interno de las celdas
+          halign: 'center',  // Alineación horizontal del contenido
+        },
+        styles: {
+          cellWidth: 'wrap',  // Ajusta el ancho de las celdas al contenido
+          overflow: 'linebreak',  // Permitir saltos de línea en las celdas
+        },
+        columnStyles: {
+          0: { cellWidth: tablaWidth * 0.6, halign: 'left' },  // Ancho de la primera columna (título de las áreas)
+          1: { cellWidth: tablaWidth * 0.1 },  // Ancho de las columnas de calificación
+          2: { cellWidth: tablaWidth * 0.1 },
+          3: { cellWidth: tablaWidth * 0.1 },
+          4: { cellWidth: tablaWidth * 0.1 },
+
+        },
+        tableWidth: 'wrap',  // Ajusta la tabla al contenido
+      });
+      // --- Agregar Cuadro "Observaciones" ---
+
+      // Definir posiciones y dimensiones para el nuevo cuadro
+      const observacionesY = cuadroY + 95; // Posición Y donde empieza el cuadro
+      const observacionesHeight = 130; // Altura fija para el cuadro de observaciones
+
+      // Dibuja el cuadro
+      doc.rect(cuadroX, observacionesY, tablaWidth, observacionesHeight); // Dibuja el cuadro donde va la tabla
+
+      // Añade la tabla dentro del cuadro
+      const cabeceraObservacion = [{ title: 'OBSERVACIONES', dataKey: 'observacion' }];
+      const textObservacion = [{ observacion: informe.observacion || '' }]; // Asegúrate de que siempre haya un valor
+
+      doc.autoTable({
+        head: [cabeceraObservacion.map(col => col.title)],  // Título de la cabecera
+        body: textObservacion.map(item => [item.observacion]),  // Datos del cuerpo de la tabla
+        startY: observacionesY + 10,  // Añade un margen de 10 debajo del cuadro
+        margin: { left: cuadroX },
+        theme: 'grid',
+        headStyles: {
+          font: 'Cambria',
+          fillColor: [255, 255, 255],
+          textColor: [37, 123, 205],
+          halign: 'center',
+          fontSize: 10,  // Tamaño de la fuente para la cabecera
+        },
+        styles: {
+          textColor: [37, 123, 205],
+          font: 'Cambria',
           fontSize: 7,  // Tamaño de la fuente para el contenido
           cellPadding: 5,
           overflow: 'linebreak',  // Permitir saltos de línea en las celdas
+          lineColor: [37, 123, 205],  // Color de las líneas de la tabla
+          lineWidth: 0.5, // Ancho de las líneas
         },
         columnStyles: {
           0: {  // Define las propiedades de la primera columna
             cellWidth: tablaWidth,  // Limita el ancho de la columna
-            maxCellHeight: observacionesHeight,  // Limita la altura de las celdas para no exceder el cuadro
-          }
+            maxCellHeight: 100,  // Limita la altura de las celdas para no exceder el cuadro
+            lineColor: [0, 0, 0, 0],  // Bordes transparentes
+          },
+          1: { // Ejemplo para aplicar al borde derecho
+            cellWidth: tablaWidth,
+            lineColor: [37, 123, 205], // Color del borde derecho (azul)
+            lineWidth: 0.5, // Ancho del borde derecho
+          },
+          2: {
+            cellWidth: tablaWidth,
+            lineColor: [0, 0, 0], // Color del borde derecho (azul)
+          },
+          2: {
+            cellWidth: tablaWidth,
+            lineColor: [37, 123, 205], // Color del borde derecho (azul)
+            lineWidth: 0.5, // Ancho del borde derecho
+          },
+
         },
         tableWidth: 'wrap',  // Ajusta la tabla al contenido
       });
+
+
 
       // --- Agregar Cuadro "Procedimientos" ---
 
@@ -518,8 +693,8 @@ doc.autoTable({
       const procedimientosHeight = 180; // Altura ajustada para acomodar las categorías y procedimientos
 
       // Añade la tabla dentro del cuadro
-      let cabeceraProcedimiento = [{ title: 'PROCEDIMIENTOS', dataKey: 'procedimiento' }];
-      const textProcedimiento  = [{ procedimiento: informe.procedimientos }];
+      let cabeceraProcedimiento = [{ title: 'PROCEDIMIENTOS:', dataKey: 'procedimiento' }];
+      const textProcedimiento = [{ procedimiento: informe.procedimientos }];
       doc.autoTable({
         head: [cabeceraProcedimiento.map(col => col.title)],  // Título de la cabecera
 
@@ -527,10 +702,12 @@ doc.autoTable({
         margin: { left: cuadroX },
         theme: 'grid',
         headStyles: {
-          fillColor: [0, 255, 0],  // Color de la cabecera
-          halign: 'center',
-          cellWidth: tablaWidth ,
-          fontSize: 7  // Tamaño de la fuente para la cabecera
+          font: 'Cambria',
+          fillColor: [255, 255, 255],
+          textColor: [37, 123, 205],
+          halign: 'left',
+          cellWidth: tablaWidth,
+          fontSize: 10  // Tamaño de la fuente para la cabecera
         },
         styles: {
           fontSize: 5,  // Tamaño de la fuente para el contenido
@@ -540,108 +717,172 @@ doc.autoTable({
 
         tableWidth: 'wrap',  // Ajusta la tabla al contenido
       });
-      procedimientosY = procedimientosY + 15;
-      cabeceraProcedimiento = [{ title: 'DESINSECTACION/FUMIGACION', dataKey: 'procedimiento' }];
+      procedimientosY = procedimientosY + 17;
+      cabeceraProcedimiento = [{ title: 'DESINSECTACION / FUMIGACION', dataKey: 'procedimiento' }];
+      // Tabla para la cabecera (se mantiene en su posición)
       doc.autoTable({
         head: [cabeceraProcedimiento.map(col => col.title)],  // Título de la cabecera
-        body: [
-        ['NEBULIZADOR TÉRMICO'],  // Primera fila
-        ['ASPERSOR MANUAL'],  // Segunda fila
-        ['NEBULIZADOR UVL ELÉCTRICO DIINA FOG'],  // Tercera fila
-        ['NEBULIZADOR MECÁNICO'],   // Cuarta fila
-        ['LÁMPARAS ELECTROCUTADORAS/ATRAPADORAS'],  // Quinta fila
-    ],
         startY: procedimientosY,  // Posición Y donde empieza la tabla
-        margin: { left: cuadroX },
+        margin: { left: cuadroX },  // La cabecera se queda en la posición original
         theme: 'grid',
         headStyles: {
-          fillColor: [0, 255, 0],  // Color de la cabecera
-          halign: 'center',
-          fontSize: 7  // Tamaño de la fuente para la cabecera
+          font: 'Cambria',
+          fillColor: [255, 255, 255],
+          textColor: [37, 123, 205],
+          halign: 'left',  // Alineación a la izquierda
+          fontSize: 8  // Tamaño de la fuente para la cabecera
         },
         styles: {
-          fontSize: 5,  // Tamaño de la fuente para el contenido
-          cellPadding: 5,
-          overflow: 'linebreak',  // Permitir saltos de línea en las celdas
+          lineColor: [0, 0, 0, 0],  // Bordes transparentes
         },
         columnStyles: {
-        0: { cellWidth: tablaWidth }, 
-
-      },
-        tableWidth: 'wrap',  // Ajusta la tabla al contenido
+          0: { cellWidth: tablaWidth },  // Mantiene el ancho de la cabecera
+        },
+        tableWidth: 'wrap',
       });
-    
-      procedimientosY = procedimientosY + 95;
+
+      // Ajustamos el valor Y para el contenido y agregamos más margen a la izquierda para el cuerpo
+      procedimientosY = doc.lastAutoTable.finalY;  // Ajustamos la posición Y después de la cabecera
+
+      // Tabla para el contenido (cuerpo)
+      doc.autoTable({
+        body: [
+          ['NEBULIZADOR TÉRMICO'],  // Primera fila
+          ['ASPERSOR MANUAL'],  // Segunda fila
+          ['NEBULIZADOR UVL ELÉCTRICO DIINA FOG'],  // Tercera fila
+          ['NEBULIZADOR MECÁNICO'],   // Cuarta fila
+          ['LÁMPARAS ELECTROCUTADORAS/ATRAPADORAS'],  // Quinta fila
+        ],
+        startY: procedimientosY,  // Posición Y donde empieza la tabla
+        margin: { left: cuadroX + 30 },  // Mueve el cuerpo 20 unidades más a la derecha
+        theme: 'grid',
+        styles: {
+          textColor: [37, 123, 205],
+          font: 'Cambria',
+          fontSize: 5,  // Tamaño de la fuente para el contenido
+          cellPadding: 5,
+          overflow: 'linebreak',  // Permitir saltos de línea en las celdas
+          lineColor: [0, 0, 0, 0],  // Hace los bordes transparentes
+        },
+        columnStyles: {
+          0: { cellWidth: tablaWidth },  // Mantiene el ancho del cuerpo
+        },
+        tableWidth: 'wrap',
+      });
+
+
+      procedimientosY = procedimientosY + 80;
       cabeceraProcedimiento = [{ title: 'DESRATIZACIÓN', dataKey: 'procedimiento' }];
+      // Tabla para la cabecera (se mantiene en su posición original)
       doc.autoTable({
         head: [cabeceraProcedimiento.map(col => col.title)],  // Título de la cabecera
-        body: [
-
-        ['BIOMONITORES PEGABLES'],  // Sexta fila
-        ['ESTACIONES DE CEBADO'],  // Séptima fila
-        ['CORDÓN SANITARIO PERIMETRAL'],  // Octava fila
-      
-    ],
         startY: procedimientosY,  // Posición Y donde empieza la tabla
-        margin: { left: cuadroX },
+        margin: { left: cuadroX },  // La cabecera se queda en la posición original
         theme: 'grid',
         headStyles: {
-          fillColor: [0, 255, 0],  // Color de la cabecera
-          halign: 'center',
-          fontSize: 7  // Tamaño de la fuente para la cabecera
+          font: 'Cambria',
+          fillColor: [255, 255, 255],
+          textColor: [37, 123, 205],
+          halign: 'left',  // Alineación a la izquierda
+          fontSize: 8  // Tamaño de la fuente para la cabecera
         },
         styles: {
+          lineColor: [0, 0, 0, 0],  // Bordes transparentes
+        },
+        columnStyles: {
+          0: { cellWidth: tablaWidth },  // Mantiene el ancho de la cabecera
+        },
+        tableWidth: 'wrap',
+      });
+
+      // Ajustamos el valor Y para el contenido y agregamos más margen a la izquierda para el cuerpo
+      procedimientosY = doc.lastAutoTable.finalY;  // Ajustamos la posición Y después de la cabecera
+
+      // Tabla para el contenido (cuerpo)
+      doc.autoTable({
+        body: [
+          ['BIOMONITORES PEGABLES'],  // Sexta fila
+          ['ESTACIONES DE CEBADO'],  // Séptima fila
+          ['CORDÓN SANITARIO PERIMETRAL'],  // Octava fila
+        ],
+        startY: procedimientosY,  // Posición Y donde empieza la tabla
+        margin: { left: cuadroX + 30 },  // Mueve el cuerpo 20 unidades más a la derecha
+        theme: 'grid',
+        styles: {
+          textColor: [37, 123, 205],
+          font: 'Cambria',
           fontSize: 5,  // Tamaño de la fuente para el contenido
           cellPadding: 5,
           overflow: 'linebreak',  // Permitir saltos de línea en las celdas
+          lineColor: [0, 0, 0, 0],  // Hace los bordes transparentes
         },
         columnStyles: {
-        0: { cellWidth: tablaWidth }, 
-
-      },
-        tableWidth: 'wrap',  // Ajusta la tabla al contenido
+          0: { cellWidth: tablaWidth },  // Mantiene el ancho del cuerpo
+        },
+        tableWidth: 'wrap',
       });
 
-      
-      procedimientosY = procedimientosY + 65;
+
+      procedimientosY = procedimientosY + 45;
       cabeceraProcedimiento = [{ title: 'DESINFECCIÓN', dataKey: 'procedimiento' }];
+      // Tabla para la cabecera (se mantiene en su posición original)
       doc.autoTable({
         head: [cabeceraProcedimiento.map(col => col.title)],  // Título de la cabecera
-        body: [
-
-        ['NEBULIZADOR UVL ELECTRICO'],  // Novena fila
-        ['NEBULIZADOR MECÁNICO'],  // Décima fila
-        ['SANITIZACIÓN']  // Undécima fila
-    ],
         startY: procedimientosY,  // Posición Y donde empieza la tabla
-        margin: { left: cuadroX },
+        margin: { left: cuadroX },  // La cabecera se queda en la posición original
         theme: 'grid',
         headStyles: {
-          fillColor: [0, 255, 0],  // Color de la cabecera
-          halign: 'center',
-          fontSize: 7  // Tamaño de la fuente para la cabecera
+          font: 'Cambria',
+          fillColor: [255, 255, 255],
+          textColor: [37, 123, 205],
+          halign: 'left',  // Alineación a la izquierda
+          fontSize: 8  // Tamaño de la fuente para la cabecera
         },
         styles: {
+          lineColor: [0, 0, 0, 0],  // Bordes transparentes
+        },
+        columnStyles: {
+          0: { cellWidth: tablaWidth },  // Mantiene el ancho de la cabecera
+        },
+        tableWidth: 'wrap',
+      });
+
+      // Ajustamos el valor Y para el contenido y agregamos más margen a la izquierda para el cuerpo
+      procedimientosY = doc.lastAutoTable.finalY;  // Ajustamos la posición Y después de la cabecera
+
+      // Tabla para el contenido (cuerpo)
+      doc.autoTable({
+        body: [
+          ['NEBULIZADOR UVL ELECTRICO'],  // Novena fila
+          ['NEBULIZADOR MECÁNICO'],  // Décima fila
+          ['SANITIZACIÓN'],  // Undécima fila
+        ],
+        startY: procedimientosY,  // Posición Y donde empieza la tabla
+        margin: { left: cuadroX + 30 },  // Mueve el cuerpo 20 unidades más a la derecha
+        theme: 'grid',
+        styles: {
+          textColor: [37, 123, 205],
+          font: 'Cambria',
           fontSize: 5,  // Tamaño de la fuente para el contenido
           cellPadding: 5,
           overflow: 'linebreak',  // Permitir saltos de línea en las celdas
+          lineColor: [0, 0, 0, 0],  // Hace los bordes transparentes
         },
         columnStyles: {
-        0: { cellWidth: tablaWidth }, 
-
-      },
-        tableWidth: 'wrap',  // Ajusta la tabla al contenido
+          0: { cellWidth: tablaWidth },  // Mantiene el ancho del cuerpo
+        },
+        tableWidth: 'wrap',
       });
-    
-    
+
+
       // --- Agregar Cuadro "Recomendaciones" ---
 
       // Definir posiciones y dimensiones para el nuevo cuadro "Recomendaciones"
-      const recomendacionesY = procedimientosY  + 70; // 10 puntos de margen debajo del cuadro de procedimientos
+      const recomendacionesY = procedimientosY + 40; // 10 puntos de margen debajo del cuadro de procedimientos
       const recomendacionesHeight = 60; // Altura del nuevo cuadro
 
 
-      const cabecera = [{ title: 'RECOMENDACIONES', dataKey: 'recomendacion' }];
+      const cabecera = [{ title: 'RECOMENDACIONES:', dataKey: 'recomendacion' }];
       const text = [{ recomendacion: informe.recomendaciones }];
       doc.autoTable({
         head: [cabecera.map(col => col.title)],  // Título de la cabecera
@@ -650,11 +891,15 @@ doc.autoTable({
         margin: { left: cuadroX },
         theme: 'grid',
         headStyles: {
-          fillColor: [0, 255, 0],
-          halign: 'center',
-          fontSize: 12  // Tamaño de la fuente para la cabecera
+          font: 'Cambria',
+          fillColor: [255, 255, 255],
+          textColor: [37, 123, 205],
+          halign: 'left',
+          fontSize: 10  // Tamaño de la fuente para la cabecera
         },
         styles: {
+          textColor: [37, 123, 205],
+          font: 'Cambria',
           fontSize: 7,  // Tamaño de la fuente para el contenido
           cellPadding: 5,
           overflow: 'linebreak',  // Permitir saltos de línea en las celdas
@@ -670,7 +915,7 @@ doc.autoTable({
       // --- Agregar Sección "Firma Supervisor" ---
 
       // Definir posiciones y dimensiones para la firma
-      const firmaY = recomendacionesY + recomendacionesHeight +60; // 20 puntos de margen debajo del cuadro de recomendaciones
+      const firmaY = recomendacionesY + recomendacionesHeight + 60; // 20 puntos de margen debajo del cuadro de recomendaciones
       const firmaLineWidth = 170; // Ancho de la línea de firma
       const firmaLineX = (pageWidth - firmaLineWidth) / 2; // Centrar la línea horizontalmente
       const firmaLineY = firmaY; // Posición Y de la línea
