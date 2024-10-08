@@ -76,19 +76,20 @@
             </div>
 
             <!-- Productos dentro de la Plaga -->
-            <div v-for="(producto, productoIndex) in plaga.cantidadProductoDtos" :key="productoIndex"
+            <div v-for="(producto, productoIndex) in plaga.cantidadProductoPlaga" :key="productoIndex"
               class="producto-group">
 
               <!-- Selección de producto -->
               <select id="idProductos" v-model="producto.productoDto">
                 <option disabled value="">Seleccione un producto</option>
-                <option v-for="producto in productos" :key="producto.id" :value="producto.id">
+                <option v-for="producto in productos" :key="producto.id" :value="producto">
                   {{ producto.nombre }}
                 </option>
               </select>
 
 
-              <input type="number" v-model="producto.cantidad" placeholder="Cantidad" class="cantidad-input" min="0" />
+              <input type="number" v-model="producto.cantidadProducto" placeholder="Cantidad" class="cantidad-input"
+                min="0" />
               <button type="button" @click="removeProducto(plagaIndex, productoIndex)">Eliminar Producto</button>
             </div>
 
@@ -185,9 +186,9 @@ export default {
         plagas: [
           {
             tipoPlaga: '',
-            cantidadProductoDtos: [
+            cantidadProductoPlaga: [
               {
-                cantidad: 0,
+                cantidadProducto: 0,
                 productoDto: ''
               }
             ]
@@ -218,6 +219,17 @@ export default {
     this.cargarProductos();
   },
   methods: {
+    async submitForm() {
+      try {
+        console.log('Informe IPM creado con éxito:', this.informe);
+        const nuevoInforme = await crearInformePlagaFachada(this.informe);
+        console.log('Informe IPM creado con éxito:', nuevoInforme);
+        this.limpiarFormulario();
+        this.cargarInformes(); // Recargamos los informes después de crear uno nuevo
+      } catch (error) {
+        console.error('Error al crear el informe IPM:', error);
+      }
+    },
     async submitForm2() {
       try {
         console.log('Informe IPM creado con éxito 2:', this.informe);
@@ -237,9 +249,9 @@ export default {
           })),
           plagaDtos: this.informe.plagas.map(plaga => ({
             tipoPlaga: plaga.tipoPlaga,
-            cantidadProductoDtos: plaga.cantidadProductoDtos.map(cp => ({
+            cantidadProductoPlaga: plaga.cantidadProductoPlaga.map(cp => ({
               productoDto: cp.productoDto,
-              cantidad: cp.cantidad
+              cantidadProducto: cp.cantidadProducto
             }))
           }))
         };
@@ -267,7 +279,7 @@ export default {
     addPlaga() {
       this.informe.plagas.push({
         tipoPlaga: '',
-        cantidadProductoDtos: [
+        cantidadProductoPlaga: [
           {
             cantidad: 0,
             productoDto: ''
@@ -279,13 +291,13 @@ export default {
       this.informe.plagas.splice(plagaIndex, 1);
     },
     addProducto(plagaIndex) {
-      this.informe.plagas[plagaIndex].cantidadProductoDtos.push({
+      this.informe.plagas[plagaIndex].cantidadProductoPlaga.push({
         cantidad: 0,
         productoDto: ''
       });
     },
     removeProducto(plagaIndex, productoIndex) {
-      this.informe.plagas[plagaIndex].cantidadProductoDtos.splice(productoIndex, 1);
+      this.informe.plagas[plagaIndex].cantidadProductoPlaga.splice(productoIndex, 1);
     },
     limpiarFormulario() {
       this.informe = {
@@ -300,9 +312,9 @@ export default {
         plagas: [
           {
             tipoPlaga: '',
-            cantidadProductoDtos: [
+            cantidadProductoPlaga: [
               {
-                cantidad: 0,
+                cantidadProducto: 0,
                 productoDto: ''
               }
             ]
@@ -488,37 +500,31 @@ export default {
       { title: 'Tiempo', dataKey: 'tiempo' }];
 
       let filasPlagas = [];
-
 if (Array.isArray(informe.plagaDtos)) {
-
   informe.plagaDtos.forEach(plaga => {
- /*   filasPlagas.push([
-          plaga.tipoPlaga,
-          
-          informe.tiempo  
-        ]); */
-   if (Array.isArray(plaga.cantidadProductoPlaga)) {
+    if (Array.isArray(plaga.cantidadProductoPlaga)) {
+      let firstRow = true;  // Para controlar cuándo escribir el nombre de la plaga
       plaga.cantidadProductoPlaga.forEach(producto => {
         filasPlagas.push([
-          plaga.tipoPlaga,
-          producto.productoDto,
+          firstRow ? plaga.tipoPlaga : '',  // Solo poner el nombre de la plaga en la primera fila
+          producto.productoDto.nombre,
           producto.cantidadProducto,
-          informe.tiempo  // Usando el tiempo del informe para cada fila
+          informe.tiempo
         ]);
+        firstRow = false;  // Para las siguientes filas, dejar el campo vacío
       });
     }
   });
-} else {
-  console.error("El informe no tiene plagas o no es un arreglo.");
 }
 
-console.log(informe.plagaDtos);
-console.log(informe.plagaDtos.cantidadProductoPlaga);
+
+      console.log(informe.plagaDtos);
+      console.log(informe.plagaDtos.cantidadProductoPlaga);
 
       doc.autoTable({
         head: [cabeceraPlagas.map(col => col.title)],  // Título de la cabecera
         body: filasPlagas,
-        
+
         startY: serviciosY + 60,  // Posición Y donde empieza la tabla
         margin: { left: distanciaDerecha },
         theme: 'grid',
@@ -544,11 +550,11 @@ console.log(informe.plagaDtos.cantidadProductoPlaga);
           lineWidth: 0.5, // Ancho de las líneas
         },
         columnStyles: {
-          0: { cellWidth: tablaWidth * 0.25 },  // Ancho de la primera columna (título de las áreas)
+          0: { cellWidth: tablaWidth * 0.25, minCellHeight: 10 },  // Ancho de la primera columna (título de las áreas)
           1: { cellWidth: tablaWidth * 0.25 },  // Ancho de las columnas de calificación
           2: { cellWidth: tablaWidth * 0.25 },
           3: { cellWidth: tablaWidth * 0.25 },
-         
+
 
         },
         tableWidth: 'wrap',  // Ajusta la tabla al contenido
