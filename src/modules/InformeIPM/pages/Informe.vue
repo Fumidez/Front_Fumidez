@@ -500,31 +500,26 @@ export default {
       { title: 'Tiempo', dataKey: 'tiempo' }];
 
       let filasPlagas = [];
-if (Array.isArray(informe.plagaDtos)) {
-  informe.plagaDtos.forEach(plaga => {
-    if (Array.isArray(plaga.cantidadProductoPlaga)) {
-      let firstRow = true;  // Para controlar cuándo escribir el nombre de la plaga
-      plaga.cantidadProductoPlaga.forEach(producto => {
-        filasPlagas.push([
-          firstRow ? plaga.tipoPlaga : '',  // Solo poner el nombre de la plaga en la primera fila
-          producto.productoDto.nombre,
-          producto.cantidadProducto,
-          informe.tiempo
-        ]);
-        firstRow = false;  // Para las siguientes filas, dejar el campo vacío
-      });
-    }
-  });
-}
-
-
-      console.log(informe.plagaDtos);
-      console.log(informe.plagaDtos.cantidadProductoPlaga);
+      if (Array.isArray(informe.plagaDtos)) {
+        informe.plagaDtos.forEach(plaga => {
+          if (Array.isArray(plaga.cantidadProductoPlaga)) {
+            let firstRow = true;  // Para controlar cuándo escribir el nombre de la plaga
+            plaga.cantidadProductoPlaga.forEach(producto => {
+              filasPlagas.push([
+                firstRow ? plaga.tipoPlaga : '',  // Solo poner el nombre de la plaga en la primera fila
+                producto.productoDto.nombre,
+                producto.cantidadProducto,
+                informe.tiempo
+              ]);
+              firstRow = false;  // Para las siguientes filas, dejar el campo vacío
+            });
+          }
+        });
+      }
 
       doc.autoTable({
         head: [cabeceraPlagas.map(col => col.title)],  // Título de la cabecera
         body: filasPlagas,
-
         startY: serviciosY + 60,  // Posición Y donde empieza la tabla
         margin: { left: distanciaDerecha },
         theme: 'grid',
@@ -534,6 +529,76 @@ if (Array.isArray(informe.plagaDtos)) {
           textColor: [37, 123, 205],
           halign: 'center',  // Alineación a la izquierda
           fontSize: 10, // Tamaño de la fuente para la cabecera
+          lineColor: [37, 123, 205],
+          cellWidth: tablaWidth * 0.25
+        },
+        bodyStyles: {
+          textColor: [37, 123, 205],
+          font: 'Cambria',
+          fontSize: 6,  // Tamaño de la fuente para el contenido
+          cellPadding: 3,  // Espacio interno de las celdas
+          halign: 'center',  // Alineación horizontal del contenido
+        },
+        styles: {
+          cellWidth: 'wrap',  // Ajusta el ancho de las celdas al contenido
+          overflow: 'linebreak',  // Permitir saltos de línea en las celdas
+          lineColor: [37, 123, 205],
+          lineWidth: 0.5, // Ancho de las líneas
+        },
+        columnStyles: {
+          0: { cellWidth: tablaWidth * 0.25 }, 
+          1: { cellWidth: tablaWidth * 0.25 },  
+          2: { cellWidth: tablaWidth * 0.25 },
+          3: { cellWidth: tablaWidth * 0.25 },
+        },
+        tableWidth: 'wrap',  // Ajusta la tabla al contenido
+      });
+ // --- Agregar Cuadro "Formulario IPM" ---
+      let formularioY = headerHeight + 180;
+      let cabeceraFormulario = [{ title: 'IDENTIFICACIÓN Y RELACIÓN DEL CONTROL DE ROEDORES', dataKey: 'servicio' }];
+
+      doc.autoTable({
+        head: [cabeceraFormulario.map(col => col.title)],  // Título de la cabecera
+        startY: formularioY,  // Posición Y donde empieza la tabla
+        margin: { left: distanciaDerecha },
+        theme: 'grid',
+        headStyles: {
+          font: 'Cambria',
+          fillColor: [255, 255, 255],
+          textColor: [37, 123, 205],
+          halign: 'center',  // Alineación a la izquierda
+          fontSize: 8, // Tamaño de la fuente para la cabecera
+          lineColor: [37, 123, 205],
+          cellWidth: tablaWidth
+        },
+        styles: {
+          cellWidth: 'wrap',  // Ajusta el ancho de las celdas al contenido
+          overflow: 'linebreak',  // Permitir saltos de línea en las celdas
+          lineColor: [37, 123, 205],
+          lineWidth: 0.5, // Ancho de las líneas
+        },
+        tableWidth: 'wrap',  // Ajusta la tabla al contenido
+      });
+
+      formularioY = formularioY + 25;
+
+      doc.autoTable({
+        head: [  
+          ['UBICACIÓN', 'CON. SI', 'CON. NO', 'TOTAL CEB', 'RODENT. PEGA', 'RODENT. CB']
+        ],
+        body: [ 
+          ['FORMULARIO IPM', ' ', '', '', '', ''],
+          ['TOTAL', ' ', '', '', '', '']
+        ],
+        startY: formularioY,  // Posición Y donde empieza la tabla
+        margin: { left: distanciaDerecha },
+        theme: 'grid',
+        headStyles: {
+          font: 'Cambria',
+          fillColor: [255, 255, 255],
+          textColor: [37, 123, 205],
+          halign: 'center',  // Alineación a la izquierda
+          fontSize: 5, // Tamaño de la fuente para la cabecera
           lineColor: [37, 123, 205],
         },
         bodyStyles: {
@@ -550,17 +615,129 @@ if (Array.isArray(informe.plagaDtos)) {
           lineWidth: 0.5, // Ancho de las líneas
         },
         columnStyles: {
-          0: { cellWidth: tablaWidth * 0.25, minCellHeight: 10 },  // Ancho de la primera columna (título de las áreas)
-          1: { cellWidth: tablaWidth * 0.25 },  // Ancho de las columnas de calificación
-          2: { cellWidth: tablaWidth * 0.25 },
-          3: { cellWidth: tablaWidth * 0.25 },
-
-
+          0: { cellWidth: tablaWidth * 0.30 },  
+          1: { cellWidth: tablaWidth * 0.14 },  
+          2: { cellWidth: tablaWidth * 0.14 },
+          3: { cellWidth: tablaWidth * 0.14 },
+          4: { cellWidth: tablaWidth * 0.14 },
+          5: { cellWidth: tablaWidth * 0.14 },
         },
         tableWidth: 'wrap',  // Ajusta la tabla al contenido
       });
 
+      cabeceraFormulario = [{ title: 'CORDON SANITARIO ESTRUCTURAL', dataKey: 'servicio' }];
+      formularioY = formularioY + 45;
 
+      doc.autoTable({
+        head: [cabeceraFormulario.map(col => col.title)],  // Título de la cabecera
+        startY: formularioY,  // Posición Y donde empieza la tabla
+        margin: { left: distanciaDerecha },
+        theme: 'grid',
+        headStyles: {
+          font: 'Cambria',
+          fillColor: [255, 255, 255],
+          textColor: [37, 123, 205],
+          halign: 'center',  // Alineación a la izquierda
+          fontSize: 8, // Tamaño de la fuente para la cabecera
+          lineColor: [37, 123, 205],
+          cellWidth: tablaWidth
+        },
+        styles: {
+          cellWidth: 'wrap',  // Ajusta el ancho de las celdas al contenido
+          overflow: 'linebreak',  // Permitir saltos de línea en las celdas
+          lineColor: [37, 123, 205],
+          lineWidth: 0.5, // Ancho de las líneas
+        },
+        tableWidth: 'wrap',  // Ajusta la tabla al contenido
+      });
+
+      formularioY = formularioY + 17;
+
+      doc.autoTable({
+        head: [  
+          ['UBICACIÓN', 'CON. SI', 'CON. NO', 'TOTAL CEB', 'RODENT. PEGA', 'RODENT. CB']
+        ],
+        body: [ 
+          ['GUARDIANÍA', ' ', '', '', '', ''],
+          ['TOTAL:', ' ', '', '', '', ''],
+          ['GRAN TOTAL:', ' ', '', '', '', ''],
+        ],
+        startY: formularioY,  // Posición Y donde empieza la tabla
+        margin: { left: distanciaDerecha },
+        theme: 'grid',
+        headStyles: {
+          font: 'Cambria',
+          fillColor: [255, 255, 255],
+          textColor: [37, 123, 205],
+          halign: 'center',  // Alineación a la izquierda
+          fontSize: 5, // Tamaño de la fuente para la cabecera
+          lineColor: [37, 123, 205],
+        },
+        bodyStyles: {
+          textColor: [37, 123, 205],
+          font: 'Cambria',
+          fontSize: 6,  // Tamaño de la fuente para el contenido
+          cellPadding: 3,  // Espacio interno de las celdas
+          halign: 'center',  // Alineación horizontal del contenido
+        },
+        styles: {
+          cellWidth: 'wrap',  // Ajusta el ancho de las celdas al contenido
+          overflow: 'linebreak',  // Permitir saltos de línea en las celdas
+          lineColor: [37, 123, 205],
+          lineWidth: 0.5, // Ancho de las líneas
+        },
+        columnStyles: {
+          0: { cellWidth: tablaWidth * 0.30 },  
+          1: { cellWidth: tablaWidth * 0.14 },  
+          2: { cellWidth: tablaWidth * 0.14 },
+          3: { cellWidth: tablaWidth * 0.14 },
+          4: { cellWidth: tablaWidth * 0.14 },
+          5: { cellWidth: tablaWidth * 0.14 },
+        },
+        tableWidth: 'wrap',  // Ajusta la tabla al contenido
+      });
+
+      formularioY = formularioY + 60;
+
+      doc.autoTable({
+        head: [  
+          ['INDICADOR DEL RIESGO', 'BAJO 0 al 14%', 'MEDIO 15 al 30%', 'ALTO sup al 30%']
+        ],
+        body: [ 
+          ['TOTAL SI X 100 \n___________\n TOTAL CEB. ', ' ', '', '']
+        ],
+        startY: formularioY,  // Posición Y donde empieza la tabla
+        margin: { left: distanciaDerecha },
+        theme: 'grid',
+        headStyles: {
+          font: 'Cambria',
+          fillColor: [255, 255, 255],
+          textColor: [37, 123, 205],
+          halign: 'center',  // Alineación a la izquierda
+          fontSize: 5, // Tamaño de la fuente para la cabecera
+          lineColor: [37, 123, 205],
+        },
+        bodyStyles: {
+          textColor: [37, 123, 205],
+          font: 'Cambria',
+          fontSize: 6,  // Tamaño de la fuente para el contenido
+          cellPadding: 3,  // Espacio interno de las celdas
+          halign: 'center',  // Alineación horizontal del contenido
+        },
+        styles: {
+          cellWidth: 'wrap',  // Ajusta el ancho de las celdas al contenido
+          overflow: 'linebreak',  // Permitir saltos de línea en las celdas
+          lineColor: [37, 123, 205],
+          lineWidth: 0.5, // Ancho de las líneas
+        },
+        columnStyles: {
+          0: { cellWidth: tablaWidth * 0.52 },  
+          1: { cellWidth: tablaWidth * 0.16 },  
+          2: { cellWidth: tablaWidth * 0.16 },
+          3: { cellWidth: tablaWidth * 0.16 },
+        },
+        tableWidth: 'wrap',  // Ajusta la tabla al contenido
+      });
 
       // --- Agregar Cuadro "SANITIZACION CONFIDENCIAL" ---
 
@@ -771,7 +948,7 @@ if (Array.isArray(informe.plagaDtos)) {
           lineColor: [0, 0, 0, 0],  // Hace los bordes transparentes
         },
         columnStyles: {
-          0: { cellWidth: tablaWidth },  // Mantiene el ancho del cuerpo
+          0: { cellWidth: tablaWidth - 30 },  // Mantiene el ancho del cuerpo
         },
         tableWidth: 'wrap',
       });
@@ -796,7 +973,7 @@ if (Array.isArray(informe.plagaDtos)) {
           lineColor: [0, 0, 0, 0],  // Bordes transparentes
         },
         columnStyles: {
-          0: { cellWidth: tablaWidth },  // Mantiene el ancho de la cabecera
+          0: { cellWidth: tablaWidth - 30},  // Mantiene el ancho de la cabecera
         },
         tableWidth: 'wrap',
       });
@@ -823,7 +1000,7 @@ if (Array.isArray(informe.plagaDtos)) {
           lineColor: [0, 0, 0, 0],  // Hace los bordes transparentes
         },
         columnStyles: {
-          0: { cellWidth: tablaWidth },  // Mantiene el ancho del cuerpo
+          0: { cellWidth: tablaWidth - 30},  // Mantiene el ancho del cuerpo
         },
         tableWidth: 'wrap',
       });
@@ -848,7 +1025,7 @@ if (Array.isArray(informe.plagaDtos)) {
           lineColor: [0, 0, 0, 0],  // Bordes transparentes
         },
         columnStyles: {
-          0: { cellWidth: tablaWidth },  // Mantiene el ancho de la cabecera
+          0: { cellWidth: tablaWidth - 30},  // Mantiene el ancho de la cabecera
         },
         tableWidth: 'wrap',
       });
@@ -875,7 +1052,7 @@ if (Array.isArray(informe.plagaDtos)) {
           lineColor: [0, 0, 0, 0],  // Hace los bordes transparentes
         },
         columnStyles: {
-          0: { cellWidth: tablaWidth },  // Mantiene el ancho del cuerpo
+          0: { cellWidth: tablaWidth - 30},  // Mantiene el ancho del cuerpo
         },
         tableWidth: 'wrap',
       });
