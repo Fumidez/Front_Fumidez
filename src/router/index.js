@@ -7,6 +7,7 @@ import Producto from '../modules/Producto/components/Producto.vue';
 import Proveedor from '../modules/Proveedor/components/Proveedor.vue';
 import Informe from '../modules/InformeIPM/pages/Informe.vue';
 import login from '../modules/Login/pages/login.vue';
+import Desratizacion from '../modules/InformeIPM/pages/Desratizacion.vue';
 
 
 const routes = [
@@ -18,6 +19,7 @@ const routes = [
   { path: '/proveedores', component: Proveedor },
   { path: '/informe', component: Informe },
   { path: '/login', component: login },
+  { path: '/desratizacion/:id', component: Desratizacion },
 
   { path: '/', redirect: '/clientes' }, // Redirigir al inicio
 ];
