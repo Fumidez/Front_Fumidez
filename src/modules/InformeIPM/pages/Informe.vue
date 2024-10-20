@@ -27,17 +27,23 @@
           <textarea id="recomendaciones" v-model="informe.recomendaciones" placeholder="Recomendaciones"></textarea>
         </div>
 
-        <!-- Concurrencia -->
+        <!-- Tiempo -->
         <div class="form-group">
-          <label for="concurrencia">Concurrencia</label>
-          <input type="text" id="concurrencia" v-model="informe.concurrencia" placeholder="Concurrencia" />
+          <label for="tiempo">Tiempo</label>
+          <input type="time" id="tiempo" v-model="informe.tiempo" placeholder="Tiempo" />
         </div>
 
         <!-- Frecuencia -->
         <div class="form-group">
           <label for="frecuencia">Frecuencia</label>
-          <input type="text" id="frecuencia" v-model="informe.frecuencia" placeholder="Frecuencia" />
+          <select id="frecuencia" v-model="informe.frecuencia" class="form-control">
+            <option value="" disabled selected>Selecciona una frecuencia</option>
+            <option v-for="frecuencia in frecuencias" :key="frecuencia" :value="frecuencia">
+              {{ frecuencia }}
+            </option>
+          </select>
         </div>
+
 
         <!-- Precio -->
         <div class="form-group">
@@ -100,6 +106,50 @@
           <button type="button" @click="addPlaga">Añadir Plaga</button>
         </div>
 
+        <div class="sanitizacion-row">
+          <div class="input-group">
+            <label>Área Interna</label>
+            <select v-model="informe.sanitizacionConfidenciales.areaInterna">
+              <option disabled value="">Seleccione una opción</option>
+              <option v-for="n in 4" :key="n" :value="n">{{ n }}</option>
+            </select>
+          </div>
+
+          <div class="input-group">
+            <label>Área Externa</label>
+            <select v-model="informe.sanitizacionConfidenciales.areaExterna">
+              <option disabled value="">Seleccione una opción</option>
+              <option v-for="n in 4" :key="n" :value="n">{{ n }}</option>
+            </select>
+          </div>
+
+          <div class="input-group">
+            <div class="input-group">
+              <label>Nombre del Área Opcional 1</label>
+              <input v-model="informe.sanitizacionConfidenciales.areaNombreOpc1" type="text"
+                placeholder="Nombre del Área Opcional 1">
+            </div>
+            <select v-model="informe.sanitizacionConfidenciales.areaOpc1">
+              <option disabled value="">Seleccione una opción</option>
+              <option v-for="n in 4" :key="n" :value="n">{{ n }}</option>
+            </select>
+          </div>
+
+          <div class="input-group">
+            <div class="input-group">
+              <label>Nombre del Área Opcional 2</label>
+              <input v-model="informe.sanitizacionConfidenciales.areaNombreOpc2" type="text"
+                placeholder="Nombre del Área Opcional 2">
+            </div>
+            <select v-model="informe.sanitizacionConfidenciales.areaOpc2">
+              <option disabled value="">Seleccione una opción</option>
+              <option v-for="n in 4" :key="n" :value="n">{{ n }}</option>
+            </select>
+          </div>
+        </div>
+
+
+
         <!-- Botón de Guardar -->
         <button type="submit">Guardar</button>
       </form>
@@ -113,43 +163,18 @@
           <tr>
             <th>#</th>
             <th>Número de Factura</th>
-            <th>Observación</th>
-            <th>Procedimiento</th>
-            <th>Recomendaciones</th>
-            <th>Concurrencia</th>
             <th>Frecuencia</th>
             <th>Precio</th>
-            <th>Orden</th>
-            <th>Procedimientos</th>
-            <th>Plaga</th>
-
+            <th>cLIENTE</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="(informe) in informes" :key="informe.id">
             <td>{{ informe.id }}</td>
             <td>{{ informe.numFactura }}</td>
-            <!--   <td>{{ informe.observacion }}</td>-->
-            <!--     <td>{{ informe.procedimineto }}</td>-->
-            <td>{{ informe.recomendaciones }}</td>
-            <td>{{ informe.concurrencia }}</td>
             <td>{{ informe.frecuencia }}</td>
             <td>{{ informe.precio }}</td>
             <td>{{ informe.ordenDto.cliente.nombre }}</td>
-            <td>
-              <ul>
-                <li v-for="procedimineto in informe.procediminetoDtos" :key="procedimineto.id">
-                  {{ procedimineto.tipoProcedimineto }}
-                </li>
-              </ul>
-            </td>
-            <td>
-              <ul>
-                <li v-for="plaga in informe.plagaDtos" :key="plaga.id">
-                  {{ plaga.tipoPlaga }}
-                </li>
-              </ul>
-            </td>
             <td>
               <button @click="generatePDF(informe)">Generar PDF</button>
 
@@ -190,6 +215,14 @@ export default {
         frecuencia: '',
         precio: '',
         idOrden: '',
+        sanitizacionConfidenciales: {
+          areaInterna: '',
+          areaExterna: '',
+          areaOpc1: '',
+          areaOpc2: '',
+          areaNombreOpc1: '',
+          areaNombreOpc2: ''
+        },
         plagas: [
           {
             tipoPlaga: '',
@@ -218,7 +251,8 @@ export default {
         'SANITIZACIÓN'],
 
       productos: [],
-      informes: [] // Array para almacenar los informes existentes
+      informes: [],
+      frecuencias: ['MENSUAL', 'BIMENSUAL', 'TRIMESTRAL', 'OCASIONAL']
     };
   },
   mounted() {
@@ -245,7 +279,6 @@ export default {
           observacion: this.informe.observacion,
           procedimineto: this.informe.procedimineto,
           recomendaciones: this.informe.recomendaciones,
-          concurrencia: this.informe.concurrencia,
           frecuencia: this.informe.frecuencia,
           precio: this.informe.precio,
           ordenDto: {
@@ -260,7 +293,15 @@ export default {
               productoDto: cp.productoDto,
               cantidadProducto: cp.cantidadProducto
             }))
-          }))
+          })),
+          sanitizacionConfidencialDto: { // Cambia 'sanitizacionConfidencialDtos' por 'sanitizacionConfidencialDto'
+        areaInterna: this.informe.sanitizacionConfidenciales.areaInterna,
+        areaExterna: this.informe.sanitizacionConfidenciales.areaExterna,
+        areaOpc1: this.informe.sanitizacionConfidenciales.areaOpc1,
+        areaOpc2: this.informe.sanitizacionConfidenciales.areaOpc2,
+        areaNombreOpc1: this.informe.sanitizacionConfidenciales.areaNombreOpc1,
+        areaNombreOpc2: this.informe.sanitizacionConfidenciales.areaNombreOpc2
+    }
         };
         const nuevoInforme = await crearInformePlagaFachada(informeDto);
         console.log('Informe IPM creado con éxito:', nuevoInforme);
@@ -481,22 +522,33 @@ export default {
         tableWidth: 'wrap',
       });
 
-      doc.autoTable({
-        body: [
-          [' ', ' ', ' ', ' ', ' '],  // Primera fila
-          ['MENSUAL', 'BIMENSUAL', 'TRIMESTRAL', 'OCASIONAL', '____'],  // Segunda fila
+      const seleccion = informe.frecuencia;
 
+      let datosTabla = [
+        [
+          seleccion === 'MENSUAL' ? 'X' : ' ', // Marca si es MENSUAL
+          seleccion === 'BIMENSUAL' ? 'X' : ' ', // Marca si es BIMENSUAL
+          seleccion === 'TRIMESTRAL' ? 'X' : ' ', // Marca si es TRIMESTRAL
+          seleccion === 'OCASIONAL' ? 'X' : ' ', // Marca si es OCASIONAL
+          ' '  // Última celda vacía
         ],
-        startY: serviciosY + 20,  // Posición Y donde empieza la tabla
+        ['MENSUAL', 'BIMENSUAL', 'TRIMESTRAL', 'OCASIONAL', '____'],  // Segunda fila
+      ];
+
+      serviciosY = serviciosY + 20;
+
+      doc.autoTable({
+        body: datosTabla,
+        startY: serviciosY,
         margin: { left: distanciaDerecha },
         theme: 'grid',
 
         bodyStyles: {
           textColor: [37, 123, 205],
           font: 'Cambria',
-          fontSize: 6,  // Tamaño de la fuente para el contenido
-          cellPadding: 3,  // Espacio interno de las celdas
-          halign: 'center',  // Alineación horizontal del contenido
+          fontSize: 6,
+          cellPadding: 3,
+          halign: 'center',
         },
         styles: {
           cellWidth: 'wrap',  // Ajusta el ancho de las celdas al contenido
@@ -539,10 +591,12 @@ export default {
         });
       }
 
+      serviciosY = serviciosY + 40;
+
       doc.autoTable({
         head: [cabeceraPlagas.map(col => col.title)],  // Título de la cabecera
         body: filasPlagas,
-        startY: serviciosY + 60,  // Posición Y donde empieza la tabla
+        startY: serviciosY,  // Posición Y donde empieza la tabla
         margin: { left: distanciaDerecha },
         theme: 'grid',
         headStyles: {
@@ -575,8 +629,11 @@ export default {
         },
         tableWidth: 'wrap',  // Ajusta la tabla al contenido
       });
-      // --- Agregar Cuadro "Formulario IPM" ---
-      let formularioY = headerHeight + 180;
+
+      console.log("Cantidad de filas")
+      console.log(filasPlagas.length)
+
+      let formularioY = serviciosY + (filasPlagas.length * 15) + 30;
       let cabeceraFormulario = [{ title: 'IDENTIFICACIÓN Y RELACIÓN DEL CONTROL DE ROEDORES', dataKey: 'servicio' }];
 
       doc.autoTable({
@@ -637,7 +694,7 @@ export default {
             } else {
               datosFormulario.rodentC = 'X';
             }
-            datosFormulario.totalCeb +=1;
+            datosFormulario.totalCeb += 1;
           } else {
             if (formulario.consumo == 'SI') {
               datosFormularioCordon.conSi += 1;
@@ -649,7 +706,7 @@ export default {
             } else {
               datosFormularioCordon.rodentC = 'X';
             }
-            datosFormularioCordon.totalCeb +=1;
+            datosFormularioCordon.totalCeb += 1;
 
           }
         });
@@ -734,8 +791,8 @@ export default {
           ['UBICACIÓN', 'CON. SI', 'CON. NO', 'TOTAL CEB', 'RODENT. PEGA', 'RODENT. CB']
         ],
         body: [
-          ['GUARDIANÍA',  datosFormularioCordon.conSi, datosFormularioCordon.conNo, datosFormularioCordon.totalCeb, datosFormularioCordon.rodentP, datosFormularioCordon.rodentC],
-          ['GRAN TOTAL:',(datosFormularioCordon.conSi+datosFormulario.conSi), (datosFormularioCordon.conNo+datosFormulario.conNo), (datosFormularioCordon.totalCeb+datosFormulario.totalCeb), '', ''],
+          ['GUARDIANÍA', datosFormularioCordon.conSi, datosFormularioCordon.conNo, datosFormularioCordon.totalCeb, datosFormularioCordon.rodentP, datosFormularioCordon.rodentC],
+          ['GRAN TOTAL:', (datosFormularioCordon.conSi + datosFormulario.conSi), (datosFormularioCordon.conNo + datosFormulario.conNo), (datosFormularioCordon.totalCeb + datosFormulario.totalCeb), '', ''],
         ],
         startY: formularioY,  // Posición Y donde empieza la tabla
         margin: { left: distanciaDerecha },
@@ -850,13 +907,15 @@ export default {
         tableWidth: 'wrap',  // Ajusta la tabla al contenido
       });
 
+      datosTabla = [
+        ['AREAS INTERNAS', '1', '2', '3', '4'],  // Primera fila
+        ['AREAS EXTERNAS', '1', '2', '3', '4'],  // Segunda fila
+        [informe.sanitizacionConfidencialDto.areaNombreOpc1 ? informe.sanitizacionConfidencialDto.areaNombreOpc1 : 'AREA', '1', '2', '3', '4'],  // Tercera fila
+        [informe.sanitizacionConfidencialDto.areaNombreOpc2 ? informe.sanitizacionConfidencialDto.areaNombreOpc2 : 'AREA', '1', '2', '3', '4']   // Cuarta fila
+      ];
+
       doc.autoTable({
-        body: [
-          ['AREAS INTERNAS', '1', '2', '3', '4'],  // Primera fila
-          ['AREAS EXTERNAS', '1', '2', '3', '4'],  // Segunda fila
-          ['AREA ', '1', '2', '3', '4'],  // Tercera fila
-          ['AREA ', '1', '2', '3', '4']   // Cuarta fila
-        ],
+        body: datosTabla,
         startY: cuadroY + 32,  // Posición Y donde empieza la tabla
         margin: { left: cuadroX },
         theme: 'grid',
@@ -1461,6 +1520,30 @@ export default {
 
 
 <style scoped>
+.sanitizacion-row {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  /* Espacio entre los elementos */
+}
+
+.input-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  /* Espacio entre el label y el select */
+}
+
+label {
+  width: 150px;
+  /* Ajusta el ancho de los labels para alinearlos */
+}
+
+select {
+  width: 200px;
+  /* Ajusta el ancho de los selects */
+}
+
 .informe-container {
   max-width: 1200px;
   margin: auto;
