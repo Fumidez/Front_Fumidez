@@ -15,7 +15,6 @@ export const consultarDesratizacionFachadaPorIdInforme = async (id) => {
 }
 
 
-
 const crearDesratizacion = async (bodyDesratizacion) => {
     return await axios.post(API_URL, bodyDesratizacion).then(r => r.data);
 
