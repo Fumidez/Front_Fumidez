@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:7070/app-proveedor/proveedor";
+const API_URL = "http://localhost:7070/app-producto/proveedor";
 
 // Crear un Proveedor
 export const crearProveedorFachada = async (bodyProveedor) => {
