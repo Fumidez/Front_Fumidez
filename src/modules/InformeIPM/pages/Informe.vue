@@ -52,11 +52,15 @@
         </div>
 
         <!-- Orden ID -->
-        <div class="form-group">
-          <label for="idOrden">ID de Orden</label>
-          <input type="number" id="idOrden" v-model="informe.idOrden" placeholder="ID de Orden" />
+        <div>
+          <label for="ordenSelect">Seleccionar Orden de Trabajo:</label>
+          <select id="ordenSelect" v-model="informe.idOrden" @change="cargarOrdenSeleccionada">
+            <option value="">Seleccione una orden</option>
+            <option v-for="orden in ordenes" :key="orden.id" :value="orden.id">
+              {{ orden.numeroOrden }}
+            </option>
+          </select>
         </div>
-
         <!-- Procedimientos -->
         <div class="form-group">
           <label>Procedimientos</label>
@@ -205,6 +209,7 @@ import { obtenerTodosLosProductosFachada } from '../../Producto/helpers/producto
 import router from '@/router';
 
 import { consultarDesratizacionFachadaPorIdInforme, crearDesratizacionFachada } from '../helpers/desratizacionHelper';
+import { consultarOrdenFachada } from '../../OrdenTrabajo/helpers/OrdenTrabajoHelper';
 
 export default {
   name: "InformeIpm",
@@ -254,6 +259,7 @@ export default {
         'SANITIZACIÓN'],
 
       productos: [],
+      ordenes: [],
       registro: {
         tipoIdentificadorCordon: false,
         consumo: "",
@@ -269,6 +275,7 @@ export default {
   mounted() {
     this.cargarInformes(); // Cargamos los informes al montar el componente
     this.cargarProductos();
+    this.cargarOrdenes();
   },
   methods: {
     async submitForm() {
@@ -306,13 +313,13 @@ export default {
             }))
           })),
           sanitizacionConfidencialDto: { // Cambia 'sanitizacionConfidencialDtos' por 'sanitizacionConfidencialDto'
-        areaInterna: this.informe.sanitizacionConfidenciales.areaInterna,
-        areaExterna: this.informe.sanitizacionConfidenciales.areaExterna,
-        areaOpc1: this.informe.sanitizacionConfidenciales.areaOpc1,
-        areaOpc2: this.informe.sanitizacionConfidenciales.areaOpc2,
-        areaNombreOpc1: this.informe.sanitizacionConfidenciales.areaNombreOpc1,
-        areaNombreOpc2: this.informe.sanitizacionConfidenciales.areaNombreOpc2
-    }
+            areaInterna: this.informe.sanitizacionConfidenciales.areaInterna,
+            areaExterna: this.informe.sanitizacionConfidenciales.areaExterna,
+            areaOpc1: this.informe.sanitizacionConfidenciales.areaOpc1,
+            areaOpc2: this.informe.sanitizacionConfidenciales.areaOpc2,
+            areaNombreOpc1: this.informe.sanitizacionConfidenciales.areaNombreOpc1,
+            areaNombreOpc2: this.informe.sanitizacionConfidenciales.areaNombreOpc2
+          }
         };
         const nuevoInforme = await crearInformePlagaFachada(informeDto);
         console.log('Informe IPM creado con éxito:', nuevoInforme);
@@ -403,6 +410,16 @@ export default {
       } catch (error) {
         console.error('Error al cargar los productos:', error);
         alert('Hubo un error al cargar los productos.');
+      }
+    },
+
+
+    async cargarOrdenes() {
+      try {
+        this.ordenes = await consultarOrdenFachada();
+      } catch (error) {
+        console.error('Error al cargar las ordenes:', error);
+        alert('Hubo un error al cargar las  ordenes.');
       }
     },
     async generatePDF(informe) {
@@ -1071,7 +1088,7 @@ export default {
       procedimientosY = doc.lastAutoTable.finalY;  // Ajustamos la posición Y después de la cabecera
 
       let informePorId = await consultarInformePorIdFachada(informe.id);
-//      console.log("informePorId");
+      //      console.log("informePorId");
       console.log(informePorId);
 
 
@@ -1091,47 +1108,47 @@ export default {
 
       if (Array.isArray(informePorId.procediminetos)) {
         informePorId.procediminetos.forEach(informe => {
-          
-          if(informe.tipoProcedimineto == 0){
-              datosProcedimientos.nebulizador = 'X';
-              
+
+          if (informe.tipoProcedimineto == 0) {
+            datosProcedimientos.nebulizador = 'X';
+
           }
-          if(informe.tipoProcedimineto == 1){
-              datosProcedimientos.aspersor = 'X';
+          if (informe.tipoProcedimineto == 1) {
+            datosProcedimientos.aspersor = 'X';
           }
-          if(informe.tipoProcedimineto == 2){
-              datosProcedimientos.uvl = 'X';
+          if (informe.tipoProcedimineto == 2) {
+            datosProcedimientos.uvl = 'X';
           }
-          if(informe.tipoProcedimineto == 3){
-              datosProcedimientos.mecanico = 'X';
+          if (informe.tipoProcedimineto == 3) {
+            datosProcedimientos.mecanico = 'X';
           }
-          if(informe.tipoProcedimineto == 4){
-              datosProcedimientos.lamparas = 'X';
+          if (informe.tipoProcedimineto == 4) {
+            datosProcedimientos.lamparas = 'X';
           }
-          if(informe.tipoProcedimineto == 5){
-              datosProcedimientos.biomonitores = 'X';
+          if (informe.tipoProcedimineto == 5) {
+            datosProcedimientos.biomonitores = 'X';
           }
-          if(informe.tipoProcedimineto == 6){
-              datosProcedimientos.estaciones = 'X';
+          if (informe.tipoProcedimineto == 6) {
+            datosProcedimientos.estaciones = 'X';
           }
-          if(informe.tipoProcedimineto == 7){
-              datosProcedimientos.cordon = 'X';
+          if (informe.tipoProcedimineto == 7) {
+            datosProcedimientos.cordon = 'X';
           }
-          if(informe.tipoProcedimineto ==8){
-              datosProcedimientos.nUvl = 'X';
+          if (informe.tipoProcedimineto == 8) {
+            datosProcedimientos.nUvl = 'X';
           }
-          if(informe.tipoProcedimineto == 9){
-              datosProcedimientos.nMEc = 'X';
+          if (informe.tipoProcedimineto == 9) {
+            datosProcedimientos.nMEc = 'X';
           }
-          if(informe.tipoProcedimineto == 10){
-              datosProcedimientos.sanitizacion = 'X';
+          if (informe.tipoProcedimineto == 10) {
+            datosProcedimientos.sanitizacion = 'X';
           }
 
-     
 
-      });
-    }
-    console.log("Datos: "+ datosProcedimientos);
+
+        });
+      }
+      console.log("Datos: " + datosProcedimientos);
       // Tabla para el contenido (cuerpo)
       doc.autoTable({
         body: [
