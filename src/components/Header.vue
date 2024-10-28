@@ -11,7 +11,6 @@
           <ul>
             <li><router-link to="/clientes">Clientes</router-link></li>
             <li><router-link to="/productos">Productos</router-link></li>
-            <li><router-link to="/plagas">Plagas</router-link></li>
             <li><router-link to="/proveedores">Proveedores</router-link></li>
             <li><router-link to="/usuarios">Usuarios</router-link></li>
             <li><router-link to="/orden_trabajo">Orden Trabajo</router-link></li>

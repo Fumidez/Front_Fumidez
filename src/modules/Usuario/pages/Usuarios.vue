@@ -3,11 +3,18 @@
       <h1>Ingresar Usuario</h1>
       <form @submit.prevent="submitForm">
         <!-- Tipo -->
-        <div class="form-group">
-          <label for="tipo">Tipo de Usuario</label>
-          <input type="text" id="tipo" v-model="usuario.tipo" placeholder="Tipo" />
-        </div>
-  
+      
+          <div class="input-group">
+            <label>Rol del usuario</label>
+            <select v-model="usuario.tipo" id="role">
+      <option disabled value="">Seleccione un rol</option>
+      <option v-for="rol in roles" :key="rol" :value="rol">
+        {{ rol }}
+      </option>
+    </select>
+          </div>
+
+
         <!-- Contraseña -->
         <div class="form-group">
           <label for="contrasenia">Contraseña</label>
@@ -56,8 +63,7 @@
   </template>
   
   <script>
-import { crearUsuarioFachada } from '../helpers/UsuarioHelper';
-
+import { consultarUsuarioFachada, crearUsuarioFachada } from '../helpers/UsuarioHelper';
   // Importamos el helper que maneja la lógica de crear un usuario.
   
   
@@ -74,9 +80,15 @@ import { crearUsuarioFachada } from '../helpers/UsuarioHelper';
           ruc: '',
           direccion: '',
           telefono: ''
-        }
+        },
+        usuarios: [],
+        roles:['ADMIN', 'TECNICO'],
       };
     },
+
+    mounted() {
+    this.cargarUsuarios();
+  },
     methods: {
       async submitForm() {
         try {
@@ -100,7 +112,21 @@ import { crearUsuarioFachada } from '../helpers/UsuarioHelper';
           direccion: '',
           telefono: ''
         };
+      },
+
+
+      async cargarUsuarios() {
+      try {
+        this.usuarios = await consultarUsuarioFachada();
+      } catch (error) {
+        console.error('Error al cargar los usuarios:', error);
+        alert('Hubo un error al cargar los usuarios.');
       }
+
+      console.log(this.usuarios);
+
+    },
+
     }
   };
   </script>

@@ -85,7 +85,7 @@
                         <td>{{ item.csp }}</td>
                         <td>{{ item.informeId }}</td>
                         <td>
-                            <button @click="editarRegistro(item)">Editar</button>
+                            <button @click="generateFormularioIPM(registro) ">Editar</button>
                             <button @click="eliminarRegistro(item.id)">Eliminar</button>
                         </td>
                     </tr>
@@ -97,7 +97,8 @@
 
 <script>
 import { consultarDesratizacionFachadaPorIdInforme, crearDesratizacionFachada } from '../helpers/desratizacionHelper';
-
+import jsPDF from 'jspdf';
+import JsPDFAutotable from 'jspdf-autotable'
 import router from '@/router';
 
 export default {
@@ -170,6 +171,7 @@ export default {
             }
         },
 
+ 
     
     },
 };

@@ -14,6 +14,11 @@ export const crearInformePlagaFachada = async (bodyInforme) => {
     return await crearInformePlaga(bodyInforme)
 }
 
+
+export const consultarInformePorIdFachada = async (id) => {
+    return await consultarInformePorId(id)
+}
+
 const crearInforme = async (bodyInforme) => {
     return await axios.post(API_URL, bodyInforme).then(r => r.data);
 
@@ -29,3 +34,7 @@ const consultarInforme = async () => {
     return data;
 }
 
+const consultarInformePorId = async (id) => {
+    const data = axios.get(API_URL+'/'+id).then(r => r.data);
+    return data;
+}

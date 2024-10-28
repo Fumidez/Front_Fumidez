@@ -52,18 +52,22 @@
         </div>
 
         <!-- Orden ID -->
-        <div class="form-group">
-          <label for="idOrden">ID de Orden</label>
-          <input type="number" id="idOrden" v-model="informe.idOrden" placeholder="ID de Orden" />
+        <div>
+          <label for="ordenSelect">Seleccionar Orden de Trabajo:</label>
+          <select id="ordenSelect" v-model="informe.idOrden" @change="cargarOrdenSeleccionada">
+            <option value="">Seleccione una orden</option>
+            <option v-for="orden in ordenes" :key="orden.id" :value="orden.id">
+              {{ orden.numeroOrden }}
+            </option>
+          </select>
         </div>
-
         <!-- Procedimientos -->
         <div class="form-group">
           <label>Procedimientos</label>
           <div v-for="(procedimineto, index) in informe.procediminetos" :key="index" class="procedimiento-group">
 
             <select id="idProcedimientos" v-model="procedimineto.tipoProcedimineto">
-              <option disabled value="">Procesdimientos</option>
+              <option disabled value="">Procedimientos</option>
               <option v-for="(proc, index) in procedimientos" :key="proc.id" :value="index">
                 {{ proc }}
               </option>
@@ -194,14 +198,18 @@
 import {
   crearInformeFachada,
   consultarInformeFachada,
-  crearInformePlagaFachada
+  crearInformePlagaFachada,
+  consultarInformePorIdFachada
+
 
 } from '../helpers/InformeHelper';
 import jsPDF from 'jspdf';
 import JsPDFAutotable from 'jspdf-autotable'
 import { obtenerTodosLosProductosFachada } from '../../Producto/helpers/productosHelpers';
 import router from '@/router';
-import { consultarDesratizacionFachadaPorIdInforme } from '../helpers/desratizacionHelper';
+
+import { consultarDesratizacionFachadaPorIdInforme, crearDesratizacionFachada } from '../helpers/desratizacionHelper';
+import { consultarOrdenFachada } from '../../OrdenTrabajo/helpers/OrdenTrabajoHelper';
 
 export default {
   name: "InformeIpm",
@@ -251,13 +259,23 @@ export default {
         'SANITIZACIÓN'],
 
       productos: [],
-      informes: [],
+      ordenes: [],
+      registro: {
+        tipoIdentificadorCordon: false,
+        consumo: "",
+        ubicacion: "",
+        observaciones: "",
+        reemplazoPegaCebo: false,
+        csp: "",
+      },
+      informes: [], // Array para almacenar los informes existentes
       frecuencias: ['MENSUAL', 'BIMENSUAL', 'TRIMESTRAL', 'OCASIONAL']
     };
   },
   mounted() {
     this.cargarInformes(); // Cargamos los informes al montar el componente
     this.cargarProductos();
+    this.cargarOrdenes();
   },
   methods: {
     async submitForm() {
@@ -295,13 +313,13 @@ export default {
             }))
           })),
           sanitizacionConfidencialDto: { // Cambia 'sanitizacionConfidencialDtos' por 'sanitizacionConfidencialDto'
-        areaInterna: this.informe.sanitizacionConfidenciales.areaInterna,
-        areaExterna: this.informe.sanitizacionConfidenciales.areaExterna,
-        areaOpc1: this.informe.sanitizacionConfidenciales.areaOpc1,
-        areaOpc2: this.informe.sanitizacionConfidenciales.areaOpc2,
-        areaNombreOpc1: this.informe.sanitizacionConfidenciales.areaNombreOpc1,
-        areaNombreOpc2: this.informe.sanitizacionConfidenciales.areaNombreOpc2
-    }
+            areaInterna: this.informe.sanitizacionConfidenciales.areaInterna,
+            areaExterna: this.informe.sanitizacionConfidenciales.areaExterna,
+            areaOpc1: this.informe.sanitizacionConfidenciales.areaOpc1,
+            areaOpc2: this.informe.sanitizacionConfidenciales.areaOpc2,
+            areaNombreOpc1: this.informe.sanitizacionConfidenciales.areaNombreOpc1,
+            areaNombreOpc2: this.informe.sanitizacionConfidenciales.areaNombreOpc2
+          }
         };
         const nuevoInforme = await crearInformePlagaFachada(informeDto);
         console.log('Informe IPM creado con éxito:', nuevoInforme);
@@ -392,6 +410,16 @@ export default {
       } catch (error) {
         console.error('Error al cargar los productos:', error);
         alert('Hubo un error al cargar los productos.');
+      }
+    },
+
+
+    async cargarOrdenes() {
+      try {
+        this.ordenes = await consultarOrdenFachada();
+      } catch (error) {
+        console.error('Error al cargar las ordenes:', error);
+        alert('Hubo un error al cargar las  ordenes.');
       }
     },
     async generatePDF(informe) {
@@ -1057,18 +1085,78 @@ export default {
         },
         tableWidth: 'wrap',
       });
-
-      // Ajustamos el valor Y para el contenido y agregamos más margen a la izquierda para el cuerpo
       procedimientosY = doc.lastAutoTable.finalY;  // Ajustamos la posición Y después de la cabecera
 
+      let informePorId = await consultarInformePorIdFachada(informe.id);
+      //      console.log("informePorId");
+      console.log(informePorId);
+
+
+      const datosProcedimientos = {
+        nebulizador: '',
+        aspersor: '',
+        uvl: '',
+        mecanico: '',
+        lamparas: '',
+        biomonitores: '',
+        estaciones: '',
+        cordon: '',
+        nUvl: '',
+        nMEc: '',
+        sanitizacion: ''
+      }
+
+      if (Array.isArray(informePorId.procediminetos)) {
+        informePorId.procediminetos.forEach(informe => {
+
+          if (informe.tipoProcedimineto == 0) {
+            datosProcedimientos.nebulizador = 'X';
+
+          }
+          if (informe.tipoProcedimineto == 1) {
+            datosProcedimientos.aspersor = 'X';
+          }
+          if (informe.tipoProcedimineto == 2) {
+            datosProcedimientos.uvl = 'X';
+          }
+          if (informe.tipoProcedimineto == 3) {
+            datosProcedimientos.mecanico = 'X';
+          }
+          if (informe.tipoProcedimineto == 4) {
+            datosProcedimientos.lamparas = 'X';
+          }
+          if (informe.tipoProcedimineto == 5) {
+            datosProcedimientos.biomonitores = 'X';
+          }
+          if (informe.tipoProcedimineto == 6) {
+            datosProcedimientos.estaciones = 'X';
+          }
+          if (informe.tipoProcedimineto == 7) {
+            datosProcedimientos.cordon = 'X';
+          }
+          if (informe.tipoProcedimineto == 8) {
+            datosProcedimientos.nUvl = 'X';
+          }
+          if (informe.tipoProcedimineto == 9) {
+            datosProcedimientos.nMEc = 'X';
+          }
+          if (informe.tipoProcedimineto == 10) {
+            datosProcedimientos.sanitizacion = 'X';
+          }
+
+
+
+        });
+      }
+      console.log("Datos: " + datosProcedimientos);
       // Tabla para el contenido (cuerpo)
       doc.autoTable({
         body: [
-          ['NEBULIZADOR TÉRMICO'],  // Primera fila
-          ['ASPERSOR MANUAL'],  // Segunda fila
-          ['NEBULIZADOR UVL ELÉCTRICO DIINA FOG'],  // Tercera fila
-          ['NEBULIZADOR MECÁNICO'],   // Cuarta fila
-          ['LÁMPARAS ELECTROCUTADORAS/ATRAPADORAS'],  // Quinta fila
+          [datosProcedimientos.nebulizador, 'NEBULIZADOR TÉRMICO'],  // Primera fila
+          [datosProcedimientos.aspersor, 'ASPERSOR MANUAL'],  // Segunda fila
+          [datosProcedimientos.uvl, 'NEBULIZADOR UVL ELÉCTRICO DIINA FOG'],  // Tercera fila
+          [datosProcedimientos.mecanico, 'NEBULIZADOR MECÁNICO'],  // Cuarta fila
+          [datosProcedimientos.lamparas, 'LÁMPARAS ELECTROCUTADORAS/ATRAPADORAS'],  // Quinta fila
         ],
         startY: procedimientosY,  // Posición Y donde empieza la tabla
         margin: { left: cuadroX + 30 },  // Mueve el cuerpo 20 unidades más a la derecha
@@ -1082,11 +1170,11 @@ export default {
           lineColor: [0, 0, 0, 0],  // Hace los bordes transparentes
         },
         columnStyles: {
-          0: { cellWidth: tablaWidth - 30 },  // Mantiene el ancho del cuerpo
+          0: { cellWidth: 15 },  // Ancho para la primera columna
+          1: { cellWidth: tablaWidth - 45 },  // Ancho ajustado para la segunda columna
         },
         tableWidth: 'wrap',
       });
-
 
       procedimientosY = procedimientosY + 80;
       cabeceraProcedimiento = [{ title: 'DESRATIZACIÓN', dataKey: 'procedimiento' }];
@@ -1118,9 +1206,9 @@ export default {
       // Tabla para el contenido (cuerpo)
       doc.autoTable({
         body: [
-          ['BIOMONITORES PEGABLES'],  // Sexta fila
-          ['ESTACIONES DE CEBADO'],  // Séptima fila
-          ['CORDÓN SANITARIO PERIMETRAL'],  // Octava fila
+          [datosProcedimientos.biomonitores, 'BIOMONITORES PEGABLES'],  // Sexta fila
+          [datosProcedimientos.estaciones, 'ESTACIONES DE CEBADO'],  // Séptima fila
+          [datosProcedimientos.cordon, 'CORDÓN SANITARIO PERIMETRAL'],  // Octava fila
         ],
         startY: procedimientosY,  // Posición Y donde empieza la tabla
         margin: { left: cuadroX + 30 },  // Mueve el cuerpo 20 unidades más a la derecha
@@ -1134,7 +1222,8 @@ export default {
           lineColor: [0, 0, 0, 0],  // Hace los bordes transparentes
         },
         columnStyles: {
-          0: { cellWidth: tablaWidth - 30 },  // Mantiene el ancho del cuerpo
+          0: { cellWidth: 15 },  // Ancho para la primera columna
+          1: { cellWidth: tablaWidth - 45 },  // Mantiene el ancho del cuerpo
         },
         tableWidth: 'wrap',
       });
@@ -1170,9 +1259,9 @@ export default {
       // Tabla para el contenido (cuerpo)
       doc.autoTable({
         body: [
-          ['NEBULIZADOR UVL ELECTRICO'],  // Novena fila
-          ['NEBULIZADOR MECÁNICO'],  // Décima fila
-          ['SANITIZACIÓN'],  // Undécima fila
+          [datosProcedimientos.nUvl, 'NEBULIZADOR UVL ELECTRICO'],  // Novena fila
+          [datosProcedimientos.nMEc, 'NEBULIZADOR MECÁNICO'],  // Décima fila
+          [datosProcedimientos.sanitizacion, 'SANITIZACIÓN'],  // Undécima fila
         ],
         startY: procedimientosY,  // Posición Y donde empieza la tabla
         margin: { left: cuadroX + 30 },  // Mueve el cuerpo 20 unidades más a la derecha
@@ -1186,7 +1275,8 @@ export default {
           lineColor: [0, 0, 0, 0],  // Hace los bordes transparentes
         },
         columnStyles: {
-          0: { cellWidth: tablaWidth - 30 },  // Mantiene el ancho del cuerpo
+          0: { cellWidth: 15 },  // Ancho para la primera columna
+          1: { cellWidth: tablaWidth - 45 },  // Mantiene el ancho del cuerpo
         },
         tableWidth: 'wrap',
       });
@@ -1286,7 +1376,7 @@ export default {
       doc.save(`informe_${informe.numFactura}.pdf`);
     },
 
-    generateFormularioIPM(informe) {
+    async generateFormularioIPM(informe) {
       const doc = new jsPDF('portrait', 'pt', 'a4'); // Orientación vertical
 
       const headerHeight = 65;
@@ -1360,160 +1450,190 @@ export default {
       doc.text(`FECHA DE TRABAJO REALIZADO: ${informe.ordenDto.fecha}`, infoX, infoYStart + 20);
       doc.text(`AREA TRATADA: ${informe.ordenDto.area}`, infoX, infoYStart + 40);
 
-      let formularioY1 = tituloY + 120;
 
-      doc.autoTable({
-        head: [
-          [
-            { content: 'N° EST. DE CEBADO', rowSpan: 2 },
-            { content: 'CONSUMO', colSpan: 3, styles: { halign: 'center' } },
-            { content: 'UBICACIÓN', rowSpan: 2, fontSize: 10 },
-            { content: 'OBSERVACIONES', rowSpan: 2 },
-            { content: 'REEMPLAZO', colSpan: 2, styles: { halign: 'center' } },
-            { content: 'C.S.P', colSpan: 3, styles: { halign: 'center' } }
+      let formulariosIPM = await this.cargarInformesPorId(informe.id);
+      console.log("Formularios IPM cargados:", formulariosIPM);
+
+      if (Array.isArray(formulariosIPM)) {
+        // Crear el array 'body' para almacenar las filas de la tabla
+        const bodyData = formulariosIPM.map((formulario) => {
+          let datosFormulario = {
+            consumoDaño: formulario.consumo === 'DAÑO' ? 'X' : '', // Aquí añadimos consumoDaño
+            consumoSi: formulario.consumo === 'SI' ? 'X' : '',
+            consumoNo: formulario.consumo !== 'SI' ? 'X' : '',
+            reemplazoP: formulario.reemplazoPegaCebo ? 'X' : '',
+            reemplazoCB: !formulario.reemplazoPegaCebo ? 'X' : '',
+            cspS: formulario.csp === 'SUMIDERO' ? 'X' : '',
+            cspCR: formulario.csp === 'CAJA DE REVISION' ? 'X' : '',
+            cspDE: formulario.csp !== 'SUMIDERO' && formulario.csp !== 'CAJA DE REVISION' ? 'X' : ''
+          };
+
+          // Retornar la fila con los datos correspondientes
+          return [
+            formulario.id,
+            datosFormulario.consumoDaño || '', // Daño
+            datosFormulario.consumoSi,       // SI
+            datosFormulario.consumoNo,       // NO
+            formulario.ubicacion || '',      // Ubicación
+            formulario.observaciones || '',  // Observaciones
+            datosFormulario.reemplazoP,      // P
+            datosFormulario.reemplazoCB,     // CB
+            datosFormulario.cspS,            // S
+            datosFormulario.cspCR,           // CR
+            datosFormulario.cspDE            // DE
+          ];
+        });
+        let formularioY1 = tituloY + 120;
+        doc.autoTable({
+          head: [
+            [
+              { content: 'N° EST. DE CEBADO', rowSpan: 2 },
+              { content: 'CONSUMO', colSpan: 3, styles: { halign: 'center' } },
+              { content: 'UBICACIÓN', rowSpan: 2, fontSize: 10 },
+              { content: 'OBSERVACIONES', rowSpan: 2 },
+              { content: 'REEMPLAZO', colSpan: 2, styles: { halign: 'center' } },
+              { content: 'C.S.P', colSpan: 3, styles: { halign: 'center' } }
+            ],
+            [
+              'DAÑO', 'SI', 'NO', 'P', 'CB', 'S', 'CR', 'DE'
+            ]
           ],
-          [
-            'DAÑO', 'SI', 'NO', 'P', 'CB', 'S', 'CR', 'DE'
-          ]
-        ],
-        body: [
-          ['', '', '', '', '', '', '', '', '', '', ''],
+          body: bodyData, // Aquí se pasa el array de datos
+          startY: formularioY1,
+          margin: { left: 40, right: 10 }, // Márgenes para ajustar la tabla al ancho de la página
+          theme: 'grid',
+          headStyles: {
+            font: 'Cambria',
+            fillColor: [255, 255, 255],
+            textColor: [0, 0, 0],
+            halign: 'center',
+            fontSize: 5,
+            lineColor: [0, 0, 0]
+          },
+          bodyStyles: {
+            textColor: [0, 0, 0],
+            font: 'Cambria',
+            fontSize: 6,
+            cellPadding: 3,
+            halign: 'center'
+          },
+          styles: {
+            cellWidth: 'auto',
+            overflow: 'linebreak',
+            lineColor: [0, 0, 0],
+            lineWidth: 0.5
+          },
+          tableWidth: 'wrap', // Ajustar la tabla para que se ajuste al ancho de la página
+          columnStyles: {
+            0: { cellWidth: 12 + 20 },  // Ajuste del ancho para la columna de Nº
+            1: { cellWidth: 5 + 20 },  // Ajuste del ancho para EST. DE CEBADO
+            2: { cellWidth: 5 + 20 },  // Ajuste del ancho para CONSUMO DAÑO
+            3: { cellWidth: 5 + 20 },  // Ajuste del ancho para CONSUMO SI
+            4: { cellWidth: 100 + 20 },  // Ajuste del ancho para CONSUMO NO
+            5: { cellWidth: 110 + 20 },  // Ajuste del ancho para UBICACIÓN
+            6: { cellWidth: 5 + 20 },  // Ajuste del ancho para OBSERVACIONES
+            7: { cellWidth: 5 + 20 },  // Ajuste del ancho para REEMPLAZO P
+            8: { cellWidth: 5 + 20 },  // Ajuste del ancho para REEMPLAZO CB
+            9: { cellWidth: 5 + 20 },  // Ajuste del ancho para REEMPLAZO S
+            10: { cellWidth: 5 + 20 }, // Ajuste del ancho para REEMPLAZO C.R
+            11: { cellWidth: 5 + 20 }, // Ajuste del ancho para REEMPLAZO D.E
+            12: { cellWidth: 5 + 20 }, // Ajuste del ancho para C.S.P
+            13: { cellWidth: 5 + 20 }, // Ajuste del ancho para C.S.P CB
+            14: { cellWidth: 5 + 20 }, // Ajuste del ancho para C.S.P S
+          }
+        });
 
-        ],
-        startY: formularioY1,
-        margin: { left: 40, right: 10 }, // Márgenes para ajustar la tabla al ancho de la página
-        theme: 'grid',
-        headStyles: {
-          font: 'Cambria',
-          fillColor: [255, 255, 255],
-          textColor: [0, 0, 0],
-          halign: 'center',
-          fontSize: 5,
-          lineColor: [0, 0, 0]
-        },
-        bodyStyles: {
-          textColor: [0, 0, 0],
-          font: 'Cambria',
-          fontSize: 6,
-          cellPadding: 3,
-          halign: 'center'
-        },
-        styles: {
-          cellWidth: 'auto',
-          overflow: 'linebreak',
-          lineColor: [0, 0, 0],
-          lineWidth: 0.5
-        },
-        tableWidth: 'wrap', // Ajustar la tabla para que se ajuste al ancho de la página
-        columnStyles: {
-          0: { cellWidth: 12 + 20 },  // Ajuste del ancho para la columna de Nº
-          1: { cellWidth: 5 + 20 },  // Ajuste del ancho para EST. DE CEBADO
-          2: { cellWidth: 5 + 20 },  // Ajuste del ancho para CONSUMO DAÑO
-          3: { cellWidth: 5 + 20 },  // Ajuste del ancho para CONSUMO SI
-          4: { cellWidth: 100 + 20 },  // Ajuste del ancho para CONSUMO NO
-          5: { cellWidth: 110 + 20 },  // Ajuste del ancho para UBICACIÓN
-          6: { cellWidth: 5 + 20 },  // Ajuste del ancho para OBSERVACIONES
-          7: { cellWidth: 5 + 20 },  // Ajuste del ancho para REEMPLAZO P
-          8: { cellWidth: 5 + 20 },  // Ajuste del ancho para REEMPLAZO CB
-          9: { cellWidth: 5 + 20 },  // Ajuste del ancho para REEMPLAZO S
-          10: { cellWidth: 5 + 20 }, // Ajuste del ancho para REEMPLAZO C.R
-          11: { cellWidth: 5 + 20 }, // Ajuste del ancho para REEMPLAZO D.E
-          12: { cellWidth: 5 + 20 }, // Ajuste del ancho para C.S.P
-          13: { cellWidth: 5 + 20 }, // Ajuste del ancho para C.S.P CB
-          14: { cellWidth: 5 + 20 }, // Ajuste del ancho para C.S.P S
-        }
-      });
+        // --- Pie de página ---
+        // Crear degradado en el pie de página
+        drawGradient(
+          doc,
+          0,
+          pageHeight - footerHeight,
+          sectionWidth * 2,
+          footerHeight,
+          white,
+          white,
+          50
+        ); // 20% blanco
+        drawGradient(
+          doc,
+          sectionWidth * 2,
+          pageHeight - footerHeight,
+          sectionWidth * 2.9,
+          footerHeight,
+          white,
+          blue,
+          50
+        ); // 29% blanco a azul
+        drawGradient(
+          doc,
+          sectionWidth * 4.9,
+          pageHeight - footerHeight,
+          sectionWidth * 0.2,
+          footerHeight,
+          blue,
+          blue,
+          50
+        ); // 2% azul
+        drawGradient(
+          doc,
+          sectionWidth * 5.1,
+          pageHeight - footerHeight,
+          sectionWidth * 2.9,
+          footerHeight,
+          blue,
+          white,
+          50
+        ); // 29% azul a blanco
+        drawGradient(
+          doc,
+          sectionWidth * 8,
+          pageHeight - footerHeight,
+          sectionWidth * 2,
+          footerHeight,
+          white,
+          white,
+          50
+        ); // 20% blanco
 
-      // --- Pie de página ---
-      // Crear degradado en el pie de página
-      drawGradient(
-        doc,
-        0,
-        pageHeight - footerHeight,
-        sectionWidth * 2,
-        footerHeight,
-        white,
-        white,
-        50
-      ); // 20% blanco
-      drawGradient(
-        doc,
-        sectionWidth * 2,
-        pageHeight - footerHeight,
-        sectionWidth * 2.9,
-        footerHeight,
-        white,
-        blue,
-        50
-      ); // 29% blanco a azul
-      drawGradient(
-        doc,
-        sectionWidth * 4.9,
-        pageHeight - footerHeight,
-        sectionWidth * 0.2,
-        footerHeight,
-        blue,
-        blue,
-        50
-      ); // 2% azul
-      drawGradient(
-        doc,
-        sectionWidth * 5.1,
-        pageHeight - footerHeight,
-        sectionWidth * 2.9,
-        footerHeight,
-        blue,
-        white,
-        50
-      ); // 29% azul a blanco
-      drawGradient(
-        doc,
-        sectionWidth * 8,
-        pageHeight - footerHeight,
-        sectionWidth * 2,
-        footerHeight,
-        white,
-        white,
-        50
-      ); // 20% blanco
+        const webIcon = 'src/assets/web.png'; // Ruta al icono del sitio web
+        const emailIcon = 'src/assets/mail.png'; // Ruta al icono de correo
+        const locationIcon = 'src/assets/home.png'; // Ruta al icono de ubicación
+        const phoneIcon = 'src/assets/phone.png'; // Ruta al icono de teléfono
+        const whatsappIcon = 'src/assets/whatsapp.png'; // Ruta al icono de WhatsApp
 
-      const webIcon = 'src/assets/web.png'; // Ruta al icono del sitio web
-      const emailIcon = 'src/assets/mail.png'; // Ruta al icono de correo
-      const locationIcon = 'src/assets/home.png'; // Ruta al icono de ubicación
-      const phoneIcon = 'src/assets/phone.png'; // Ruta al icono de teléfono
-      const whatsappIcon = 'src/assets/whatsapp.png'; // Ruta al icono de WhatsApp
+        // Añadir textos con iconos
+        const footerY = pageHeight - footerHeight + 20;
 
-      // Añadir textos con iconos
-      const footerY = pageHeight - footerHeight + 20;
+        // Sitio web
+        doc.addImage(webIcon, 'PNG', 30, footerY - 5, 10, 10); // Ajusta el tamaño y posición
+        doc.text('www.fumidez.com', 50, footerY);
 
-      // Sitio web
-      doc.addImage(webIcon, 'PNG', 30, footerY - 5, 10, 10); // Ajusta el tamaño y posición
-      doc.text('www.fumidez.com', 50, footerY);
+        // Correo electrónico
+        doc.addImage(emailIcon, 'PNG', 30, footerY + 15 - 5, 10, 10);
+        doc.text('fumidezplagas@gmail.com', 50, footerY + 15);
 
-      // Correo electrónico
-      doc.addImage(emailIcon, 'PNG', 30, footerY + 15 - 5, 10, 10);
-      doc.text('fumidezplagas@gmail.com', 50, footerY + 15);
+        // Dirección
+        doc.addImage(locationIcon, 'PNG', 30, footerY + 30 - 5, 10, 10);
+        doc.text(
+          'Matriz Quito: Urb. Caminos del Sur. Pasaje 6 Casa Oe 10-23 y Julián Estrella',
+          50,
+          footerY + 30
+        );
 
-      // Dirección
-      doc.addImage(locationIcon, 'PNG', 30, footerY + 30 - 5, 10, 10);
-      doc.text(
-        'Matriz Quito: Urb. Caminos del Sur. Pasaje 6 Casa Oe 10-23 y Julián Estrella',
-        50,
-        footerY + 30
-      );
+        // Teléfonos
+        doc.addImage(phoneIcon, 'PNG', pageWidth - 80 - 15, footerY - 5, 10, 10);
+        doc.text('02 262 0298', pageWidth - 80, footerY);
 
-      // Teléfonos
-      doc.addImage(phoneIcon, 'PNG', pageWidth - 80 - 15, footerY - 5, 10, 10);
-      doc.text('02 262 0298', pageWidth - 80, footerY);
+        // WhatsApp
+        doc.addImage(whatsappIcon, 'PNG', pageWidth - 80 - 15, footerY + 15 - 5, 10, 10);
+        doc.text('099 995 4079', pageWidth - 80, footerY + 15);
 
-      // WhatsApp
-      doc.addImage(whatsappIcon, 'PNG', pageWidth - 80 - 15, footerY + 15 - 5, 10, 10);
-      doc.text('099 995 4079', pageWidth - 80, footerY + 15);
+        // --- Guardar PDF ---
+        doc.save(`Formulario_IPM_${informe.numFactura}.pdf`);
+      }
 
-      // --- Guardar PDF ---
-      doc.save(`Formulario_IPM_${informe.numFactura}.pdf`);
     }
-
   }
 };
 </script>
