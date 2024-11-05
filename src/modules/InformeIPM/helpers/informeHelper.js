@@ -25,9 +25,14 @@ const crearInforme = async (bodyInforme) => {
 }
 
 const crearInformePlaga = async (bodyInforme) => {
-    return await axios.post(API_URL+'/plagas', bodyInforme).then(r => r.data);
-
+    try {
+        return await axios.post(API_URL+'/plagas', bodyInforme).then(r => r.data);
+    } catch (error) {
+        console.error("Error al crear el informe de plaga:", error);
+        throw error;  // Opcional: vuelve a lanzar el error si necesitas manejarlo más arriba
+    }
 }
+
 
 const consultarInforme = async () => {
     const data = axios.get(API_URL).then(r => r.data);
