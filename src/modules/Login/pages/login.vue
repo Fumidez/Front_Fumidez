@@ -47,9 +47,11 @@ export default {
         const response = await consultarLoginFachada(this.credentials);
 
         console.log(response);
+        //localStorage.setItem('userdata', JSON.stringify(data));
         if (response && response.constrasenia) {
           localStorage.setItem('token', response.constrasenia);
-          // Redirige a la página de 'informe' después de iniciar sesión
+          localStorage.setItem('userType', response.tipo);
+
           this.$router.push('/informe');
         } else {
           alert('Error en la autenticación, por favor revisa tus credenciales.');

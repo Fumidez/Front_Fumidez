@@ -82,8 +82,10 @@ export default {
     },
     mounted() {
         this.cargarInformes();
+     
     },
     methods: {
+ 
         redirigirCrearInforme() {
             this.$router.push('/informe_registrar');
         },

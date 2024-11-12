@@ -10,8 +10,12 @@ import Proveedor from '../modules/Proveedor/components/Proveedor.vue';
 import Informe from '../modules/InformeIPM/pages/Informe.vue';
 import Login from '../modules/Login/pages/login.vue';
 import Desratizacion from '../modules/InformeIPM/pages/Desratizacion.vue';
+
 import InformeLista from '../modules/InformeIPM/pages/ListaInforme.vue'
 import InformeRegistrar from '../modules/InformeIPM/pages/RegistrarInforme.vue'
+
+import Calendario from '../modules/Calendario/Page/CalendarioPage.vue';
+
 
 const routes = [
   { path: '/login', component: Login }, // Página de login
@@ -26,6 +30,8 @@ const routes = [
   { path: '/informe_lista', component: InformeLista, meta: { requiresAuth: true } },
   { path: '/informe_registrar', component: InformeRegistrar, meta: { requiresAuth: true } },
   { path: '/desratizacion/:id', component: Desratizacion, meta: { requiresAuth: true } },
+  { path: '/calendario', component: Calendario, meta: { requiresAuth: true } },
+
   { path: '/', redirect: '/clientes' },
 ];
 

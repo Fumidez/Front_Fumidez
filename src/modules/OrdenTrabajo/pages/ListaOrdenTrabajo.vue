@@ -20,6 +20,7 @@
                         <th>Usuario</th>
                         <th>Cliente</th>
                         <th>Servicios</th>
+                        <th>Estado</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
@@ -40,8 +41,16 @@
                                 </li>
                             </ul>
                         </td>
+                        <td>{{ orden.estado }}</td>
+
                         <td>
                             <button @click="generatePDF(orden)">Generar PDF</button>
+                        </td>
+                        <td>
+                            <button @click="updateEstado(orden.id, 'confirmado')">Confirmar Estado</button>
+                        </td>
+                        <td>
+                            <button @click="updateEstado(orden.id, 'cancelado')">Cancelar Estado</button>
                         </td>
                     </tr>
                 </tbody>
@@ -52,7 +61,7 @@
 
 <script>
 import { generatePDFOrdenFachada } from '../helpers/generarOrdenPdf';
-import { consultarOrdenFachada } from '../helpers/OrdenTrabajoHelper';
+import { actualizarOrdenEstadoFachada, actualizarOrdenFachada, consultarOrdenFachada } from '../helpers/OrdenTrabajoHelper';
 
 export default {
     name: "OrdenTrabajo",
@@ -77,6 +86,13 @@ export default {
         },
         async generatePDF(ordenTrabajo) {
            await generatePDFOrdenFachada(ordenTrabajo); 
+        },
+
+        async updateEstado(id, param){
+            const estado = {
+                estado : param
+            }
+            const data = await actualizarOrdenEstadoFachada(id, estado);
         }
 
 

@@ -86,12 +86,11 @@ import { consultarUsuarioFachada, crearUsuarioFachada } from '../helpers/Usuario
       };
     },
 
-    mounted() {
-    this.cargarUsuarios();
-  },
+ 
     methods: {
       async submitForm() {
         try {
+          console.log(this.usuario);
           const nuevoUsuario = await crearUsuarioFachada(this.usuario);
           console.log('Usuario creado con éxito:', nuevoUsuario);
           // Aquí puedes hacer algo con la respuesta, como limpiar el formulario o redirigir.
