@@ -9,6 +9,9 @@ export const crearOrdenFachada = async (clienteOrden) => {
 export const consultarOrdenFachada = async () => {
     return await consultarOrden()
 }
+export const consultarOrdenSimpleFachada = async () => {
+    return await consultarOrdenSimple()
+}
 export const actualizarOrdenFachada = async (id, clienteOrden) => {
     return await actualizarOrden(id, clienteOrden);
 }
@@ -24,6 +27,12 @@ const crearOrden = async (clienteOrden) => {
 
 const consultarOrden = async () => {
     const data = axios.get(API_URL).then(r => r.data);
+    return data;
+}
+
+
+const consultarOrdenSimple = async () => {
+    const data = axios.get(API_URL + "/orderS").then(r => r.data);
     return data;
 }
 
