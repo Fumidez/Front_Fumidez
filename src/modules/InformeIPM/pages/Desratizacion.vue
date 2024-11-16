@@ -85,8 +85,9 @@
                         <td>{{ item.csp }}</td>
                         <td>{{ item.informeId }}</td>
                         <td>
-                            <button @click="generateFormularioIPM(registro) ">Editar</button>
+                            <button @click="generateFormularioIPM(registro)">Editar</button>
                             <button @click="eliminarRegistro(item.id)">Eliminar</button>
+                            <button @click="addRow">Añadir fila</button>
                         </td>
                     </tr>
                 </tbody>
@@ -126,6 +127,11 @@ export default {
         this.consultarPorIdInforme();
     },
     methods: {
+        addRow() {
+            const lastRow = this.registros[this.registros.length - 1]; // Obtén la última fila
+            const newRow = lastRow; // Clona/modifica la última fila
+            this.rows.push(newRow); // Añade la nueva fila al final
+        },
         // Método para manejar el envío del formulario
         async submitFormulario() {
             // Validación básica (puedes agregar más según tus necesidades)
@@ -171,8 +177,8 @@ export default {
             }
         },
 
- 
-    
+
+
     },
 };
 </script>
