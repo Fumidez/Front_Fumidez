@@ -37,6 +37,9 @@
                 </tbody>
             </table>
         </div>
+        <div>
+            <CargarArchivo />
+        </div>
     </div>
 </template>
   
@@ -46,12 +49,11 @@ import {
 } from "../helpers/InformeHelper";
 import router from "@/router";
 
-import { consultarDesratizacionFachadaPorIdInforme } from "../helpers/desratizacionHelper";
-import { consultarOrdenFachada } from "../../OrdenTrabajo/helpers/OrdenTrabajoHelper";
 import { generatePDFInformeFachada } from "../helpers/generarInforme";
-
+import CargarArchivo from "../../../components/CargarArchivo.vue";
 
 export default {
+  components: { CargarArchivo },
     name: "InformeIpm",
     data() {
         return {
