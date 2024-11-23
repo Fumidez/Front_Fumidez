@@ -15,6 +15,7 @@ import InformeLista from '../modules/InformeIPM/pages/ListaInforme.vue'
 import InformeRegistrar from '../modules/InformeIPM/pages/RegistrarInforme.vue'
 
 import Calendario from '../modules/Calendario/Page/CalendarioPage.vue';
+import vistaF from '../components/vistaF.vue';
 
 
 const routes = [
@@ -32,6 +33,7 @@ const routes = [
   { path: '/desratizacion/:id', component: Desratizacion, meta: { requiresAuth: true } },
   { path: '/calendario', component: Calendario, meta: { requiresAuth: true } },
 
+  { path: '/vistaF', component: vistaF },
   { path: '/', redirect: '/clientes' },
 ];
 

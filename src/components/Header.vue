@@ -21,6 +21,7 @@
           <li><router-link to="/informe_lista">Informes</router-link></li>
           <li><router-link to="/login">Login</router-link></li>
           <li><router-link to="/calendario">Calendario</router-link></li>
+          <li><router-link to="/vistaF">fff</router-link></li>
 
         </ul>
       </nav>
