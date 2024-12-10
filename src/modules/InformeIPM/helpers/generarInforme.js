@@ -552,6 +552,12 @@ const generatePDF = async (informe) => {
     });
 
     formularioY = formularioY + 60;
+    let cant_si = datosFormularioCordon.conSi + datosFormulario.conSi;
+    let cant_total =  datosFormularioCordon.totalCeb + datosFormulario.totalCeb;
+    let porcentaje = 0; // Valor por defecto si `cant_total` es 0
+    if (cant_total !== 0) {
+        porcentaje = (cant_si * 100) / cant_total;
+    }
 
     doc.autoTable({
         head: [
@@ -562,7 +568,10 @@ const generatePDF = async (informe) => {
                 "ALTO sup al 30%",
             ],
         ],
-        body: [["TOTAL SI X 100 \n___________\n TOTAL CEB. ", " ", "", ""]],
+        body: [["TOTAL SI X 100 \n___________\n TOTAL CEB. ",
+            porcentaje < 14 ? "X" : "",
+            porcentaje >= 15 && porcentaje < 30 ? "X" : "",
+            porcentaje > 30 ? "X" : ""]],
         startY: formularioY, // Posición Y donde empieza la tabla
         margin: { left: distanciaDerecha },
         theme: "grid",
