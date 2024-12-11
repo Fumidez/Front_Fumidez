@@ -569,7 +569,7 @@ const generatePDF = async (informe) => {
             ],
         ],
         body: [["TOTAL SI X 100 \n___________\n TOTAL CEB. ",
-            porcentaje < 14 ? "X" : "",
+            porcentaje != 0 && porcentaje < 14 ? "X" : "",
             porcentaje >= 15 && porcentaje < 30 ? "X" : "",
             porcentaje > 30 ? "X" : ""]],
         startY: formularioY, // Posición Y donde empieza la tabla
