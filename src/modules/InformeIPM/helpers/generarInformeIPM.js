@@ -1,6 +1,9 @@
 import jsPDF from 'jspdf';
 import JsPDFAutotable from 'jspdf-autotable'
+import { consultarDesratizacionFachadaPorIdInforme } from './desratizacionHelper';
 
+
+//Se debe mandar el informe dtto, no el normal
 export const generateFormularioIPMFachada = async (informe) => {
     return await generateFormularioIPM(informe)
 }
@@ -80,8 +83,7 @@ const generateFormularioIPM = async (informe) => {
     doc.text(`AREA TRATADA: ${informe.ordenDto.area}`, infoX, infoYStart + 40);
 
 
-    let formulariosIPM = await this.cargarInformesPorId(informe.id);
-    console.log("Formularios IPM cargados:", formulariosIPM);
+    let formulariosIPM = await consultarDesratizacionFachadaPorIdInforme(informe.id);
 
     if (Array.isArray(formulariosIPM)) {
       // Crear el array 'body' para almacenar las filas de la tabla
