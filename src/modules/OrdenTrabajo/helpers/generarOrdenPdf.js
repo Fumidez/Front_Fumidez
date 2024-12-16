@@ -1,7 +1,7 @@
 import jsPDF from 'jspdf';
 
-export const generatePDFOrdenFachada = async (informe) => {
-    return await generatePDF(informe)
+export const generatePDFOrdenFachada = async (ordenTrabajo) => {
+    return await generatePDF(ordenTrabajo)
 }
 
 const generatePDF = async (ordenTrabajo) => {

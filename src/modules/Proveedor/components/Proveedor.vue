@@ -1,46 +1,59 @@
 <template>
-    <div class="container">
-        <h2>Proveedores</h2>
-        <div class="content">
-            <div class="form-container">
-                <div class="form-group">
-                    <label for="nombre">Nombre</label>
-                    <input type="text" id="nombre" v-model="proveedor.nombre" required>
+    <div class="page-container d-flex flex-column" style="min-height: 100vh;">
+        <!-- Contenido Principal -->
+        <main class="flex-grow-1 d-flex align-items-center justify-content-center">
+            <div class="card p-5 shadow-lg" style="max-width: 800px; width: 100%; border-radius: 15px; background-color: rgba(255, 255, 255, 0.9); border: 3px solid transparent; border-image: linear-gradient(to right, #004080, #a9c4f5); border-image-slice: 1;">
+                <h1 class="text-center text-primary mb-4">Gestión de Proveedores</h1>
+                <!-- Formulario de Proveedores -->
+                <form @submit.prevent="actualizarDato ? actualizar() : ingresar()">
+                    <div class="form-group mb-3 d-flex align-items-center">
+                        <label for="nombre" class="w-25"><i class="bi bi-person-fill"></i> Nombre</label>
+                        <input type="text" id="nombre" v-model="proveedor.nombre" class="form-control" placeholder="Nombre del Proveedor" required />
+                    </div>
+
+                    <div class="form-group mb-3 d-flex align-items-center">
+                        <label for="direccion" class="w-25"><i class="bi bi-house-door-fill"></i> Dirección</label>
+                        <input type="text" id="direccion" v-model="proveedor.direccion" class="form-control" placeholder="Dirección" required />
+                    </div>
+
+                    <div class="form-group mb-3 d-flex align-items-center">
+                        <label for="n_cuenta" class="w-25"><i class="bi bi-credit-card-fill"></i> Número de Cuenta</label>
+                        <input type="text" id="n_cuenta" v-model="proveedor.n_cuenta" class="form-control" placeholder="Número de Cuenta" required />
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100 py-2">
+                        {{ actualizarDato ? 'Actualizar Proveedor' : 'Crear Proveedor' }}
+                    </button>
+                    <button v-if="actualizarDato" type="button" class="btn btn-secondary w-100 mt-2 py-2" @click="cambiarEstado">
+                        Cambiar a Modo Crear
+                    </button>
+                </form>
+
+                <!-- Lista de Proveedores -->
+                <div class="mt-5">
+                    <h2 class="text-center text-primary">Lista de Proveedores</h2>
+                    <div class="list-header d-flex justify-content-between py-2">
+                        <span>ID</span>
+                        <span>Nombre</span>
+                        <span>Dirección</span>
+                        <span>Número de Cuenta</span>
+                        <span>Acciones</span>
+                    </div>
+                    <ul class="list-group">
+                        <li class="list-group-item d-flex justify-content-between align-items-center" v-for="proveedor in proveedores" :key="proveedor.id">
+                            <span>{{ proveedor.id }}</span>
+                            <span>{{ proveedor.nombre }}</span>
+                            <span>{{ proveedor.direccion }}</span>
+                            <span>{{ proveedor.n_cuenta }}</span>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-primary btn-sm" @click="cambiarCampos(proveedor.id)">Editar</button>
+                                <button class="btn btn-danger btn-sm" @click="eliminar(proveedor.id)">Eliminar</button>
+                            </div>
+                        </li>
+                    </ul>
                 </div>
-                <div class="form-group">
-                    <label for="direccion">Dirección</label>
-                    <input type="text" id="direccion" v-model="proveedor.direccion" required>
-                </div>
-                <div class="form-group">
-                    <label for="n_cuenta">Número de Cuenta</label>
-                    <input type="text" id="n_cuenta" v-model="proveedor.n_cuenta" required>
-                </div>
-                <button v-if="!actualizarDato" class="btn" @click="ingresar">Crear Proveedor</button>
-                <button v-else class="btn" @click="actualizar">Actualizar Proveedor</button>
-                <button v-if="actualizarDato" class="btn" @click="cambiarEstado">Cambiar campos para ingresar</button>
             </div>
-            <div class="client-list-container">
-                <div class="client-list-header">
-                    <span class="header-item">ID</span>
-                    <span class="header-item">Nombre</span>
-                    <span class="header-item">Dirección</span>
-                    <span class="header-item">Número de Cuenta</span>
-                    <span class="header-item">Acciones</span>
-                </div>
-                <ul class="client-list">
-                    <li v-for="proveedor in proveedores" :key="proveedor.id" class="client-item">
-                        <span>{{ proveedor.id }}</span>
-                        <span>{{ proveedor.nombre }}</span>
-                        <span>{{ proveedor.direccion }}</span>
-                        <span>{{ proveedor.n_cuenta }}</span>
-                        <div class="action-buttons">
-                            <button class="btn" @click="cambiarCampos(proveedor.id)">Editar</button>
-                            <button class="btn btn-danger" @click="eliminar(proveedor.id)">Eliminar</button>
-                        </div>
-                    </li>
-                </ul>
-            </div>
-        </div>
+        </main>
     </div>
 </template>
 
@@ -141,115 +154,64 @@ export default {
 };
 </script>
 
-
 <style scoped>
-.container {
-    background-color: #121212;
-    color: #ffffff;
-    padding: 20px;
-    border-radius: 8px;
-    max-width: 1200px;
-    margin: 0 auto;
+.page-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
-h2 {
-    color: #f0f0f0;
-    margin-bottom: 20px;
+main {
+  flex-grow: 1;
+  background-image: url('@/assets/fumi.jpg'), linear-gradient(to bottom, #132333, #132333);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
-.content {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
+.card {
+  border: 3px solid transparent;
+  border-image: linear-gradient(to right, #004080, #a9c4f5);
+  border-image-slice: 1;
+  border-radius: 15px;
+  box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.2);
+  background-color: rgba(255, 255, 255, 0.8);
 }
 
-.form-container {
-    background-color: #1e1e1e;
-    padding: 20px;
-    border-radius: 8px;
+h1, h2 {
+  font-weight: 700;
+  color: #031425;
 }
 
-.form-group {
-    margin-bottom: 15px;
+.list-header {
+  background-color: rgba(0, 64, 128, 0.1);
+  border-radius: 5px;
+  padding: 5px 10px;
+  font-weight: bold;
+  color: #031425;
 }
 
-label {
-    display: block;
-    margin-bottom: 5px;
-    color: #b0b0b0;
+.list-group-item {
+  border-radius: 5px;
+  background-color: rgba(255, 255, 255, 0.9);
 }
 
-input[type="text"] {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid #444;
-    border-radius: 4px;
-    background-color: #333;
-    color: #fff;
+button {
+  transition: all 0.3s ease;
 }
 
-.btn {
-    background-color: #6200ea;
-    color: #ffffff;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    margin-top: 10px;
+button:hover {
+  background-color: #003060;
 }
 
-.btn:hover {
-    background-color: #3700b3;
-}
+/* Responsividad */
+@media (max-width: 768px) {
+  .card {
+    padding: 2rem 1.5rem;
+  }
 
-.btn-danger {
-    background-color: #b00020;
-}
-
-.btn-danger:hover {
-    background-color: #790000;
-}
-
-.client-list-container {
-    background-color: #1e1e1e;
-    padding: 20px;
-    border-radius: 8px;
-}
-
-.client-list-header {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    background-color: #333;
-    padding: 10px;
-    border-radius: 4px;
-    margin-bottom: 10px;
-}
-
-.header-item {
-    text-align: left;
-    font-weight: bold;
-    color: #f0f0f0;
-}
-
-.client-list {
-    list-style-type: none;
-    padding: 0;
-    margin: 0;
-}
-
-.client-item {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    align-items: center;
-    padding: 10px;
-    border-bottom: 1px solid #444;
-    background-color: #2c2c2c;
-    border-radius: 4px;
-    margin-bottom: 10px;
-}
-
-.action-buttons {
-    display: flex;
-    gap: 10px;
+  h1, h2 {
+    font-size: 1.5rem;
+  }
 }
 </style>

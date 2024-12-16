@@ -1,31 +1,62 @@
 <template>
-  <div class="login-container">
-    <div class="login-form">
-      <h1>Iniciar Sesión</h1>
+  <div 
+    class="container-fluid vh-100 d-flex justify-content-center align-items-center" 
+    style="background-color: #0a1a2f; background-size: cover; background-position: center;">
+    <div 
+      class="card p-4 shadow-lg" 
+      style="max-width: 400px; width: 100%; border-radius: 15px; background: #ffffffee; border: 3px solid transparent; border-image: linear-gradient(to right, #c82121 , #ffffff); border-image-slice: 1;">
+      <!-- Logo de la empresa -->
+      <div class="text-center mb-3">
+        <img 
+          src="C:\Users\User\Desktop\Fumidez_Front\Fumidez_Front\src\assets\fumidez_logo.png" 
+          alt="Logo de la empresa" 
+          style="width: 100px;">
+      </div>
+      
+      <h1 class="text-center text-primary mb-4">Iniciar Sesión</h1>
       <form @submit.prevent="login">
         <!-- Email -->
-        <div class="form-group">
-          <label for="email">Correo Electrónico</label>
-          <input type="email" id="email" v-model="credentials.email" required
+        <div class="mb-3">
+          <label for="email" class="form-label">Correo Electrónico</label>
+          <input 
+            type="email" 
+            id="email" 
+            v-model="credentials.email" 
+            class="form-control" 
+            required 
             placeholder="Ingresa tu correo electrónico" />
         </div>
 
         <!-- Contraseña -->
-        <div class="form-group">
-          <label for="password">Contraseña</label>
-          <input type="password" id="password" v-model="credentials.password" required
+        <div class="mb-3">
+          <label for="password" class="form-label">Contraseña</label>
+          <input 
+            type="password" 
+            id="password" 
+            v-model="credentials.password" 
+            class="form-control" 
+            required 
             placeholder="Ingresa tu contraseña" />
         </div>
 
         <!-- Botón de Iniciar Sesión -->
-        <button type="submit">Iniciar Sesión</button>
+        <button 
+          type="submit" 
+          class="btn btn-primary w-100 py-2">
+          Iniciar Sesión
+        </button>
 
-        <!-- Opciones de Inicio de Sesión OAuth -->
-
+        <!-- ¿Olvidaste tu contraseña? -->
+        <div class="text-center mt-3">
+          <a href="/recuperar" class="text-decoration-none text-muted">
+            ¿Olvidaste tu contraseña?
+          </a>
+        </div>
       </form>
     </div>
   </div>
 </template>
+
 
 <script>
 import { consultarLoginFachada } from '../helpers/loginHelper';
@@ -43,11 +74,9 @@ export default {
   methods: {
     async login() {
       try {
-        // Realiza una solicitud POST al backend para autenticación local
         const response = await consultarLoginFachada(this.credentials);
 
         console.log(response);
-        //localStorage.setItem('userdata', JSON.stringify(data));
         if (response && response.constrasenia) {
           localStorage.setItem('token', response.constrasenia);
           localStorage.setItem('userType', response.tipo);
@@ -56,98 +85,71 @@ export default {
         } else {
           alert('Error en la autenticación, por favor revisa tus credenciales.');
         }
-
       } catch (error) {
         console.error('Error al iniciar sesión:', error);
         alert('Credenciales inválidas. Por favor, intenta nuevamente.');
       }
     },
-
   }
 };
 </script>
 
+
 <style scoped>
-.login-container {
-  max-width: 400px;
-  margin: 100px auto;
-  padding: 2rem;
-  background-color: #ffffff;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+/* Fondo azul marino oscuro */
+.container-fluid {
+  background-color: #0a1a2f;
+  background-size: cover;
+  background-position: center;
 }
 
-.login-form h1 {
-  text-align: center;
-  margin-bottom: 1.5rem;
-  color: #181C71;
+/* Estilo del formulario con borde rojo y blanco */
+.card {
+  border: 3px solid transparent;
+  border-image: linear-gradient(to right, #4d2323, #ffffff); /* Gradiente de color rojo y blanco */
+  border-image-slice: 1;
+  border-radius: 15px;
+  box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.3);
+  background-color: #ffffffee; /* Fondo semitransparente */
+}
+
+h1 {
+  font-weight: 700;
   font-size: 1.8rem;
 }
 
-.form-group {
-  margin-bottom: 1rem;
-}
-
-label {
-  display: block;
-  font-weight: bold;
-  margin-bottom: 0.5rem;
-  color: #333;
-}
-
-input {
-  width: 100%;
-  padding: 0.75rem;
-  font-size: 1rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-
 button {
-  width: 100%;
-  padding: 0.75rem;
-  background-color: #181C71;
-  color: white;
   font-size: 1rem;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  margin-top: 0.5rem;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
 }
 
 button:hover {
-  background-color: #4a5d92;
+  background-color: #004080;
 }
 
-.oauth-options {
-  text-align: center;
-  margin-top: 1rem;
+a {
+  font-size: 0.9rem;
+  color: #6c757d;
 }
 
-.oauth-options p {
-  margin-bottom: 0.5rem;
-  color: #555;
+a:hover {
+  color: #495057;
+  text-decoration: underline;
 }
 
-.oauth-options button {
-  width: 48%;
-  padding: 0.5rem;
-  margin: 0.25rem 1%;
-  background-color: #4285F4;
-  /* Google Blue */
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
+/* Responsividad */
+@media (max-width: 576px) {
+  .card {
+    padding: 2rem 1.5rem;
+  }
 
-.oauth-options button:nth-child(3) {
-  background-color: #333;
-  /* GitHub Black */
-}
+  h1 {
+    font-size: 1.5rem;
+  }
 
-.oauth-options button:hover {
-  opacity: 0.9;
+  button {
+    font-size: 0.9rem;
+  }
 }
 </style>

@@ -113,7 +113,9 @@
         </div>
         <button type="submit">Guardar</button>
       </form>
+
     </div>
+
   </div>
 </template>
 
@@ -121,9 +123,13 @@
 import { obtenerTodosLosProductosFachada } from '../../Producto/helpers/productosHelpers';
 import { consultarOrdenFachada } from '../../OrdenTrabajo/helpers/OrdenTrabajoHelper';
 import { crearInformePlagaFachada } from '../helpers/InformeHelper';
+import Footer from '../../../components/Footer.vue';
 
 export default {
   name: "InformeIpm",
+  components:{
+  Footer
+  },
   data() {
     return {
       informe: {

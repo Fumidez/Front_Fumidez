@@ -1,66 +1,65 @@
 <template>
-    <div class="registro-container">
-        <!-- Formulario para ingresar nuevos registros -->
-        <div class="registro-form">
-            <h1>Ingresar Nuevo Registro</h1>
-            <form @submit.prevent="submitFormulario">
-                <!-- Tipo Identificador Cordon -->
-                <div class="form-group">
-                    <label for="tipoIdentificadorCordon">Tipo Identificador Cordon</label>
-                    <input type="checkbox" id="tipoIdentificadorCordon" v-model="registro.tipoIdentificadorCordon" />
-                </div>
+    <div class="page-container d-flex flex-column" style="min-height: 100vh;">
+        <main class="flex-grow-1 d-flex align-items-center justify-content-center">
+            <div class="card p-5 shadow-lg"
+                style="max-width: 800px; width: 100%; border-radius: 15px; background-color: rgba(255, 255, 255, 0.9); border: 3px solid transparent; border-image: linear-gradient(to right, #004080, #a9c4f5); border-image-slice: 1;">
+                <h1 class="text-center text-primary mb-4">Ingresar Nuevo Registro</h1>
+                <form @submit.prevent="submitFormulario">
+                    <div class="form-group mb-3 d-flex align-items-center">
+                        <label for="tipoIdentificadorCordon" class="w-25"><i class="bi bi-check-square"></i> Tipo
+                            Identificador Cordon</label>
+                        <input type="checkbox" id="tipoIdentificadorCordon" v-model="registro.tipoIdentificadorCordon"
+                            class="form-check-input" />
+                    </div>
 
-                <!-- Consumo -->
-                <div class="form-group">
-                    <label for="consumo">Consumo</label>
-                    <select id="idConsumo" v-model="registro.consumo">
+                    <div class="form-group mb-3 d-flex align-items-center">
+                        <label for="consumo" class="w-25"><i class="bi bi-box"></i> Consumo</label>
+                        <select id="idConsumo" v-model="registro.consumo" class="form-control" required>
+                            <option v-for="(con) in consumo" :key="con" :value="con">
+                                {{ con }}
+                            </option>
+                        </select>
+                    </div>
 
-                        <option v-for="(con) in consumo" :key="con.id" :value="con">
-                            {{ con }}
-                        </option>
-                    </select>
+                    <div class="form-group mb-3 d-flex align-items-center">
+                        <label for="ubicacion" class="w-25"><i class="bi bi-geo-alt-fill"></i> Ubicación</label>
+                        <input type="text" id="ubicacion" v-model="registro.ubicacion" class="form-control"
+                            placeholder="Ubicación" required />
+                    </div>
 
-                </div>
+                    <div class="form-group mb-3 d-flex align-items-center">
+                        <label for="observaciones" class="w-25"><i class="bi bi-pencil-square"></i>
+                            Observaciones</label>
+                        <textarea id="observaciones" v-model="registro.observaciones" class="form-control"
+                            placeholder="Observaciones"></textarea>
+                    </div>
 
-                <!-- Ubicación -->
-                <div class="form-group">
-                    <label for="ubicacion">Ubicación</label>
-                    <input type="text" id="ubicacion" v-model="registro.ubicacion" placeholder="Ubicación" required />
-                </div>
+                    <div class="form-group mb-3 d-flex align-items-center">
+                        <label for="reemplazoPegaCebo" class="w-25"><i class="bi bi-eraser"></i> Reemplazo Pega
+                            Cebo</label>
+                        <input type="checkbox" id="reemplazoPegaCebo" v-model="registro.reemplazoPegaCebo"
+                            class="form-check-input" />
+                    </div>
 
-                <!-- Observaciones -->
-                <div class="form-group">
-                    <label for="observaciones">Observaciones</label>
-                    <textarea id="observaciones" v-model="registro.observaciones"
-                        placeholder="Observaciones"></textarea>
-                </div>
+                    <div class="form-group mb-3 d-flex align-items-center">
+                        <label for="csp" class="w-25"><i class="bi bi-archive"></i> CSP</label>
+                        <select id="idCSP" v-model="registro.csp" class="form-control" required>
+                            <option v-for="(csp) in csp" :key="csp" :value="csp">
+                                {{ csp }}
+                            </option>
+                        </select>
+                    </div>
 
-                <!-- Reemplazo Pega Cebo -->
-                <div class="form-group">
-                    <label for="reemplazoPegaCebo">Reemplazo Pega Cebo</label>
-                    <input type="checkbox" id="reemplazoPegaCebo" v-model="registro.reemplazoPegaCebo" />
-                </div>
+                    <button type="submit" class="btn btn-primary w-100 py-2">
+                        Guardar
+                    </button>
+                </form>
+            </div>
+        </main>
 
-                <!-- CSP -->
-                <div class="form-group">
-                    <label for="csp">CSP</label>
-                    <select id="idCSP" v-model="registro.csp">
-
-                        <option v-for="(csp) in csp" :key="csp.id" :value="csp">
-                            {{ csp }}
-                        </option>
-                    </select>
-                </div>
-
-                <!-- Botón de Guardar -->
-                <button type="submit">Guardar</button>
-            </form>
-        </div>
-
-        <!-- Tabla para visualizar los registros existentes -->
-        <div class="registro-list">
-            <h1>Registros Registrados</h1>
-            <table class="registros-table">
+        <div class="registro-list mb-4">
+            <h1 class="text-center text-primary mb-4">Registros Registrados</h1>
+            <table class="table table-striped table-bordered">
                 <thead>
                     <tr>
                         <th>#</th>
@@ -85,25 +84,37 @@
                         <td>{{ item.csp }}</td>
                         <td>{{ item.informeId }}</td>
                         <td>
-                            <button @click="generateFormularioIPM(registro)">Editar</button>
-                            <button @click="eliminarRegistro(item.id)">Eliminar</button>
-                            <button @click="addRow">Añadir fila</button>
+                            <button class="btn btn-success btn-sm" @click="generateFormularioIPM(registro)">
+                                <i class="bi bi-pencil"></i> Editar
+                            </button>
+                            <button class="btn btn-danger btn-sm" @click="eliminarRegistro(item.id)">
+                                <i class="bi bi-trash"></i> Eliminar
+                            </button>
+                            <button class="btn btn-info btn-sm" @click="addRow()">
+                                <i class="bi bi-plus-circle"></i> Añadir fila
+                            </button>
                         </td>
                     </tr>
                 </tbody>
             </table>
+
         </div>
+ 
     </div>
 </template>
-
 <script>
 import { consultarDesratizacionFachadaPorIdInforme, crearDesratizacionFachada } from '../helpers/desratizacionHelper';
 import jsPDF from 'jspdf';
 import JsPDFAutotable from 'jspdf-autotable'
 import router from '@/router';
+import Footer from '../../../components/Footer.vue';
+
 
 export default {
     name: "RegistroComponent",
+    components:{
+    Footer
+    },
     data() {
         return {
             // Objeto para vincular los campos del formulario
@@ -127,10 +138,15 @@ export default {
         this.consultarPorIdInforme();
     },
     methods: {
-        addRow() {
+        async addRow() {
             const lastRow = this.registros[this.registros.length - 1]; // Obtén la última fila
             const newRow = lastRow; // Clona/modifica la última fila
-            this.rows.push(newRow); // Añade la nueva fila al final
+            console.log(newRow);
+            newRow.id = null;
+            const nuevoRegistroDuplicado = await crearDesratizacionFachada(newRow);
+            console.log(nuevoRegistroDuplicado);
+            this.registros.push(nuevoRegistroDuplicado); // Añade la nueva fila al final
+
         },
         // Método para manejar el envío del formulario
         async submitFormulario() {
@@ -184,88 +200,117 @@ export default {
 </script>
 
 <style scoped>
-.registro-container {
+.page-container {
     display: flex;
     flex-direction: column;
-    padding: 20px;
+    min-height: 100vh;
+}
+.form-check-input {
+    width: auto;
+    height: auto;
+    transform: scale(1); /* Ajusta el tamaño del checkbox */
 }
 
-.registro-form,
-.registro-list {
-    margin-bottom: 40px;
+main {
+    flex-grow: 1;
+    background-image: url('@/assets/fumi.jpg'), linear-gradient(to bottom, #132333, #132333);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.card {
+    border: 3px solid transparent;
+    border-image: linear-gradient(to right, #004080, #a9c4f5);
+    border-image-slice: 1;
+    border-radius: 15px;
+    box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.2);
+    background-color: rgba(255, 255, 255, 0.8);
+}
+
+h1 {
+    font-weight: 700;
+    color: #031425;
 }
 
 .form-group {
-    margin-bottom: 15px;
-    display: flex;
-    flex-direction: column;
+    margin-bottom: 1rem;
 }
 
-.form-group label {
-    margin-bottom: 5px;
+label {
     font-weight: bold;
+    margin-bottom: 0.5rem;
 }
 
-.form-group input[type="text"],
-.form-group input[type="number"],
-.form-group textarea {
-    padding: 8px;
+input,
+textarea,
+select {
+    width: 100%;
+    padding: 0.5rem;
+    font-size: 0.9rem;
     border: 1px solid #ccc;
     border-radius: 4px;
 }
 
-.form-group input[type="checkbox"] {
-    width: 20px;
-    height: 20px;
-}
-
 button {
-    padding: 10px 15px;
-    background-color: #42b983;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
+    transition: all 0.3s ease;
 }
 
 button:hover {
-    background-color: #369870;
+    background-color: #003060;
 }
 
-.registros-table {
+button:focus {
+    outline: none;
+}
+
+button.btn-danger {
+    background-color: #d9534f;
+    border-color: #d9534f;
+}
+
+button.btn-danger:hover {
+    background-color: #c9302c;
+}
+
+.table-striped {
     width: 100%;
     border-collapse: collapse;
 }
 
-.registros-table th,
-.registros-table td {
+.table-striped th,
+.table-striped td {
     border: 1px solid #ddd;
     padding: 8px;
 }
 
-.registros-table th {
+.table-striped th {
     background-color: #f2f2f2;
     text-align: left;
 }
 
-.registros-table tr:nth-child(even) {
+.table-striped tr:nth-child(even) {
     background-color: #f9f9f9;
 }
 
-.registros-table tr:hover {
+.table-striped tr:hover {
     background-color: #ddd;
 }
 
-.registros-table button {
+.table-striped button {
     margin-right: 5px;
     background-color: #ff4d4d;
 }
 
-.registros-table button:first-of-type {
+.table-striped button:first-of-type {
     background-color: #4CAF50;
 }
 
-.registros-table button:hover {
-    opacity: 0.8;
+.table-striped button:nth-of-type(2) {
+    background-color: #ff4d4d;
+}
+
+.table-striped button:nth-of-type(3) {
+    background-color: #17a2b8;
 }
 </style>

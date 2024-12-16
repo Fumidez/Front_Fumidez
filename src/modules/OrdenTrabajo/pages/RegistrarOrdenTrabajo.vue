@@ -1,75 +1,81 @@
 <template>
-    <div class="orden-trabajo-container">
-        <div class="orden-trabajo-form">
-            <h1>Ingresar Orden de Trabajo</h1>
-            <form @submit.prevent="submitForm">
-                <!-- Fecha -->
-                <div class="form-group">
-                    <label for="fecha">Fecha</label>
-                    <input type="date" id="fecha" v-model="ordenTrabajo.fecha" />
-                </div>
+  <div class="page-container d-flex flex-column" style="min-height: 100vh;">
+    <!-- Contenido Principal -->
+    <main class="flex-grow-1 d-flex align-items-center justify-content-center">
+      <div class="card p-5 shadow-lg"
+        style="max-width: 800px; width: 100%; border-radius: 15px; background-color: rgba(255, 255, 255, 0.9); border: 3px solid transparent; border-image: linear-gradient(to right, #004080, #a9c4f5); border-image-slice: 1;">
+        <h1 class="text-center text-primary mb-4">Ingresar Orden de Trabajo</h1>
+        <!-- Formulario de Orden de Trabajo -->
+        <form @submit.prevent="submitForm">
+          <!-- Fecha -->
+          <div class="form-group mb-3 d-flex align-items-center">
+            <label for="fecha" class="w-25"><i class="bi bi-calendar"></i> Fecha</label>
+            <input type="date" id="fecha" v-model="ordenTrabajo.fecha" class="form-control" required />
+          </div>
 
-                <!-- Hora -->
-                <div class="form-group">
-                    <label for="hora">Hora</label>
-                    <input type="time" id="hora" v-model="ordenTrabajo.hora" />
-                </div>
+          <!-- Hora -->
+          <div class="form-group mb-3 d-flex align-items-center">
+            <label for="hora" class="w-25"><i class="bi bi-clock"></i> Hora</label>
+            <input type="time" id="hora" v-model="ordenTrabajo.hora" class="form-control" required />
+          </div>
 
-                <!-- Número de Orden -->
-                <div class="form-group">
-                    <label for="numeroOrden">Número de Orden</label>
-                    <input type="text" id="numeroOrden" v-model="ordenTrabajo.numeroOrden"
-                        placeholder="Número de Orden" />
-                </div>
+          <!-- Número de Orden -->
+          <div class="form-group mb-3 d-flex align-items-center">
+            <label for="numeroOrden" class="w-25"><i class="bi bi-file-earmark"></i> Número de Orden</label>
+            <input type="text" id="numeroOrden" v-model="ordenTrabajo.numeroOrden" class="form-control" placeholder="Número de Orden" required minlength="3" />
+          </div>
 
-                <!-- Descripción -->
-                <div class="form-group">
-                    <label for="descripcion">Descripción</label>
-                    <textarea id="descripcion" v-model="ordenTrabajo.descripcion" placeholder="Descripción"></textarea>
-                </div>
+          <!-- Descripción -->
+          <div class="form-group mb-3 d-flex align-items-center">
+            <label for="descripcion" class="w-25"><i class="bi bi-file-earmark-text"></i> Descripción</label>
+            <textarea id="descripcion" v-model="ordenTrabajo.descripcion" class="form-control" placeholder="Descripción" required minlength="10"></textarea>
+          </div>
 
-                <!-- Área -->
-                <div class="form-group">
-                    <label for="area">Área</label>
-                    <input type="text" id="area" v-model="ordenTrabajo.area" placeholder="Área" />
-                </div>
+          <!-- Área -->
+          <div class="form-group mb-3 d-flex align-items-center">
+              <label for="area" class="w-25"><i class="bi bi-geo-alt-fill"></i> Área</label>
+              <input type="text" id="area" v-model="ordenTrabajo.area" class="form-control" placeholder="Área" required minlength="3" />
+          </div>
 
-                <!-- Selección de Usuario -->
-                <div class="form-group">
-                    <label for="idUsuarios">Usuario</label>
-                    <select id="idUsuarios" v-model="ordenTrabajo.idUsuarios">
-                        <option disabled value="">Seleccione un usuario</option>
-                        <option v-for="usuario in usuarios" :key="usuario.id" :value="usuario.id">
-                            {{ usuario.nombre }}
-                        </option>
-                    </select>
-                </div>
+          <!-- Selección de Usuario -->
+          <div class="form-group mb-3 d-flex align-items-center">
+            <label for="idUsuarios" class="w-25"><i class="bi bi-person"></i> Usuario</label>
+            <select id="idUsuarios" v-model="ordenTrabajo.idUsuarios" class="form-control" required>
+              <option disabled value="">Seleccione un usuario</option>
+              <option v-for="usuario in usuarios" :key="usuario.id" :value="usuario.id">{{ usuario.nombre }}</option>
+            </select>
+          </div>
 
-                <!-- Selección de Cliente -->
-                <div class="form-group">
-                    <label for="idClientes">Cliente</label>
-                    <select id="idClientes" v-model="ordenTrabajo.idClientes">
-                        <option disabled value="">Seleccione un cliente</option>
-                        <option v-for="cliente in clientes" :key="cliente.id" :value="cliente.id">
-                            {{ cliente.nombre }}
-                        </option>
-                    </select>
-                </div>
+          <!-- Selección de Cliente -->
+          <div class="form-group mb-3 d-flex align-items-center">
+            <label for="idClientes" class="w-25"><i class="bi bi-person-check"></i> Cliente</label>
+            <select id="idClientes" v-model="ordenTrabajo.idClientes" class="form-control" required>
+              <option disabled value="">Seleccione un cliente</option>
+              <option v-for="cliente in clientes" :key="cliente.id" :value="cliente.id">{{ cliente.nombre }}</option>
+            </select>
+          </div>
 
-                <!-- Servicios -->
-                <div class="form-group">
-                    <label>Servicios</label>
-                    <div v-for="(servicio, index) in ordenTrabajo.servicios" :key="index" class="servicio-group">
-                        <input type="text" v-model="servicio.tipoServicio" placeholder="Tipo de Servicio" />
-                        <button type="button" @click="removeServicio(index)">Eliminar</button>
-                    </div>
-                    <button type="button" @click="addServicio">Añadir Servicio</button>
-                </div>
+          <!-- Servicios -->
+          <div class="form-group mb-3">
+            <label><i class="bi bi-tools"></i> Servicios</label>
+            <div v-for="(servicio, index) in ordenTrabajo.servicios" :key="index" class="d-flex gap-2 align-items-center">
+              <input type="text" v-model="servicio.tipoServicio" class="form-control" placeholder="Tipo de Servicio" required minlength="3" />
+              <button type="button" class="btn btn-danger btn-sm" @click="removeServicio(index)">
+                <i class="bi bi-trash"></i>
+              </button>
+            </div>
+            <button type="button" class="btn btn-primary w-100 mt-2 py-2" @click="addServicio">
+              <i class="bi bi-plus-circle"></i> Añadir Servicio
+            </button>
+          </div>
 
-                <button type="submit">Guardar</button>
-            </form>
-        </div>
-    </div>
+          <button type="submit" class="btn btn-primary w-100 py-2">
+            Guardar
+          </button>
+        </form>
+      </div>
+    </main>
+  </div>
 </template>
 
 <script>
@@ -160,104 +166,125 @@ export default {
 </script>
 
 <style scoped>
-.orden-trabajo-container {
-    max-width: 1200px;
-    /* Ajusta el tamaño máximo del contenedor */
-    margin: auto;
-    padding: 1rem;
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
+.page-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
-.orden-trabajo-form {
-    padding: 1rem;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    background-color: #f9f9f9;
+main {
+  flex-grow: 1;
+  background-image: url('@/assets/fumi.jpg'), linear-gradient(to bottom, #132333, #132333);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  position: relative;
+}
+
+/* Indicador de carga */
+main::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  z-index: -1;
+  pointer-events: none;
+}
+
+.card {
+  border: 3px solid transparent;
+  border-image: linear-gradient(to right, #004080, #a9c4f5);
+  border-image-slice: 1;
+  border-radius: 15px;
+  box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.2);
+  background-color: rgba(255, 255, 255, 0.8);
 }
 
 h1 {
-    text-align: center;
-    font-size: 1.4rem;
-    color: #181C71;
+  font-weight: 700;
+  color: #031425;
 }
 
 .form-group {
-    margin-bottom: 0.75rem;
+  margin-bottom: 1rem;
 }
 
 label {
-    display: block;
-    font-weight: bold;
-    margin-bottom: 0.25rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
 }
 
 input,
-textarea {
-    width: 100%;
-    padding: 0.5rem;
-    font-size: 0.9rem;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+textarea,
+select {
+  width: 100%;
+  padding: 0.5rem;
+  font-size: 0.9rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
 }
 
 button {
-    padding: 0.6rem;
-    background-color: #181C71;
-    color: white;
-    font-size: 0.9rem;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    margin-top: 0.5rem;
+  transition: all 0.3s ease;
 }
 
 button:hover {
-    background-color: #4a5d92;
+  background-color: #003060;
 }
 
-.orden-trabajo-list {
-    background-color: #fff;
-    padding: 1rem;
-    border-radius: 8px;
+button:focus {
+  outline: none;
 }
 
-.ordenes-table {
-    width: 100%;
-    margin-top: 1rem;
-    border-collapse: collapse;
+button.btn-danger {
+  background-color: #d9534f;
+  border-color: #d9534f;
 }
 
-.ordenes-table th,
-.ordenes-table td {
-    padding: 0.75rem;
-    border: 1px solid #ccc;
-    text-align: left;
-}
-
-.ordenes-table th {
-    background-color: #181C71;
-    color: white;
-}
-
-ul {
-    padding-left: 20px;
+button.btn-danger:hover {
+  background-color: #c9302c;
 }
 
 .servicio-group {
-    display: flex;
-    align-items: center;
-    margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.5rem;
 }
 
 .servicio-group input {
-    flex: 1;
-    margin-right: 0.5rem;
+  flex: 1;
+  margin-right: 0.5rem;
 }
 
 .servicio-group button {
-    background-color: red;
-    padding: 0.4rem;
+  padding: 0.4rem;
+}
+
+/* Mensajes de error */
+input:invalid,
+textarea:invalid,
+select:invalid {
+  border-color: #e74c3c;
+}
+
+/* Indicador visual para formularios válidos */
+input:valid,
+textarea:valid,
+select:valid {
+  border-color: #2ecc71;
+}
+
+/* Responsividad */
+@media (max-width: 768px) {
+  .card {
+    padding: 2rem 1.5rem;
+  }
+
+  h1 {
+    font-size: 1.5rem;
+  }
 }
 </style>

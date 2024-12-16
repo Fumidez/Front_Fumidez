@@ -1,96 +1,170 @@
 <template>
-    <div>
+  <div class="photo-uploader">
+    <div class="upload-section">
       <h2>Subir Foto</h2>
-      <!-- Formulario para subir foto -->
-      <form @submit.prevent="uploadPhoto">
-        <input type="file" @change="onFileChange" accept="image/*" />
-        <button type="submit">Subir Foto</button>
+      <form @submit.prevent="uploadPhoto" class="upload-form">
+        <input
+          type="file"
+          @change="onFileChange"
+          accept="image/*"
+          class="file-input"
+        />
+        <button type="submit" class="upload-button">Subir Foto</button>
       </form>
-  
+    </div>
+
+    <div class="photos-section">
       <h2>Fotos Cargadas</h2>
-      <!-- Lista de fotos -->
-      <div v-if="photos.length > 0">
-        <div v-for="foto in photos" :key="foto.id" class="foto-item">
-          <img :src="'data:' + foto.mimeType + ';base64,' + foto.fotoBase64" alt="Foto" />
-          <p>{{ foto.nombre }}</p>
+      <div v-if="photos.length > 0" class="photo-grid">
+        <div
+          v-for="foto in photos"
+          :key="foto.id"
+          class="photo-item"
+        >
+          <img
+            :src="'data:' + foto.mimeType + ';base64,' + foto.fotoBase64"
+            alt="Foto"
+            class="photo-image"
+          />
+          <p class="photo-name">{{ foto.nombre }}</p>
         </div>
       </div>
-      <p v-else>No hay fotos disponibles</p>
+      <p v-else class="no-photos">No hay fotos disponibles</p>
     </div>
-  </template>
-  
-  <script>
-  import axios from 'axios';
-  
-  export default {
-    data() {
-      return {
-        selectedFile: {
-            file:null,
-            idInform: 0
-        },
-        photos: [], // Para almacenar las fotos recuperadas del backend
-      };
+  </div>
+</template>
+
+<script>
+import axios from "axios";
+
+export default {
+  name: "PhotoUploader",
+  data() {
+    return {
+      selectedFile: null,
+      photos: [], // Para almacenar las fotos recuperadas del backend
+    };
+  },
+  methods: {
+    onFileChange(event) {
+      this.selectedFile = event.target.files[0];
     },
-    methods: {
-      // Método para manejar la selección de la foto
-      onFileChange(event) {
-        this.selectedFile = event.target.files[0];
-      },
-  
-      // Método para subir la foto al backend
-      async uploadPhoto() {
-        if (!this.selectedFile) {
-          alert("Por favor, selecciona una foto.");
-          return;
-        }
-  
-        const formData = new FormData();
-        formData.append('foto', this.selectedFile);
-  
-        try {
-          // Cambiar la URL al endpoint correcto
-          await axios.post('http://localhost:7070/app-almacenamiento/almacenamiento/guardar', formData, {
+    async uploadPhoto() {
+      if (!this.selectedFile) {
+        alert("Por favor, selecciona una foto.");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("foto", this.selectedFile);
+
+      try {
+        await axios.post(
+          "http://localhost:7070/app-almacenamiento/almacenamiento/guardar",
+          formData,
+          {
             headers: {
-              'Content-Type': 'multipart/form-data',
+              "Content-Type": "multipart/form-data",
             },
-          });
-          this.selectedFile = null;
-          this.fetchPhotos(); // Actualiza la lista de fotos después de cargar una nueva
-        } catch (error) {
-          console.error("Error al subir la foto", error);
-        }
-      },
-  
-      // Método para recuperar todas las fotos desde el backend
-      async fetchPhotos() {
-        try {
-          // Cambiar la URL al endpoint correcto
-          const response = await axios.get('http://localhost:7070/app-almacenamiento/almacenamiento/listar');
-          this.photos = response.data;
-        } catch (error) {
-          console.error("Error al obtener las fotos", error);
-        }
-      },
+          }
+        );
+        this.selectedFile = null;
+        this.fetchPhotos();
+      } catch (error) {
+        console.error("Error al subir la foto", error);
+      }
     },
-  
-    // Llamar a la función fetchPhotos cuando el componente se monte para cargar las fotos existentes
-    mounted() {
-      this.fetchPhotos();
+    async fetchPhotos() {
+      try {
+        const response = await axios.get(
+          "http://localhost:7070/app-almacenamiento/almacenamiento/listar"
+        );
+        this.photos = response.data;
+      } catch (error) {
+        console.error("Error al obtener las fotos", error);
+      }
     },
-  };
-  </script>
-  
-  <style scoped>
-  .foto-item {
-    margin: 20px;
-    display: inline-block;
-    text-align: center;
-  }
-  
-  .foto-item img {
-    max-width: 200px;
-    max-height: 200px;
-  }
-  </style>
-  
+  },
+  mounted() {
+    this.fetchPhotos();
+  },
+};
+</script>
+
+<style scoped>
+.photo-uploader {
+  font-family: Arial, sans-serif;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.upload-section {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.upload-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.file-input {
+  margin-bottom: 10px;
+}
+
+.upload-button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.upload-button:hover {
+  background-color: #0056b3;
+}
+
+.photos-section {
+  text-align: center;
+}
+
+.photo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 20px;
+  padding: 10px;
+}
+
+.photo-item {
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.photo-image {
+  max-width: 100%;
+  max-height: 150px;
+  border-radius: 4px;
+  margin-bottom: 10px;
+}
+
+.photo-name {
+  font-size: 14px;
+  color: #555;
+}
+
+.no-photos {
+  color: #888;
+  font-size: 16px;
+  margin-top: 20px;
+}
+</style>

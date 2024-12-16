@@ -20,8 +20,8 @@ import vistaF from '../components/vistaF.vue';
 
 const routes = [
   { path: '/login', component: Login }, // Página de login
-  { path: '/clientes', component: Clientes, meta: { requiresAuth: true } },
-  { path: '/usuarios', component: Usuarios, meta: { requiresAuth: true } },
+  { path: '/clientes', component: Clientes , meta: { requiresAuth: true } },
+  { path: '/usuarios', component: Usuarios , meta: { requiresAuth: true } },
   { path: '/orden_trabajo', component: OrdenTrabajo, meta: { requiresAuth: true } },
   { path: '/orden_trabajo_lista', component: OrdenTrabajoLista, meta: { requiresAuth: true } },
   { path: '/orden_trabajo_registro', component: OrdenTrabajoRegistrar, meta: { requiresAuth: true } },

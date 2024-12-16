@@ -178,9 +178,8 @@
             <td>{{ informe.numFactura }}</td>
             <td>{{ informe.frecuencia }}</td>
             <td>{{ informe.precio }}</td>
-            <td>{{ informe.ordenDto.cliente.nombre }}</td>
             <td>
-              <button @click="generatePDF(informe)">Generar PDF</button>
+              <button @click="generatePDF1(informe)">Generar PDF</button>
 
             </td>
             <td>
@@ -1376,7 +1375,15 @@ export default {
       doc.save(`informe_${informe.numFactura}.pdf`);
     },
 
-    async generateFormularioIPM(informe) {
+
+    async generatePDF1(informe) {
+
+      const informeId = await consultarInformePorIdFachada(informe.id);
+      await this.generateFormularioIPM(informeId);
+      
+    },
+
+    async generateFormularioIPM1(informe) {
       const doc = new jsPDF('portrait', 'pt', 'a4'); // Orientación vertical
 
       const headerHeight = 65;

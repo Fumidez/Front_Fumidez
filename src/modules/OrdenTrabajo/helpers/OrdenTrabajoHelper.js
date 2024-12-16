@@ -12,6 +12,12 @@ export const consultarOrdenFachada = async () => {
 export const consultarOrdenSimpleFachada = async () => {
     return await consultarOrdenSimple()
 }
+export const buscarOrdenPorId = async (id) => {
+    return await buscarPorId(id);
+}
+
+
+
 export const actualizarOrdenFachada = async (id, clienteOrden) => {
     return await actualizarOrden(id, clienteOrden);
 }
@@ -38,6 +44,9 @@ const consultarOrdenSimple = async () => {
 
 const actualizarOrden = async (id, clienteOrden) => {
     return await axios.put(`${API_URL}/${id}`, clienteOrden).then(r => r.data);
+}
+const buscarPorId = async (id) => {
+    return await axios.get(`${API_URL}/${id}`).then(r => r.data);
 }
 
 const actualizarOrdenEstado = async (id, estado) => {

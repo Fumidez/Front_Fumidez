@@ -1,118 +1,93 @@
 <template>
-  <div class="orden-trabajo-container">
-    <div class="orden-trabajo-form">
-      <h1>Ingresar Orden de Trabajo</h1>
-      <form @submit.prevent="submitForm">
-        <!-- Fecha -->
-        <div class="form-group">
-          <label for="fecha">Fecha</label>
-          <input type="date" id="fecha" v-model="ordenTrabajo.fecha" />
-        </div>
+  <div class="page-container d-flex flex-column" style="min-height: 100vh;">
+    <!-- Header -->
 
-        <!-- Hora -->
-        <div class="form-group">
-          <label for="hora">Hora</label>
-          <input type="time" id="hora" v-model="ordenTrabajo.hora" />
-        </div>
+    <!-- Contenido Principal -->
+    <main class="flex-grow-1 d-flex align-items-center justify-content-center">
+      <div class="card p-5 shadow-lg"
+        style="max-width: 800px; width: 100%; border-radius: 15px; background-color: rgba(255, 255, 255, 0.9); border: 3px solid transparent; border-image: linear-gradient(to right, #004080, #a9c4f5); border-image-slice: 1;">
+        <h1 class="text-center text-primary mb-4">Ingresar Orden de Trabajo</h1>
+        <form @submit.prevent="submitForm">
 
-        <!-- Número de Orden -->
-        <div class="form-group">
-          <label for="numeroOrden">Número de Orden</label>
-          <input type="text" id="numeroOrden" v-model="ordenTrabajo.numeroOrden" placeholder="Número de Orden" />
-        </div>
-
-        <!-- Descripción -->
-        <div class="form-group">
-          <label for="descripcion">Descripción</label>
-          <textarea id="descripcion" v-model="ordenTrabajo.descripcion" placeholder="Descripción"></textarea>
-        </div>
-
-        <!-- Área -->
-        <div class="form-group">
-          <label for="area">Área</label>
-          <input type="text" id="area" v-model="ordenTrabajo.area" placeholder="Área" />
-        </div>
-
-        <!-- Selección de Usuario -->
-        <div class="form-group">
-          <label for="idUsuarios">Usuario</label>
-          <select id="idUsuarios" v-model="ordenTrabajo.idUsuarios">
-            <option disabled value="">Seleccione un usuario</option>
-            <option v-for="usuario in usuarios" :key="usuario.id" :value="usuario.id">
-              {{ usuario.nombre }}
-            </option>
-          </select>
-        </div>
-
-        <!-- Selección de Cliente -->
-        <div class="form-group">
-          <label for="idClientes">Cliente</label>
-          <select id="idClientes" v-model="ordenTrabajo.idClientes">
-            <option disabled value="">Seleccione un cliente</option>
-            <option v-for="cliente in  clientes" :key="cliente.id" :value="cliente.id">
-              {{ cliente.nombre }}
-            </option>
-          </select>
-        </div>
-
-        <!-- Servicios -->
-        <div class="form-group">
-          <label>Servicios</label>
-          <div v-for="(servicio, index) in ordenTrabajo.servicios" :key="index" class="servicio-group">
-            <input type="text" v-model="servicio.tipoServicio" placeholder="Tipo de Servicio" />
-            <button type="button" @click="removeServicio(index)">Eliminar</button>
+          <!-- Fecha -->
+          <div class="form-group mb-3 d-flex align-items-center">
+            <label for="fecha" class="w-25"><i class="bi bi-calendar-event-fill"></i> Fecha</label>
+            <input type="date" id="fecha" v-model="ordenTrabajo.fecha" class="form-control" />
           </div>
-          <button type="button" @click="addServicio">Añadir Servicio</button>
-        </div>
 
-        <button type="submit">Guardar</button>
-      </form>
-    </div>
+          <!-- Hora -->
+          <div class="form-group mb-3 d-flex align-items-center">
+            <label for="hora" class="w-25"><i class="bi bi-clock-fill"></i> Hora</label>
+            <input type="time" id="hora" v-model="ordenTrabajo.hora" class="form-control" />
+          </div>
 
-    <div class="orden-trabajo-list">
-      <h1>Órdenes de Trabajo Registradas</h1>
-      <!-- Tabla para visualizar las órdenes de trabajo -->
-      <table class="ordenes-table">
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Fecha</th>
-            <th>Hora</th>
-            <th>Número de Orden</th>
-            <th>Descripción</th>
-            <th>Área</th>
-            <th>Usuario</th>
-            <th>Cliente</th>
-            <th>Servicios</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(orden, index) in ordenesTrabajo" :key="orden.id">
-            <td>{{ index + 1 }}</td>
-            <td>{{ orden.fecha }}</td>
-            <td>{{ orden.hora }}</td>
-            <td>{{ orden.numeroOrden }}</td>
-            <td>{{ orden.descripcion }}</td>
-            <td>{{ orden.area }}</td>
-            <td>{{ orden.usuario.nombre }}</td>
-            <td>{{ orden.cliente.nombre }}</td>
-            <td>
-              <ul>
-                <li v-for="servicio in orden.servicios" :key="servicio.id">
-                  {{ servicio.tipoServicio }}
-                </li>
-              </ul>
-            </td>
-            <td>
-              <button @click="generatePDF(orden)">Generar PDF</button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+          <!-- Número de Orden -->
+          <div class="form-group mb-3 d-flex align-items-center">
+            <label for="numeroOrden" class="w-25"><i class="bi bi-hash"></i> Número de Orden</label>
+            <input type="text" id="numeroOrden" v-model="ordenTrabajo.numeroOrden" class="form-control"
+              placeholder="Número de Orden" />
+          </div>
+
+          <!-- Descripción -->
+          <div class="form-group mb-3">
+            <label for="descripcion"><i class="bi bi-textarea-t"></i> Descripción</label>
+            <textarea id="descripcion" v-model="ordenTrabajo.descripcion" class="form-control"
+              placeholder="Descripción"></textarea>
+          </div>
+
+          <!-- Área -->
+          <div class="form-group mb-3 d-flex align-items-center">
+            <label for="area" class="w-25"><i class="bi bi-geo-alt-fill"></i> Área</label>
+            <input type="text" id="area" v-model="ordenTrabajo.area" class="form-control" placeholder="Área" />
+          </div>
+
+          <!-- Selección de Usuario -->
+          <div class="form-group mb-3">
+            <label for="idUsuarios"><i class="bi bi-person-fill"></i> Usuario</label>
+            <select id="idUsuarios" v-model="ordenTrabajo.idUsuarios" class="form-control">
+              <option disabled value="">Seleccione un usuario</option>
+              <option v-for="usuario in usuarios" :key="usuario.id" :value="usuario.id">
+                {{ usuario.nombre }}
+              </option>
+            </select>
+          </div>
+
+          <!-- Selección de Cliente -->
+          <div class="form-group mb-3">
+            <label for="idClientes"><i class="bi bi-people-fill"></i> Cliente</label>
+            <select id="idClientes" v-model="ordenTrabajo.idClientes" class="form-control">
+              <option disabled value="">Seleccione un cliente</option>
+              <option v-for="cliente in clientes" :key="cliente.id" :value="cliente.id">
+                {{ cliente.nombre }}
+              </option>
+            </select>
+          </div>
+
+          <!-- Servicios -->
+          <div class="form-group mb-3">
+            <label><i class="bi bi-tools"></i> Servicios</label>
+            <div v-for="(servicio, index) in ordenTrabajo.servicios" :key="index" class="d-flex mb-2">
+              <input type="text" v-model="servicio.tipoServicio" class="form-control me-2"
+                placeholder="Tipo de Servicio" />
+              <button type="button" class="btn btn-danger" @click="removeServicio(index)">
+                <i class="bi bi-trash-fill"></i>
+              </button>
+            </div>
+            <button type="button" class="btn btn-secondary w-100" @click="addServicio">
+              <i class="bi bi-plus-circle-fill"></i> Añadir Servicio
+            </button>
+          </div>
+
+          <!-- Botón Guardar -->
+          <button type="submit" class="btn btn-primary w-100 py-2">
+            Guardar
+          </button>
+        </form>
+      </div>
+    </main>
   </div>
 </template>
+
 <script>
 // Importamos el helper para manejar la creación y obtención de órdenes de trabajo
 import { crearOrdenFachada, consultarOrdenFachada } from '../helpers/OrdenTrabajoHelper';
@@ -358,104 +333,43 @@ export default {
 </script>
 
 <style scoped>
-.orden-trabajo-container {
-  max-width: 1200px;
-  /* Ajusta el tamaño máximo del contenedor */
-  margin: auto;
-  padding: 1rem;
+.page-container {
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  min-height: 100vh;
 }
 
-.orden-trabajo-form {
-  padding: 1rem;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  background-color: #f9f9f9;
+main {
+  flex-grow: 1;
+  background-image: url('@/assets/fumi.jpg'), linear-gradient(to bottom, #132333, #132333);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  min-height: 100vh;
+}
+
+.card {
+  border: 3px solid transparent;
+  border-image: linear-gradient(to right, #004080, #a9c4f5);
+  border-image-slice: 1;
+  border-radius: 15px;
+  box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.2);
+  background-color: rgba(255, 255, 255, 0.8);
 }
 
 h1 {
-  text-align: center;
-  font-size: 1.4rem;
-  color: #181C71;
-}
-
-.form-group {
-  margin-bottom: 0.75rem;
-}
-
-label {
-  display: block;
-  font-weight: bold;
-  margin-bottom: 0.25rem;
-}
-
-input,
-textarea {
-  width: 100%;
-  padding: 0.5rem;
-  font-size: 0.9rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  font-weight: 700;
+  font-size: 1.8rem;
+  color: #031425;
 }
 
 button {
-  padding: 0.6rem;
-  background-color: #181C71;
-  color: white;
-  font-size: 0.9rem;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  margin-top: 0.5rem;
+  font-size: 1rem;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
 }
 
 button:hover {
-  background-color: #4a5d92;
-}
-
-.orden-trabajo-list {
-  background-color: #fff;
-  padding: 1rem;
-  border-radius: 8px;
-}
-
-.ordenes-table {
-  width: 100%;
-  margin-top: 1rem;
-  border-collapse: collapse;
-}
-
-.ordenes-table th,
-.ordenes-table td {
-  padding: 0.75rem;
-  border: 1px solid #ccc;
-  text-align: left;
-}
-
-.ordenes-table th {
-  background-color: #181C71;
-  color: white;
-}
-
-ul {
-  padding-left: 20px;
-}
-
-.servicio-group {
-  display: flex;
-  align-items: center;
-  margin-bottom: 0.5rem;
-}
-
-.servicio-group input {
-  flex: 1;
-  margin-right: 0.5rem;
-}
-
-.servicio-group button {
-  background-color: red;
-  padding: 0.4rem;
+  background-color: #003060;
 }
 </style>

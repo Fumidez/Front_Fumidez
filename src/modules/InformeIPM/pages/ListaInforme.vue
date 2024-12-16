@@ -15,7 +15,6 @@
                         <th>Número de Factura</th>
                         <th>Frecuencia</th>
                         <th>Precio</th>
-                        <th>cLIENTE</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -24,7 +23,6 @@
                         <td>{{ informe.numFactura }}</td>
                         <td>{{ informe.frecuencia }}</td>
                         <td>{{ informe.precio }}</td>
-                        <td>{{ informe.ordenDto.cliente.nombre }}</td>
                         <td>
                             <button @click="generatePDF(informe)">Generar PDF</button>
                         </td>
@@ -46,6 +44,7 @@
 <script>
 import {
     consultarInformeFachada,
+    consultarInformePorIdFachada,
 } from "../helpers/InformeHelper";
 import router from "@/router";
 
@@ -104,7 +103,9 @@ export default {
             await router.push({ path: ruta });
         },
         async generatePDF(informe) {
-            await generatePDFInformeFachada(informe);
+
+            const informeId = await consultarInformePorIdFachada(informe.id);
+            await generatePDFInformeFachada(informeId);
         },
     },
 };
