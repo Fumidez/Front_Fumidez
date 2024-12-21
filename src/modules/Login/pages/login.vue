@@ -8,7 +8,7 @@
       <!-- Logo de la empresa -->
       <div class="text-center mb-3">
         <img 
-          src="C:\Users\User\Desktop\Fumidez_Front\Fumidez_Front\src\assets\fumidez_logo.png" 
+          src="../../../assets/fumidez_logo.png" 
           alt="Logo de la empresa" 
           style="width: 100px;">
       </div>
