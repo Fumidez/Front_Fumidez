@@ -76,22 +76,44 @@
                 <tbody>
                     <tr v-for="(item, index) in registros" :key="item.id">
                         <td>{{ index + 1 }}</td>
-                        <td>{{ item.tipoIdentificadorCordon ? 'Sí' : 'No' }}</td>
-                        <td>{{ item.consumo }}</td>
-                        <td>{{ item.ubicacion }}</td>
-                        <td>{{ item.observaciones }}</td>
-                        <td>{{ item.reemplazoPegaCebo ? 'Sí' : 'No' }}</td>
-                        <td>{{ item.csp }}</td>
-                        <td>{{ item.informeId }}</td>
                         <td>
-                            <button class="btn btn-success btn-sm" @click="generateFormularioIPM(registro)">
-                                <i class="bi bi-pencil"></i> Editar
-                            </button>
+                            <select v-model="item.tipoIdentificadorCordon"  @change="actualizarRegistro(item)">
+                                <option :value="true">Sí</option>
+                                <option :value="false">No</option>
+                            </select>
+                        </td>
+                        <td>
+                            <div class="form-group mb-3 d-flex align-items-center">
+                                <select id="idConsumo" v-model="item.consumo" class="form-control" required  @change="actualizarRegistro(item)">
+                                    <option v-for="(con) in consumo" :key="con" :value="con">
+                                        {{ con }}
+                                    </option>
+                                </select>
+                            </div>
+                        </td>
+                        <td><input type="text" v-model="item.ubicacion"  @change="actualizarRegistro(item)"/></td>
+                        <td><input type="text" v-model="item.observaciones"  @change="actualizarRegistro(item)"/></td>
+                        <td>
+                            <select v-model="item.reemplazoPegaCebo"  @change="actualizarRegistro(item)">
+                                <option :value="true">Sí</option>
+                                <option :value="false">No</option>
+                            </select>
+                        </td>
+                        <td>
+                            <div class="form-group mb-3 d-flex align-items-center">
+                                <select id="idCSP" v-model="item.csp" class="form-control" required  @change="actualizarRegistro(item)">
+                                    <option v-for="(csp) in csp" :key="csp" :value="csp">
+                                        {{ csp }}
+                                    </option>
+                                </select>
+                            </div>
+                        </td>
+                        <td>
                             <button class="btn btn-danger btn-sm" @click="eliminarRegistro(item.id)">
                                 <i class="bi bi-trash"></i> Eliminar
                             </button>
                             <button class="btn btn-info btn-sm" @click="addRow()">
-                                <i class="bi bi-plus-circle"></i> Añadir fila
+                                <i class="bi bi-plus-circle"></i> Copiar fila
                             </button>
                         </td>
                     </tr>
@@ -99,7 +121,7 @@
             </table>
 
         </div>
- 
+
     </div>
 </template>
 <script>
@@ -112,8 +134,8 @@ import Footer from '../../../components/Footer.vue';
 
 export default {
     name: "RegistroComponent",
-    components:{
-    Footer
+    components: {
+        Footer
     },
     data() {
         return {
@@ -187,11 +209,14 @@ export default {
             }
         },
 
-        eliminarRegistro(id) {
+        async eliminarRegistro(id) {
             if (confirm("¿Estás seguro de que deseas eliminar este registro?")) {
                 this.registros = this.registros.filter((reg) => reg.id !== id);
             }
         },
+        async actualizarRegistro(item){
+            console.log(item);
+        }
 
 
 
@@ -205,10 +230,12 @@ export default {
     flex-direction: column;
     min-height: 100vh;
 }
+
 .form-check-input {
     width: auto;
     height: auto;
-    transform: scale(1); /* Ajusta el tamaño del checkbox */
+    transform: scale(1);
+    /* Ajusta el tamaño del checkbox */
 }
 
 main {
