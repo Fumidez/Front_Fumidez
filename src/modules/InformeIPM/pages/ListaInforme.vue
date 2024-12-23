@@ -31,6 +31,11 @@
                                 Formulario
                             </button>
                         </td>
+                        <td>
+                            <button @click="generatePDFFormularioIPM(informe)">
+                                Generar PDF IPM
+                            </button>
+                        </td>
                     </tr>
                 </tbody>
             </table>
@@ -40,7 +45,7 @@
         </div>
     </div>
 </template>
-  
+
 <script>
 import {
     consultarInformeFachada,
@@ -50,9 +55,10 @@ import router from "@/router";
 
 import { generatePDFInformeFachada } from "../helpers/generarInforme";
 import CargarArchivo from "../../../components/CargarArchivo.vue";
+import { generateFormularioIPMFachada } from "../helpers/generarInformeIPM";
 
 export default {
-  components: { CargarArchivo },
+    components: { CargarArchivo },
     name: "InformeIpm",
     data() {
         return {
@@ -83,10 +89,10 @@ export default {
     },
     mounted() {
         this.cargarInformes();
-     
+
     },
     methods: {
- 
+
         redirigirCrearInforme() {
             this.$router.push('/informe_registrar');
         },
@@ -107,11 +113,16 @@ export default {
             const informeId = await consultarInformePorIdFachada(informe.id);
             await generatePDFInformeFachada(informeId);
         },
+        async generatePDFFormularioIPM(informe) {
+
+            const informeId = await consultarInformePorIdFachada(informe.id);
+            await generateFormularioIPMFachada(informeId);
+        },
     },
 };
 </script>
-  
-  
+
+
 <style scoped>
 .sanitizacion-row {
     display: flex;
@@ -292,4 +303,3 @@ ul {
     }
 }
 </style>
-  
