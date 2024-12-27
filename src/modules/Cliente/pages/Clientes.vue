@@ -19,6 +19,16 @@
             </div>
           </div>
 
+          <div class="form-group row align-items-center g-0 mb-3">
+            <label for="nombreEncargado" class="col-2 d-flex align-items-center">
+              <i class="bi bi-person-fill me-2 text-primary"></i> Persona Encargada
+            </label>
+            <div class="col-10">
+              <input type="text" id="nombreEncargado" v-model="cliente.personaEncargada" class="form-control" required
+                placeholder="Persona encargada" />
+            </div>
+          </div>
+
           <!-- Teléfono -->
           <div class="form-group row align-items-center mb-3">
             <label for="telefono" class="col-2 d-flex align-items-center">
@@ -94,7 +104,8 @@ export default {
         telefono: '',
         correo: '',
         direccion: '',
-        ruc: ''
+        ruc: '',
+        personaEncargada:''
       }
     };
   },

@@ -1,165 +1,184 @@
 <template>
-    <div class="page-container d-flex flex-column" style="min-height: 100vh;">
-      <!-- Contenido Principal -->
-      <main class="flex-grow-1 d-flex align-items-center justify-content-center">
-        <div class="card p-5 shadow-lg"
-          style="max-width: 800px; width: 100%; border-radius: 15px; background-color: rgba(255, 255, 255, 0.9); border: 3px solid transparent; border-image: linear-gradient(to right, #004080, #a9c4f5); border-image-slice: 1;">
-          <h1 class="text-center text-primary mb-4">Gestión de Productos</h1>
-          <!-- Formulario de Productos -->
-          <form @submit.prevent="actualizarDato ? actualizar() : ingresar()">
-            <div class="form-group mb-3 d-flex align-items-center">
-              <label for="nombre" class="w-25"><i class="bi bi-tag-fill"></i> Nombre</label>
-              <input type="text" id="nombre" v-model="producto.nombre" class="form-control" placeholder="Nombre del Producto" required />
-            </div>
-  
-            <div class="form-group mb-3 d-flex align-items-center">
-              <label for="cantidad" class="w-25"><i class="bi bi-boxes"></i> Cantidad</label>
-              <input type="number" id="cantidad" v-model="producto.cantidad" class="form-control" placeholder="Cantidad" required />
-            </div>
-  
-            <div class="form-group mb-3 d-flex align-items-center">
-              <label for="precio" class="w-25"><i class="bi bi-currency-dollar"></i> Precio</label>
-              <input type="number" id="precio" v-model="producto.precio" class="form-control" placeholder="Precio" required />
-            </div>
-  
-            <div class="form-group mb-3 d-flex align-items-center">
-              <label for="idProveedor" class="w-25"><i class="bi bi-building"></i> ID Proveedor</label>
-              <input type="number" id="idProveedor" v-model="producto.idProveedor" class="form-control" placeholder="ID del Proveedor" required />
-            </div>
-  
-            <button type="submit" class="btn btn-primary w-100 py-2">
-              {{ actualizarDato ? 'Actualizar Producto' : 'Crear Producto' }}
-            </button>
-            <button v-if="actualizarDato" type="button" class="btn btn-secondary w-100 mt-2 py-2" @click="cambiarEstado">
-              Cambiar a Modo Crear
-            </button>
-          </form>
-  
-          <!-- Lista de Productos -->
-          <div class="mt-5">
-            <h2 class="text-center text-primary">Lista de Productos</h2>
-            <div class="list-header d-flex justify-content-between py-2">
-              <span>ID</span>
-              <span>Nombre</span>
-              <span>Cantidad</span>
-              <span>Precio</span>
-              <span>ID Proveedor</span>
-              <span>Acciones</span>
-            </div>
-            <ul class="list-group">
-              <li class="list-group-item d-flex justify-content-between align-items-center" v-for="producto in productos" :key="producto.id">
-                <span>{{ producto.id }}</span>
-                <span>{{ producto.nombre }}</span>
-                <span>{{ producto.cantidad }}</span>
-                <span>{{ producto.precio }}</span>
-                <span>{{ producto.idProveedor }}</span>
-                <div class="d-flex gap-2">
-                  <button class="btn btn-primary btn-sm" @click="cambiarCampos(producto.id)">Editar</button>
-                  <button class="btn btn-danger btn-sm" @click="eliminar(producto.id)">Eliminar</button>
-                </div>
-              </li>
-            </ul>
+  <div class="page-container d-flex flex-column" style="min-height: 100vh;">
+    <!-- Contenido Principal -->
+    <main class="flex-grow-1 d-flex align-items-center justify-content-center">
+      <div class="card p-5 shadow-lg"
+        style="max-width: 800px; width: 100%; border-radius: 15px; background-color: rgba(255, 255, 255, 0.9); border: 3px solid transparent; border-image: linear-gradient(to right, #004080, #a9c4f5); border-image-slice: 1;">
+        <h1 class="text-center text-primary mb-4">Gestión de Productos</h1>
+        <!-- Formulario de Productos -->
+        <form @submit.prevent="actualizarDato ? actualizar() : ingresar()">
+          <div class="form-group mb-3 d-flex align-items-center">
+            <label for="nombre" class="w-25"><i class="bi bi-tag-fill"></i> Nombre</label>
+            <input type="text" id="nombre" v-model="producto.nombre" class="form-control"
+              placeholder="Nombre del Producto" required />
           </div>
+
+          <div class="form-group mb-3 d-flex align-items-center">
+            <label for="cantidad" class="w-25"><i class="bi bi-boxes"></i> Cantidad</label>
+            <input type="number" id="cantidad" v-model="producto.cantidad" class="form-control" placeholder="Cantidad"
+              required />
+          </div>
+
+          <div class="form-group mb-3 d-flex align-items-center">
+            <label for="precio" class="w-25"><i class="bi bi-currency-dollar"></i> Precio</label>
+            <input type="number" id="precio" v-model="producto.precio" class="form-control" placeholder="Precio"
+              required />
+          </div>
+
+          <div class="form-group mb-3 d-flex align-items-center">
+            <label for="idProveedor" class="w-25"><i class="bi bi-person-check"></i>Proveedor</label>
+            <select id="idProveedor" v-model="producto.idProveedor" class="form-control" required>
+              <option disabled value="">Seleccione un Proveedor</option>
+              <option v-for="proveedor in proveedores" :key="proveedor.id" :value="proveedor.id">{{ proveedor.nombre }}
+              </option>
+            </select>
+          </div>
+
+          <button type="submit" class="btn btn-primary w-100 py-2">
+            {{ actualizarDato ? 'Actualizar Producto' : 'Crear Producto' }}
+          </button>
+          <button v-if="actualizarDato" type="button" class="btn btn-secondary w-100 mt-2 py-2" @click="cambiarEstado">
+            Cambiar a Modo Crear
+          </button>
+        </form>
+
+        <!-- Lista de Productos -->
+        <div class="mt-5">
+          <h2 class="text-center text-primary">Lista de Productos</h2>
+          <div class="list-header d-flex justify-content-between py-2">
+            <span>ID</span>
+            <span>Nombre</span>
+            <span>Cantidad</span>
+            <span>Precio</span>
+            <span>ID Proveedor</span>
+            <span>Acciones</span>
+          </div>
+          <ul class="list-group">
+            <li class="list-group-item d-flex justify-content-between align-items-center" v-for="producto in productos"
+              :key="producto.id">
+              <span>{{ producto.id }}</span>
+              <span>{{ producto.nombre }}</span>
+              <span>{{ producto.cantidad }}</span>
+              <span>{{ producto.precio }}</span>
+              <span>{{ producto.idProveedor }}</span>
+              <div class="d-flex gap-2">
+                <button class="btn btn-primary btn-sm" @click="cambiarCampos(producto.id)">Editar</button>
+                <button class="btn btn-danger btn-sm" @click="eliminar(producto.id)">Eliminar</button>
+              </div>
+            </li>
+          </ul>
         </div>
-      </main>
-    </div>
-  </template>
+      </div>
+    </main>
+  </div>
+</template>
 <script>
+import { obtenerTodosLosProveedorsFachada } from '../../Proveedor/helpers/proveedoresHelpers';
 import {
-    crearProductoFachada,
-    obtenerTodosLosProductosFachada,
-    actualizarProductoFachada,
-    eliminarProductoFachada,
-    obtenerProductoFachada
+  crearProductoFachada,
+  obtenerTodosLosProductosFachada,
+  actualizarProductoFachada,
+  eliminarProductoFachada,
+  obtenerProductoFachada
 } from '../helpers/productosHelpers';
 
 export default {
-    data() {
-        return {
-            producto: {
-                id: null,
-                nombre: "",
-                cantidad: null,
-                precio: null,
-                idProveedor: null
-            },
-            productos: [],
-            actualizarDato: false
-        };
-    },
-    methods: {
-        async ingresar() {
-            if (this.producto.nombre && this.producto.cantidad && this.producto.precio && this.producto.idProveedor) {
-                try {
-                    await crearProductoFachada(this.producto);
-                    alert("Producto ingresado");
-                    this.resetProducto();
-                    this.buscarProductos();
-                } catch (error) {
-                    console.error("Error al ingresar el producto:", error);
-                }
-            } else {
-                alert("Faltan llenar campos");
-            }
-        },
-        async actualizar() {
-            if (this.producto.nombre && this.producto.cantidad && this.producto.precio && this.producto.idProveedor) {
-                try {
-                    await actualizarProductoFachada(this.producto.id, this.producto);
-                    alert("Producto actualizado");
-                    this.buscarProductos();
-                    this.resetProducto();
-                    this.actualizarDato = false;
-                } catch (error) {
-                    console.error("Error al actualizar el producto:", error);
-                }
-            } else {
-                alert("Faltan llenar campos");
-            }
-        },
-        async eliminar(id) {
-            try {
-                await eliminarProductoFachada(id);
-                alert("Producto eliminado");
-                this.buscarProductos();
-            } catch (error) {
-                console.error("Error al eliminar el producto:", error);
-            }
-        },
-        async buscarProductos() {
-            try {
-                const response = await obtenerTodosLosProductosFachada();
-                this.productos = response;
-            } catch (error) {
-                console.error("Error al buscar productos:", error);
-            }
-        },
-        async cambiarCampos(id) {
-            try {
-                let productoData = await obtenerProductoFachada(id);
-                this.producto = productoData;
-                this.actualizarDato = true;
-            } catch (error) {
-                console.error("Error al cargar los datos del producto:", error);
-            }
-        },
-        cambiarEstado() {
-            this.actualizarDato = !this.actualizarDato;
-            this.resetProducto();
-        },
-        resetProducto() {
-            this.producto = {
-                id: null,
-                nombre: "",
-                cantidad: null,
-                precio: null,
-                idProveedor: null
-            };
+  data() {
+    return {
+      producto: {
+        id: null,
+        nombre: "",
+        cantidad: null,
+        precio: null,
+        idProveedor: null
+      },
+      productos: [],
+      proveedores: [],
+      actualizarDato: false
+    };
+  },
+  methods: {
+    async ingresar() {
+      if (this.producto.nombre && this.producto.cantidad && this.producto.precio && this.producto.idProveedor) {
+        try {
+          await crearProductoFachada(this.producto);
+          alert("Producto ingresado");
+          this.resetProducto();
+          this.buscarProductos();
+        } catch (error) {
+          console.error("Error al ingresar el producto:", error);
         }
+      } else {
+        alert("Faltan llenar campos");
+      }
     },
-    mounted() {
+    async actualizar() {
+      if (this.producto.nombre && this.producto.cantidad && this.producto.precio && this.producto.idProveedor) {
+        try {
+          await actualizarProductoFachada(this.producto.id, this.producto);
+          alert("Producto actualizado");
+          this.buscarProductos();
+          this.resetProducto();
+          this.actualizarDato = false;
+        } catch (error) {
+          console.error("Error al actualizar el producto:", error);
+        }
+      } else {
+        alert("Faltan llenar campos");
+      }
+    },
+    async eliminar(id) {
+      try {
+        await eliminarProductoFachada(id);
+        alert("Producto eliminado");
         this.buscarProductos();
+      } catch (error) {
+        console.error("Error al eliminar el producto:", error);
+      }
+    },
+    async buscarProductos() {
+      try {
+        const response = await obtenerTodosLosProductosFachada();
+        this.productos = response;
+      } catch (error) {
+        console.error("Error al buscar productos:", error);
+      }
+    },
+    async cambiarCampos(id) {
+      try {
+        let productoData = await obtenerProductoFachada(id);
+        this.producto = productoData;
+        this.actualizarDato = true;
+      } catch (error) {
+        console.error("Error al cargar los datos del producto:", error);
+      }
+    },
+    cambiarEstado() {
+      this.actualizarDato = !this.actualizarDato;
+      this.resetProducto();
+    },
+    resetProducto() {
+      this.producto = {
+        id: null,
+        nombre: "",
+        cantidad: null,
+        precio: null,
+        idProveedor: null
+      };
+    },
+    async cargarProveedores() {
+      try {
+        const response = await obtenerTodosLosProveedorsFachada();
+        this.proveedores = response;
+      } catch (error) {
+        console.error("Error al buscar proveedores:", error);
+      }
     }
+  },
+  mounted() {
+    this.buscarProductos();
+    this.cargarProveedores();
+  }
 };
 </script>
 
@@ -187,7 +206,8 @@ main {
   background-color: rgba(255, 255, 255, 0.8);
 }
 
-h1, h2 {
+h1,
+h2 {
   font-weight: 700;
   color: #031425;
 }
@@ -219,7 +239,8 @@ button:hover {
     padding: 2rem 1.5rem;
   }
 
-  h1, h2 {
+  h1,
+  h2 {
     font-size: 1.5rem;
   }
 }

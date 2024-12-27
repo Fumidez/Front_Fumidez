@@ -57,6 +57,9 @@
                   </td>
                   <td>
                     <div class="d-flex gap-2 justify-content-center">
+                      <button class="btn btn-outline-success btn-sm" @click="verOrden(orden.id)">
+                        <i class="bi bi-check"></i>
+                      </button>
                       <button class="btn btn-outline-primary btn-sm" @click="generatePDF(orden)">
                         <i class="bi bi-file-earmark-pdf"></i>
                       </button>
@@ -80,6 +83,7 @@
 <script>
 import { generatePDFOrdenFachada } from '../helpers/generarOrdenPdf';
 import { actualizarOrdenEstadoFachada, actualizarOrdenFachada, buscarOrdenPorId, consultarOrdenFachada } from '../helpers/OrdenTrabajoHelper';
+import router from "@/router";
 
 export default {
     name: "OrdenTrabajo",
@@ -99,8 +103,13 @@ export default {
                 console.error('Error al cargar las órdenes de trabajo:', error);
             }
         },
-        redirigirCrearOrden() {
-            this.$router.push('/orden_trabajo_registro');
+        async redirigirCrearOrden() {
+          const ruta = `/orden_trabajo_registro`;
+          await router.push({ path: ruta });
+        },
+        async verOrden(id) {
+            const ruta = `/orden_trabajo_ver/${id}`;
+            await router.push({ path: ruta });
         },
         async generatePDF(ordenTrabajo) {
             const orden = await buscarOrdenPorId(ordenTrabajo.id);

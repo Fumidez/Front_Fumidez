@@ -25,6 +25,7 @@ const routes = [
   { path: '/orden_trabajo', component: OrdenTrabajo, meta: { requiresAuth: true } },
   { path: '/orden_trabajo_lista', component: OrdenTrabajoLista, meta: { requiresAuth: true } },
   { path: '/orden_trabajo_registro', component: OrdenTrabajoRegistrar, meta: { requiresAuth: true } },
+  { path: '/orden_trabajo_ver/:id', component: OrdenTrabajoRegistrar, meta: { requiresAuth: true } },
   { path: '/productos', component: Producto, meta: { requiresAuth: true } },
   { path: '/proveedores', component: Proveedor, meta: { requiresAuth: true } },
   { path: '/informe', component: Informe, meta: { requiresAuth: true } },

@@ -22,19 +22,23 @@
           <!-- Número de Orden -->
           <div class="form-group mb-3 d-flex align-items-center">
             <label for="numeroOrden" class="w-25"><i class="bi bi-file-earmark"></i> Número de Orden</label>
-            <input type="text" id="numeroOrden" v-model="ordenTrabajo.numeroOrden" class="form-control" placeholder="Número de Orden" required minlength="3" />
+            <input v-if="!ver_orden" type="text" id="numeroOrden" v-model="ordenTrabajo.numeroOrden" class="form-control"
+              placeholder="Número de Orden" required minlength="3" />
+            <label v-else for="numeroOrdenVer" class="w-25">{{ ordenTrabajo.numeroOrden }}</label>
           </div>
 
           <!-- Descripción -->
           <div class="form-group mb-3 d-flex align-items-center">
             <label for="descripcion" class="w-25"><i class="bi bi-file-earmark-text"></i> Descripción</label>
-            <textarea id="descripcion" v-model="ordenTrabajo.descripcion" class="form-control" placeholder="Descripción" required minlength="10"></textarea>
+            <textarea id="descripcion" v-model="ordenTrabajo.descripcion" class="form-control" placeholder="Descripción"
+              required minlength="10"></textarea>
           </div>
 
           <!-- Área -->
           <div class="form-group mb-3 d-flex align-items-center">
-              <label for="area" class="w-25"><i class="bi bi-geo-alt-fill"></i> Área</label>
-              <input type="text" id="area" v-model="ordenTrabajo.area" class="form-control" placeholder="Área" required minlength="3" />
+            <label for="area" class="w-25"><i class="bi bi-geo-alt-fill"></i> Área</label>
+            <input type="text" id="area" v-model="ordenTrabajo.area" class="form-control" placeholder="Área" required
+              minlength="3" />
           </div>
 
           <!-- Selección de Usuario -->
@@ -58,8 +62,10 @@
           <!-- Servicios -->
           <div class="form-group mb-3">
             <label><i class="bi bi-tools"></i> Servicios</label>
-            <div v-for="(servicio, index) in ordenTrabajo.servicios" :key="index" class="d-flex gap-2 align-items-center">
-              <input type="text" v-model="servicio.tipoServicio" class="form-control" placeholder="Tipo de Servicio" required minlength="3" />
+            <div v-for="(servicio, index) in ordenTrabajo.servicios" :key="index"
+              class="d-flex gap-2 align-items-center">
+              <input type="text" v-model="servicio.tipoServicio" class="form-control" placeholder="Tipo de Servicio"
+                required minlength="3" />
               <button type="button" class="btn btn-danger btn-sm" @click="removeServicio(index)">
                 <i class="bi bi-trash"></i>
               </button>
@@ -79,89 +85,115 @@
 </template>
 
 <script>
-import { crearOrdenFachada } from '../helpers/OrdenTrabajoHelper';
+import { buscarOrdenPorId, crearOrdenFachada } from '../helpers/OrdenTrabajoHelper';
 
 import { consultarUsuarioFachada } from '../../Usuario/helpers/UsuarioHelper';
 
 import { consultarClienteFachada } from '../../Cliente/helpers/ClienteHelper';
 
 export default {
-    name: "OrdenTrabajo",
-    data() {
-        return {
-            ordenTrabajo: {
-                fecha: '',
-                hora: '',
-                numeroOrden: '',
-                descripcion: '',
-                area: '',
-                idUsuarios: '',
-                idClientes: '',
-                servicios: [
-                    { tipoServicio: '' }  // Inicialmente un servicio
-                ]
-            },
-            usuarios: [],
-            clientes: [],
-        };
+  name: "OrdenTrabajo",
+  data() {
+    return {
+      ordenTrabajo: {
+        fecha: '',
+        hora: '',
+        numeroOrden: '',
+        descripcion: '',
+        area: '',
+        idUsuarios: '',
+        idClientes: '',
+        servicios: [
+          { tipoServicio: '' }  // Inicialmente un servicio
+        ]
+      },
+      usuarios: [],
+      clientes: [],
+      ordenId: this.$route.params.id,
+      ver_orden: false
+    };
 
 
+  },
+  mounted() {
+    this.cargarClientes();
+    this.cargarUsuarios();
+    this.consultarPorIdOrden();
+  },
+  methods: {
+    async consultarPorIdOrden() {
+      try {
+        if (this.ordenId) {
+          const orden = await buscarOrdenPorId(this.ordenId);
+          console.log(orden)
+          this.ordenTrabajo = {
+            fecha: orden.fecha.split('T')[0],
+            hora: orden.hora,
+            numeroOrden: orden.numeroOrden,
+            descripcion: orden.descripcion,
+            area: orden.area,
+            idUsuarios: orden.usuario.id,
+            idClientes: orden.cliente.id,
+            servicios: orden.servicios
+          };
+          this.ver_orden = true
+        } else {
+          this.ver_orden = false
+        }
+      } catch (error) {
+        console.error('Error al cargar los Formularios IPM:', error);
+      }
     },
-    mounted() {
-        this.cargarClientes();
-        this.cargarUsuarios();
+    async submitForm() {
+      try {
+        console.log('Orden de trabajo creada con éxito:', this.ordenTrabajo);
+
+        const nuevaOrden = await crearOrdenFachada(this.ordenTrabajo);
+        console.log('Orden de trabajo creada con éxito:', nuevaOrden);
+        this.limpiarFormulario();
+        this.cargarOrdenesTrabajo(); // Recargamos las órdenes después de crear una nueva
+      } catch (error) {
+        console.error('Error al crear la orden de trabajo:', error);
+      }
     },
-    methods: {
-        async submitForm() {
-            try {
-                console.log('Orden de trabajo creada con éxito:', this.ordenTrabajo);
+    addServicio() {
+      this.ordenTrabajo.servicios.push({ tipoServicio: '' });
+    },
+    removeServicio(index) {
+      this.ordenTrabajo.servicios.splice(index, 1);
+    },
+    limpiarFormulario() {
+      this.ordenTrabajo = {
+        fecha: '',
+        hora: '',
+        numeroOrden: '',
+        descripcion: '',
+        area: '',
+        idUsuarios: '',
+        idClientes: '',
+        servicios: [{ tipoServicio: '' }]
+      };
+    },
+    async cargarUsuarios() {
+      try {
+        this.usuarios = await consultarUsuarioFachada();
+      } catch (error) {
+        console.error('Error al cargar los usuarios:', error);
+        alert('Hubo un error al cargar los usuarios.');
+      }
+    },
 
-                const nuevaOrden = await crearOrdenFachada(this.ordenTrabajo);
-                console.log('Orden de trabajo creada con éxito:', nuevaOrden);
-                this.limpiarFormulario();
-                this.cargarOrdenesTrabajo(); // Recargamos las órdenes después de crear una nueva
-            } catch (error) {
-                console.error('Error al crear la orden de trabajo:', error);
-            }
-        },
-        addServicio() {
-            this.ordenTrabajo.servicios.push({ tipoServicio: '' });
-        },
-        removeServicio(index) {
-            this.ordenTrabajo.servicios.splice(index, 1);
-        },
-        limpiarFormulario() {
-            this.ordenTrabajo = {
-                fecha: '',
-                hora: '',
-                numeroOrden: '',
-                descripcion: '',
-                area: '',
-                idUsuarios: '',
-                idClientes: '',
-                servicios: [{ tipoServicio: '' }]
-            };
-        },
-        async cargarUsuarios() {
-            try {
-                this.usuarios = await consultarUsuarioFachada();
-            } catch (error) {
-                console.error('Error al cargar los usuarios:', error);
-                alert('Hubo un error al cargar los usuarios.');
-            }
-        },
+    // Método para cargar la lista de clientes
+    async cargarClientes() {
+      try {
+        this.clientes = await consultarClienteFachada();
+      } catch (error) {
+        console.error('Error al cargar los clientes:', error);
+        alert('Hubo un error al cargar los clientes.');
+      }
+    },
 
-        // Método para cargar la lista de clientes
-        async cargarClientes() {
-            try {
-                this.clientes = await consultarClienteFachada();
-            } catch (error) {
-                console.error('Error al cargar los clientes:', error);
-                alert('Hubo un error al cargar los clientes.');
-            }
-        },
-
-    }
+  }
 };
 </script>
 
