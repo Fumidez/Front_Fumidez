@@ -58,7 +58,7 @@
                   <td>
                     <div class="d-flex gap-2 justify-content-center">
                       <button class="btn btn-outline-success btn-sm" @click="verOrden(orden.id)">
-                        <i class="bi bi-check"></i>
+                        <i class="bi bi-eye"></i>
                       </button>
                       <button class="btn btn-outline-primary btn-sm" @click="generatePDF(orden)">
                         <i class="bi bi-file-earmark-pdf"></i>

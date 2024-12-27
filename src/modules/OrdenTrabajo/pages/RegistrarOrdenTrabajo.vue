@@ -147,11 +147,9 @@ export default {
     async submitForm() {
       try {
         console.log('Orden de trabajo creada con éxito:', this.ordenTrabajo);
-
         const nuevaOrden = await crearOrdenFachada(this.ordenTrabajo);
         console.log('Orden de trabajo creada con éxito:', nuevaOrden);
         this.limpiarFormulario();
-        this.cargarOrdenesTrabajo(); // Recargamos las órdenes después de crear una nueva
       } catch (error) {
         console.error('Error al crear la orden de trabajo:', error);
       }
