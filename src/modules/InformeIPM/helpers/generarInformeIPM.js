@@ -5,11 +5,22 @@ import { consultarDesratizacionFachadaPorIdInforme } from './desratizacionHelper
 
 //Se debe mandar el informe dtto, no el normal
 export const generateFormularioIPMFachada = async (informe) => {
-    return await generateFormularioIPM(informe)
+    return await generateFormularioIPMData(informe)
 }
 
-const generateFormularioIPM = async (informe) => {
-    const doc = new jsPDF('portrait', 'pt', 'a4'); // Orientación vertical
+export const formularioIPMFachada = async (informe, doc) => {
+  await generateFormularioIPM(informe, doc)
+}
+
+const generateFormularioIPMData = async (informe) => {
+  const doc = new jsPDF('portrait', 'pt', 'a4'); // Orientación vertical
+  await generateFormularioIPM(informe, doc)
+  doc.save(`Formulario_IPM_${informe.numFactura}.pdf`);
+
+}
+
+const generateFormularioIPM = async (informe, doc) => {
+    //const doc = new jsPDF('portrait', 'pt', 'a4'); // Orientación vertical
 
     const headerHeight = 65;
     const footerHeight = 65;
@@ -261,7 +272,7 @@ const generateFormularioIPM = async (informe) => {
       doc.text('099 995 4079', pageWidth - 80, footerY + 15);
 
       // --- Guardar PDF ---
-      doc.save(`Formulario_IPM_${informe.numFactura}.pdf`);
+      //doc.save(`Formulario_IPM_${informe.numFactura}.pdf`);
     }
 
   }

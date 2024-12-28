@@ -36,6 +36,11 @@
                                 Generar PDF IPM
                             </button>
                         </td>
+                        <td>
+                            <button @click="generatePDFCompleto(informe)">
+                                Generar PDF Completo
+                            </button>
+                        </td>
                     </tr>
                 </tbody>
             </table>
@@ -56,6 +61,7 @@ import router from "@/router";
 import { generatePDFInformeFachada } from "../helpers/generarInforme";
 import CargarArchivo from "../../../components/CargarArchivo.vue";
 import { generateFormularioIPMFachada } from "../helpers/generarInformeIPM";
+import { generateFormularioCompletoFachada } from "../helpers/generarInformeUnido";
 
 export default {
     components: { CargarArchivo },
@@ -118,6 +124,10 @@ export default {
             const informeId = await consultarInformePorIdFachada(informe.id);
             await generateFormularioIPMFachada(informeId);
         },
+        async generatePDFCompleto(informe) {
+            const informeId = await consultarInformePorIdFachada(informe.id);
+            await generateFormularioCompletoFachada(informeId);
+},
     },
 };
 </script>

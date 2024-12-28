@@ -8,11 +8,21 @@ import {
   } from './InformeHelper';
 
 export const generatePDFInformeFachada = async (informe) => {
-    return await generatePDF(informe)
+    return await generatePDFData(informe)
 }
 
-const generatePDF = async (informe) => {
-    const doc = new jsPDF("portrait", "pt", "a4"); // Orientación vertical
+export const InformeFachada = async (informe, doc) => {
+    await generatePDF(informe, doc)
+}
+
+const generatePDFData = async (informe) => {
+  const doc = new jsPDF('portrait', 'pt', 'a4'); 
+  await generatePDF(informe, doc)
+  doc.save(`informe_${informe.numFactura}.pdf`);
+}
+
+const generatePDF = async (informe, doc) => {
+    //const doc = new jsPDF("portrait", "pt", "a4"); // Orientación vertical
 
     const headerHeight = 65;
     const footerHeight = 65;
@@ -1164,5 +1174,5 @@ const generatePDF = async (informe) => {
     doc.text("099 995 4079", doc.internal.pageSize.width - 80, footerY + 15);
 
     // Guardar PDF
-    doc.save(`informe_${informe.numFactura}.pdf`);
+    //doc.save(`informe_${informe.numFactura}.pdf`);
 }
