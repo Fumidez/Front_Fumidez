@@ -10,6 +10,20 @@ export const consultarUsuarioFachada = async () => {
     return await consultarUsuario()
 }
 
+export const obtenerUsuarioFachada = async (idUsuario) => {
+    return await obtenerUsuario(idUsuario);
+  };
+  
+  const obtenerUsuario = async (idUsuario) => {
+    try {
+      const response = await axios.get(`${API_URL}/${idUsuario}`);
+      return response.data;
+    } catch (error) {
+      console.error("Error obteniendo Usuario:", error);
+      throw error;
+    }
+  };
+
 const crearUsuario = async (usuarioBody) => {
     return await axios.post(API_URL, usuarioBody).then(r => r.data);
 

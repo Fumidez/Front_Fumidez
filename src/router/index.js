@@ -16,11 +16,26 @@ import InformeRegistrar from '../modules/InformeIPM/pages/RegistrarInforme.vue'
 
 import Calendario from '../modules/Calendario/Page/CalendarioPage.vue';
 import vistaF from '../components/vistaF.vue';
+import ListaProductos from '../modules/Producto/components/ListaProductos.vue';
+import RegistrarProducto from '../modules/Producto/components/RegistrarProducto.vue';
+import ListaProveedor from '../modules/Proveedor/components/ListaProveedor.vue';
+import RegistroProveedor from '../modules/Proveedor/components/RegistroProveedor.vue';
+import ListarClientes from '../modules/Cliente/pages/ListarClientes.vue';
+import RegistroClientes from '../modules/Cliente/pages/RegistroClientes.vue';
+import ListarUsuarios from '../modules/Usuario/pages/ListarUsuarios.vue';
+import RegistroUsuarios from '../modules/Usuario/pages/RegistroUsuarios.vue';
+import RegistrarInforme from '../modules/InformeIPM/pages/RegistrarInforme.vue';
+
+
 
 
 const routes = [
   { path: '/login', component: Login }, // Página de login
   { path: '/clientes', component: Clientes , meta: { requiresAuth: true } },
+  { path: '/clientes_lista', component: ListarClientes , meta: { requiresAuth: true } },
+  { path: '/cliente_registrar', component: RegistroClientes , meta: { requiresAuth: true } },
+  { path: '/cliente_ver/:id', component: RegistroClientes , meta: { requiresAuth: true } },
+
   { path: '/usuarios', component: Usuarios , meta: { requiresAuth: true } },
   { path: '/orden_trabajo', component: OrdenTrabajo, meta: { requiresAuth: true } },
   { path: '/orden_trabajo_lista', component: OrdenTrabajoLista, meta: { requiresAuth: true } },
@@ -28,11 +43,23 @@ const routes = [
   { path: '/orden_trabajo_ver/:id', component: OrdenTrabajoRegistrar, meta: { requiresAuth: true } },
   { path: '/productos', component: Producto, meta: { requiresAuth: true } },
   { path: '/proveedores', component: Proveedor, meta: { requiresAuth: true } },
+  { path: '/proveedores_lista', component: ListaProveedor, meta: { requiresAuth: true } },
+  { path: '/proveedor_registrar', component: RegistroProveedor, meta: { requiresAuth: true } },
+
   { path: '/informe', component: Informe, meta: { requiresAuth: true } },
   { path: '/informe_lista', component: InformeLista, meta: { requiresAuth: true } },
   { path: '/informe_registrar', component: InformeRegistrar, meta: { requiresAuth: true } },
   { path: '/desratizacion/:id', component: Desratizacion, meta: { requiresAuth: true } },
   { path: '/calendario', component: Calendario, meta: { requiresAuth: true } },
+  { path: '/productos_lista', component: ListaProductos, meta: { requiresAuth: true } },
+  { path: '/producto_registro', component: RegistrarProducto, meta: { requiresAuth: true } },
+  { path: '/producto_ver/:id', component: RegistrarProducto, meta: { requiresAuth: true } },
+  { path: '/proveedor_ver/:id', component: RegistroProveedor, meta: { requiresAuth: true } },
+  { path: '/usuarios_lista', component: ListarUsuarios, meta: { requiresAuth: true } },
+  { path: '/usuario_ver/:id', component: RegistroUsuarios, meta: { requiresAuth: true } },
+  { path: '/usuario_registro', component: RegistroUsuarios, meta: { requiresAuth: true } },
+  { path: '/informe_ver/:id', component: RegistrarInforme, meta: { requiresAuth: true } },
+
 
   { path: '/vistaF', component: vistaF },
   { path: '/', redirect: '/clientes' },

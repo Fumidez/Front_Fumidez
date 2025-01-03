@@ -3,9 +3,9 @@ import JsPDFAutotable from 'jspdf-autotable'
 import { consultarDesratizacionFachadaPorIdInforme } from '../helpers/desratizacionHelper';
 import {
     consultarInformePorIdFachada
-  
-  
-  } from './InformeHelper';
+
+
+} from './InformeHelper';
 
 export const generatePDFInformeFachada = async (informe) => {
     return await generatePDFData(informe)
@@ -16,9 +16,9 @@ export const InformeFachada = async (informe, doc) => {
 }
 
 const generatePDFData = async (informe) => {
-  const doc = new jsPDF('portrait', 'pt', 'a4'); 
-  await generatePDF(informe, doc)
-  doc.save(`informe_${informe.numFactura}.pdf`);
+    const doc = new jsPDF('portrait', 'pt', 'a4');
+    await generatePDF(informe, doc)
+    doc.save(`informe_${informe.numFactura}.pdf`);
 }
 
 const generatePDF = async (informe, doc) => {
@@ -563,7 +563,7 @@ const generatePDF = async (informe, doc) => {
 
     formularioY = formularioY + 60;
     let cant_si = datosFormularioCordon.conSi + datosFormulario.conSi;
-    let cant_total =  datosFormularioCordon.totalCeb + datosFormulario.totalCeb;
+    let cant_total = datosFormularioCordon.totalCeb + datosFormulario.totalCeb;
     let porcentaje = 0; // Valor por defecto si `cant_total` es 0
     if (cant_total !== 0) {
         porcentaje = (cant_si * 100) / cant_total;
@@ -696,68 +696,51 @@ const generatePDF = async (informe, doc) => {
         },
         tableWidth: "wrap", // Ajusta la tabla al contenido
     });
-    // --- Agregar Cuadro "Observaciones" ---
+ // --- Agregar Cuadro "Observaciones" ---
 
-    // Definir posiciones y dimensiones para el nuevo cuadro
-    const observacionesY = cuadroY + 95; // Posición Y donde empieza el cuadro
-    const observacionesHeight = 130; // Altura fija para el cuadro de observaciones
+// Definir posiciones y dimensiones para el nuevo cuadro
+const observacionesY = cuadroY + 95; // Posición Y donde empieza el cuadro
+const observacionesHeight = 130; // Altura fija para el cuadro de observaciones
 
-    // Dibuja el cuadro
-    doc.rect(cuadroX, observacionesY, tablaWidth, observacionesHeight); // Dibuja el cuadro donde va la tabla
+// Dibuja el cuadro principal
+doc.rect(cuadroX, observacionesY, tablaWidth, observacionesHeight); // Cuadro externo
 
-    // Añade la tabla dentro del cuadro
-    const cabeceraObservacion = [
-        { title: "OBSERVACIONES", dataKey: "observacion" },
-    ];
-    const textObservacion = [{ observacion: informe.observacion || "" }]; // Asegúrate de que siempre haya un valor
+// Añade el texto dentro del cuadro
+const cabeceraObservacion = [
+    { title: "OBSERVACIONES", dataKey: "observacion" },
+];
+const textObservacion = [{ observacion: informe.observacion || "" }]; // Asegúrate de que siempre haya un valor
 
-    doc.autoTable({
-        head: [cabeceraObservacion.map((col) => col.title)], // Título de la cabecera
-        body: textObservacion.map((item) => [item.observacion]), // Datos del cuerpo de la tabla
-        startY: observacionesY + 10, // Añade un margen de 10 debajo del cuadro
-        margin: { left: cuadroX },
-        theme: "grid",
-        headStyles: {
-            font: "Cambria",
-            fillColor: [255, 255, 255],
-            textColor: [37, 123, 205],
-            halign: "center",
-            fontSize: 10, // Tamaño de la fuente para la cabecera
+doc.autoTable({
+    head: [cabeceraObservacion.map((col) => col.title)], // Título de la cabecera
+    body: textObservacion.map((item) => [item.observacion]), // Datos del cuerpo de la tabla
+    startY: observacionesY + 5, // Añade un margen de 5 debajo del cuadro principal
+    margin: { left: cuadroX + 2 }, // Margen izquierdo ajustado
+    theme: "plain", // Tema sin bordes internos
+    headStyles: {
+        font: "Cambria",
+        fillColor: [255, 255, 255], // Fondo blanco
+        textColor: [37, 123, 205], // Color del texto
+        halign: "center", // Alineación central del texto
+        fontSize: 10, // Tamaño de la fuente
+        cellPadding: 0, // Sin relleno interno para evitar sobreposición
+    },
+    styles: {
+        textColor: [37, 123, 205],
+        font: "Cambria",
+        fontSize: 8, // Tamaño de la fuente del contenido
+        cellPadding: 3, // Espaciado interno para el contenido
+        overflow: "linebreak", // Permitir saltos de línea
+    },
+    columnStyles: {
+        0: {
+            cellWidth: tablaWidth - 4, // Ajusta el ancho para evitar bordes
+            valign: "top", // Alineación superior
         },
-        styles: {
-            textColor: [37, 123, 205],
-            font: "Cambria",
-            fontSize: 7, // Tamaño de la fuente para el contenido
-            cellPadding: 5,
-            overflow: "linebreak", // Permitir saltos de línea en las celdas
-            lineColor: [37, 123, 205], // Color de las líneas de la tabla
-            lineWidth: 0.5, // Ancho de las líneas
-        },
-        columnStyles: {
-            0: {
-                // Define las propiedades de la primera columna
-                cellWidth: tablaWidth, // Limita el ancho de la columna
-                maxCellHeight: 100, // Limita la altura de las celdas para no exceder el cuadro
-                lineColor: [0, 0, 0, 0], // Bordes transparentes
-            },
-            1: {
-                // Ejemplo para aplicar al borde derecho
-                cellWidth: tablaWidth,
-                lineColor: [37, 123, 205], // Color del borde derecho (azul)
-                lineWidth: 0.5, // Ancho del borde derecho
-            },
-            2: {
-                cellWidth: tablaWidth,
-                lineColor: [0, 0, 0], // Color del borde derecho (azul)
-            },
-            2: {
-                cellWidth: tablaWidth,
-                lineColor: [37, 123, 205], // Color del borde derecho (azul)
-                lineWidth: 0.5, // Ancho del borde derecho
-            },
-        },
-        tableWidth: "wrap", // Ajusta la tabla al contenido
-    });
+    },
+    tableWidth: tablaWidth - 4, // Mantener dentro del cuadro principal
+});
+
 
     // --- Agregar Cuadro "Procedimientos" ---
 

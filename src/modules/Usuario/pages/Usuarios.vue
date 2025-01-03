@@ -45,7 +45,7 @@
           <!-- Número de Cuenta -->
           <div class="form-group mb-3 d-flex align-items-center">
             <label for="nCuenta" class="w-25"><i class="bi bi-chat-left-dots-fill"></i> Número de Cuenta</label>
-            <input type="text" id="nCuenta" v-model="usuario.nCuenta" class="form-control" placeholder="Número de Cuenta" />
+            <input type="text" id="nCuenta" v-model="usuario.ncuenta" class="form-control" placeholder="Número de Cuenta" />
           </div>
 
           <!-- RUC -->
