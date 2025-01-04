@@ -4,10 +4,8 @@ import Usuarios from '../modules/Usuario/pages/Usuarios.vue';
 import OrdenTrabajo from '../modules/OrdenTrabajo/pages/OrdenTrabajo.vue';
 import OrdenTrabajoLista from '../modules/OrdenTrabajo/pages/ListaOrdenTrabajo.vue';
 import OrdenTrabajoRegistrar from '../modules/OrdenTrabajo/pages/RegistrarOrdenTrabajo.vue';
-import Plaga from '../modules/Plaga/components/Plaga.vue';
 import Producto from '../modules/Producto/components/Producto.vue';
 import Proveedor from '../modules/Proveedor/components/Proveedor.vue';
-import Informe from '../modules/InformeIPM/pages/Informe.vue';
 import Login from '../modules/Login/pages/login.vue';
 import Desratizacion from '../modules/InformeIPM/pages/Desratizacion.vue';
 
@@ -15,7 +13,6 @@ import InformeLista from '../modules/InformeIPM/pages/ListaInforme.vue'
 import InformeRegistrar from '../modules/InformeIPM/pages/RegistrarInforme.vue'
 
 import Calendario from '../modules/Calendario/Page/CalendarioPage.vue';
-import vistaF from '../components/vistaF.vue';
 import ListaProductos from '../modules/Producto/components/ListaProductos.vue';
 import RegistrarProducto from '../modules/Producto/components/RegistrarProducto.vue';
 import ListaProveedor from '../modules/Proveedor/components/ListaProveedor.vue';
@@ -26,7 +23,7 @@ import ListarUsuarios from '../modules/Usuario/pages/ListarUsuarios.vue';
 import RegistroUsuarios from '../modules/Usuario/pages/RegistroUsuarios.vue';
 import RegistrarInforme from '../modules/InformeIPM/pages/RegistrarInforme.vue';
 
-
+import CargarArchivo from '../components/CargarArchivo.vue';
 
 
 const routes = [
@@ -46,7 +43,6 @@ const routes = [
   { path: '/proveedores_lista', component: ListaProveedor, meta: { requiresAuth: true } },
   { path: '/proveedor_registrar', component: RegistroProveedor, meta: { requiresAuth: true } },
 
-  { path: '/informe', component: Informe, meta: { requiresAuth: true } },
   { path: '/informe_lista', component: InformeLista, meta: { requiresAuth: true } },
   { path: '/informe_registrar', component: InformeRegistrar, meta: { requiresAuth: true } },
   { path: '/desratizacion/:id', component: Desratizacion, meta: { requiresAuth: true } },
@@ -60,9 +56,8 @@ const routes = [
   { path: '/usuario_registro', component: RegistroUsuarios, meta: { requiresAuth: true } },
   { path: '/informe_ver/:id', component: RegistrarInforme, meta: { requiresAuth: true } },
 
-
-  { path: '/vistaF', component: vistaF },
   { path: '/', redirect: '/clientes' },
+  { path: '/c',  component: CargarArchivo },
 ];
 
 const router = createRouter({

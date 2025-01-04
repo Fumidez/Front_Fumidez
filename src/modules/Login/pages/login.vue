@@ -81,7 +81,7 @@ export default {
           localStorage.setItem('token', response.constrasenia);
           localStorage.setItem('userType', response.tipo);
 
-          this.$router.push('/informe');
+          this.$router.push('/');
         } else {
           alert('Error en la autenticación, por favor revisa tus credenciales.');
         }
