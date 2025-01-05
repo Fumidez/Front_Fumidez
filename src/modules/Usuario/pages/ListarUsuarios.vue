@@ -1,58 +1,67 @@
 <template>
-    <div class="page-container d-flex flex-column" style="min-height: 100vh;">
-      <!-- Contenido Principal -->
-      <main class="flex-grow-1 d-flex align-items-center justify-content-center">
-        <div class="card p-5 shadow-lg"
-          style="max-width: 1200px; width: 100%; border-radius: 15px; background-color: rgba(255, 255, 255, 0.9); border: 3px solid transparent; border-image: linear-gradient(to right, #004080, #a9c4f5); border-image-slice: 1;">
-          <h1 class="text-center text-primary mb-4">Gestión de Usuarios</h1>
-  
-          <!-- Botón para crear nueva orden -->
-          <div class="mb-4 text-end">
-            <button @click="redirigirCrearUsuario" class="btn btn-primary py-2 px-4">
-              <i class="bi bi-plus-circle"></i> Crear Nuevo Usuario
-            </button>
-          </div>
-  
-          <!-- Tabla de Órdenes de Trabajo -->
-          <div>
-            <table class="table table-striped table-hover align-middle">
-              <thead class="table-primary text-center">
-                <tr>
-                  <th>#</th>
-                  <th>Nombre</th>
-                  <th>Rol</th>
-                  <th>Correo</th>
-                  <th>N.Cuenta</th>
-                  <th>Ruc</th>
-                  <th>Dirección</th>
-                  <th>Telefono</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="(usuario, index) in usuarios" :key="usuario.id" class="text-center">
-                  <td>{{ index + 1 }}</td>
-                  <td>{{ usuario.nombre }}</td>
-                  <td>{{ usuario.tipo }}</td>
-                  <td>{{ usuario.correo }}</td>
-                  <td>{{ usuario.ncuenta }}</td>
-                  <td>{{ usuario.ruc }}</td>
-                  <td>{{ usuario.direccion }}</td>
-                  <td>{{ usuario.telefono }}</td>
-                  <td>
-                    <div class="d-flex gap-2 justify-content-center">
-                      <button class="btn btn-outline-success btn-sm" @click="verUsuario(usuario.id)">
-                        <i class="bi bi-eye"></i>
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+  <div class="page-container d-flex flex-column" style="min-height: 100vh;">
+    <main class="flex-grow-1 d-flex align-items-center justify-content-center">
+      <div class="card p-5 shadow-lg"
+        style="max-width: 1200px; width: 100%; border-radius: 15px; background-color: rgba(255, 255, 255, 0.9); border: 3px solid transparent; border-image: linear-gradient(to right, #004080, #a9c4f5); border-image-slice: 1;">
+        <h1 class="text-center text-primary mb-4">Gestión de Usuarios</h1>
+
+        <div class="mb-4 text-end">
+          <button @click="redirigirCrearUsuario" class="btn btn-primary py-2 px-4">
+            <i class="bi bi-plus-circle"></i> Crear Nuevo Usuario
+          </button>
         </div>
-      </main>
-    </div>
-  </template>
+        <div class="mb-3">
+          <input
+            v-model="filtro"
+            type="text"
+            class="form-control"
+            placeholder="Buscar por nombre, rol o correo"
+          />
+        </div>
+        <div>
+          <table class="table table-striped table-hover align-middle">
+            <thead class="table-primary text-center">
+              <tr>
+                <th>#</th>
+                <th>Nombre</th>
+                <th>Rol</th>
+                <th>Correo</th>
+                <th>N.Cuenta</th>
+                <th>Ruc</th>
+                <th>Dirección</th>
+                <th>Telefono</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(usuario, index) in usuariosFiltrados" :key="usuario.id" class="text-center">
+                <td>{{ index + 1 }}</td>
+                <td>{{ usuario.nombre }}</td>
+                <td>{{ usuario.tipo }}</td>
+                <td>{{ usuario.correo }}</td>
+                <td>{{ usuario.ncuenta }}</td>
+                <td>{{ usuario.ruc }}</td>
+                <td>{{ usuario.direccion }}</td>
+                <td>{{ usuario.telefono }}</td>
+                <td>
+                  <div class="d-flex gap-2 justify-content-center">
+                    <button class="btn btn-outline-success btn-sm" @click="verUsuario(usuario.id)">
+                      <i class="bi bi-eye"></i>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+              <tr v-if="usuariosFiltrados.length === 0">
+                <td colspan="9" class="text-center">No se encontraron resultados</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+</template>
+
 
 <script>
 
@@ -60,34 +69,46 @@ import router from "@/router";
 import { consultarUsuarioFachada } from "../helpers/UsuarioHelper";
 
 export default {
-    name: "Usuario",
-    data() {
-        return {
-            usuarios: []
-        };
-    },
-    mounted() {
-        this.cargarUsuarios();
-    },
-    methods: {
-        async cargarUsuarios() {
-            try {
-                this.usuarios = await consultarUsuarioFachada();
-                console.log(this.usuarios);
-            } catch (error) {
-                console.error('Error al cargar los Usuarios:', error);
-            }
-        },
-        async redirigirCrearUsuario() {
-          const ruta = `/usuario_registro`;
-          await router.push({ path: ruta });
-        },
-        async verUsuario(id) {
-            const ruta = `/usuario_ver/${id}`;
-            await router.push({ path: ruta });
-        },
+  name: "Usuario",
+  data() {
+    return {
+      usuarios: [],
+      filtro: "" 
+    };
+  },
+  computed: {
+    usuariosFiltrados() {
+      const filtroMinusculas = this.filtro.toLowerCase();
+      return this.usuarios.filter(usuario => 
+        usuario.nombre.toLowerCase().includes(filtroMinusculas) ||
+        usuario.tipo.toLowerCase().includes(filtroMinusculas) ||
+        usuario.correo.toLowerCase().includes(filtroMinusculas)
+      );
     }
+  },
+  mounted() {
+    this.cargarUsuarios();
+  },
+  methods: {
+    async cargarUsuarios() {
+      try {
+        this.usuarios = await consultarUsuarioFachada();
+        console.log(this.usuarios);
+      } catch (error) {
+        console.error('Error al cargar los Usuarios:', error);
+      }
+    },
+    async redirigirCrearUsuario() {
+      const ruta = `/usuario_registro`;
+      await router.push({ path: ruta });
+    },
+    async verUsuario(id) {
+      const ruta = `/usuario_ver/${id}`;
+      await router.push({ path: ruta });
+    },
+  }
 };
+
 </script>
 
 <style scoped>
