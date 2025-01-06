@@ -21,11 +21,10 @@
       <div class="modal-content">
         <span class="close-btn" @click="closeModal">&times;</span>
         <h3>{{ selectedEvent.title }}</h3>
-        <p><strong>Start:</strong> {{ selectedEvent.start.format() }}</p>
-        <p><strong>End:</strong> {{ selectedEvent.end.format() }}</p>
-        <p><strong>Person in charge:</strong> {{ selectedEvent.person }}</p>
-        <p><strong>Client:</strong> {{ selectedEvent.client }}</p> <!-- Added client information -->
-        <p><strong>Description:</strong> {{ selectedEvent.description }}</p>
+        <p><strong>Fecha:</strong> {{ selectedEvent.start.format() }}</p>
+        <p><strong>Persona Encargada:</strong> {{ selectedEvent.persona }}</p>
+        <p><strong>Cliente:</strong> {{ selectedEvent.cliente }}</p> <!-- Added client information -->
+        <p><strong>Descripción:</strong> {{ selectedEvent.descripcion }}</p>
         <p><strong>Work hour:</strong> {{ selectedEvent.workHour }}</p>
       </div>
     </div>
@@ -37,6 +36,7 @@ import VueCal from "vue-cal";
 import "vue-cal/dist/vuecal.css";
 import axios from "axios";
 import { consultarOrdenSimpleFachada } from "../../OrdenTrabajo/helpers/OrdenTrabajoHelper";
+import { buscarClientePorIdFachada } from "../../Cliente/helpers/ClienteHelper";
 
 export default {
   components: { VueCal },
@@ -90,14 +90,15 @@ export default {
         const hours = Math.floor(durationMinutes / 60);
         const minutes = durationMinutes % 60;
         const workHour = `${hours}h ${minutes}m`;
+        console.log(orden);
 
         return {
           start: startFormatted,
           end: endFormatted,
           title: `Orden #${orden.numeroOrden}`,
-          person: `${orden.idClientes.personaEncargada}`,
-          client: `${orden.idClientes.nombreCliente}`, // Added client information
-          description: orden.descripcion || "No description available", // Add description if available
+          persona: ` `,
+          cliente: `${orden.idClientes}`, // Added client information
+          descripcion: orden.descripcion || "No description available", // Add description if available
           workHour: workHour, // Calculated work hour
           isOrdenTrabajo: true, // Indicador para aplicar un estilo especial
         };
@@ -107,8 +108,13 @@ export default {
     },
 
     // Handle event click to show a modal with event details
-    handleEventClick(event) {
-      this.selectedEvent = event;
+    async handleEventClick(event) {
+      const datos = event; 
+      const cliente = await buscarClientePorIdFachada(event.cliente);
+      datos.persona = cliente.personaEncargada;
+      datos.cliente = cliente.nombre;
+      this.selectedEvent = datos;
+      
     },
 
     // Close the event details modal

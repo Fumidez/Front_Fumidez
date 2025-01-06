@@ -67,10 +67,10 @@
                     <button class="btn btn-outline-primary btn-sm" @click="generatePDF(orden)">
                       <i class="bi bi-file-earmark-pdf"></i>
                     </button>
-                    <button class="btn btn-outline-success btn-sm" @click="updateEstado(orden.id, 'confirmado')">
+                    <button class="btn btn-outline-success btn-sm" @click="updateEstado(orden.id, 'confirmado', orden)">
                       <i class="bi bi-check"></i>
                     </button>
-                    <button class="btn btn-outline-danger btn-sm" @click="updateEstado(orden.id, 'cancelado')">
+                    <button class="btn btn-outline-danger btn-sm" @click="updateEstado(orden.id, 'cancelado', orden)">
                       <i class="bi bi-x"></i>
                     </button>
                   </div>
@@ -136,11 +136,12 @@ export default {
       console.log(orden);
       await generatePDFOrdenFachada(orden);
     },
-    async updateEstado(id, param) {
+    async updateEstado(id, param, orden) {
       const estado = {
         estado: param,
       };
       await actualizarOrdenEstadoFachada(id, estado);
+      orden.estado = param;
     },
   },
 };

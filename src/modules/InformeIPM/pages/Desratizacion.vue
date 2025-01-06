@@ -77,31 +77,33 @@
                     <tr v-for="(item, index) in registros" :key="item.id">
                         <td>{{ index + 1 }}</td>
                         <td>
-                            <select v-model="item.tipoIdentificadorCordon"  @change="actualizarRegistro(item)">
+                            <select v-model="item.tipoIdentificadorCordon" @change="actualizarRegistro(item)">
                                 <option :value="true">Sí</option>
                                 <option :value="false">No</option>
                             </select>
                         </td>
                         <td>
                             <div class="form-group mb-3 d-flex align-items-center">
-                                <select id="idConsumo" v-model="item.consumo" class="form-control" required  @change="actualizarRegistro(item)">
+                                <select id="idConsumo" v-model="item.consumo" class="form-control" required
+                                    @change="actualizarRegistro(item)">
                                     <option v-for="(con) in consumo" :key="con" :value="con">
                                         {{ con }}
                                     </option>
                                 </select>
                             </div>
                         </td>
-                        <td><input type="text" v-model="item.ubicacion"  @change="actualizarRegistro(item)"/></td>
-                        <td><input type="text" v-model="item.observaciones"  @change="actualizarRegistro(item)"/></td>
+                        <td><input type="text" v-model="item.ubicacion" @change="actualizarRegistro(item)" /></td>
+                        <td><input type="text" v-model="item.observaciones" @change="actualizarRegistro(item)" /></td>
                         <td>
-                            <select v-model="item.reemplazoPegaCebo"  @change="actualizarRegistro(item)">
+                            <select v-model="item.reemplazoPegaCebo" @change="actualizarRegistro(item)">
                                 <option :value="true">Sí</option>
                                 <option :value="false">No</option>
                             </select>
                         </td>
                         <td>
                             <div class="form-group mb-3 d-flex align-items-center">
-                                <select id="idCSP" v-model="item.csp" class="form-control" required  @change="actualizarRegistro(item)">
+                                <select id="idCSP" v-model="item.csp" class="form-control" required
+                                    @change="actualizarRegistro(item)">
                                     <option v-for="(csp) in csp" :key="csp" :value="csp">
                                         {{ csp }}
                                     </option>
@@ -112,12 +114,16 @@
                             <button class="btn btn-danger btn-sm" @click="eliminarRegistro(item.id)">
                                 <i class="bi bi-trash"></i> Eliminar
                             </button>
+
                             <button class="btn btn-info btn-sm" @click="addRow()">
                                 <i class="bi bi-plus-circle"></i> Copiar fila
                             </button>
                         </td>
                     </tr>
+
                 </tbody>
+                <button class="btn btn-danger btn-sm" @click="generatePDF()">
+                    <i class="bi bi-trash"></i> Generar PDF </button>
             </table>
 
         </div>
@@ -130,6 +136,7 @@ import jsPDF from 'jspdf';
 import JsPDFAutotable from 'jspdf-autotable'
 import router from '@/router';
 import Footer from '../../../components/Footer.vue';
+import { generateFormularioIPMFachada } from '../helpers/generarInformeIPM';
 
 
 export default {
@@ -214,9 +221,15 @@ export default {
                 this.registros = this.registros.filter((reg) => reg.id !== id);
             }
         },
-        async actualizarRegistro(item){
+        async actualizarRegistro(item) {
             console.log(item);
-        }
+        },
+
+        async generatePDF() {
+
+            const informeId = await consultarDesratizacionFachadaPorIdInforme(this.registro.informeId);
+            await generateFormularioIPMFachada(informeId);
+        },
 
 
 

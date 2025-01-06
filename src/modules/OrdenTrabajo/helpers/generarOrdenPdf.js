@@ -143,6 +143,7 @@ const generatePDF = async (ordenTrabajo) => {
 
   doc.addImage(whatsappIcon, 'PNG', doc.internal.pageSize.width - 80 - 15, footerY + 15 - 5, 10, 10);
   doc.text('099 995 4079', doc.internal.pageSize.width - 80, footerY + 15);
+  const signatureY = doc.internal.pageSize.height - footerHeight - 50; // Ajustar la posición vertical según sea necesario
 
  // Ajustar posición del bloque "Recibí Conforme"
 const reciboX = pageWidth - 220; // Ajusta la posición horizontal según sea necesario
