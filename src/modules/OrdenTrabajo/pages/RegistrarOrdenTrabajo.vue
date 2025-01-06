@@ -1,76 +1,174 @@
 <template>
-  <div class="page-container d-flex flex-column" style="min-height: 100vh;">
+  <div class="page-container d-flex flex-column" style="min-height: 100vh">
     <!-- Contenido Principal -->
     <main class="flex-grow-1 d-flex align-items-center justify-content-center">
-      <div class="card p-5 shadow-lg"
-        style="max-width: 800px; width: 100%; border-radius: 15px; background-color: rgba(255, 255, 255, 0.9); border: 3px solid transparent; border-image: linear-gradient(to right, #004080, #a9c4f5); border-image-slice: 1;">
+      <div
+        class="card p-5 shadow-lg"
+        style="
+          max-width: 800px;
+          width: 100%;
+          border-radius: 15px;
+          background-color: rgba(255, 255, 255, 0.9);
+          border: 3px solid transparent;
+          border-image: linear-gradient(to right, #004080, #a9c4f5);
+          border-image-slice: 1;
+        "
+      >
         <h1 class="text-center text-primary mb-4">Ingresar Orden de Trabajo</h1>
         <!-- Formulario de Orden de Trabajo -->
         <form @submit.prevent="submitForm">
           <!-- Fecha -->
           <div class="form-group mb-3 d-flex align-items-center">
-            <label for="fecha" class="w-25"><i class="bi bi-calendar"></i> Fecha</label>
-            <input type="date" id="fecha" v-model="ordenTrabajo.fecha" class="form-control" required />
+            <label for="fecha" class="w-25"
+              ><i class="bi bi-calendar"></i> Fecha</label
+            >
+            <input
+              type="date"
+              id="fecha"
+              v-model="ordenTrabajo.fecha"
+              class="form-control"
+              required
+            />
           </div>
 
           <!-- Hora -->
           <div class="form-group mb-3 d-flex align-items-center">
-            <label for="hora" class="w-25"><i class="bi bi-clock"></i> Hora</label>
-            <input type="time" id="hora" v-model="ordenTrabajo.hora" class="form-control" required />
+            <label for="hora" class="w-25"
+              ><i class="bi bi-clock"></i> Hora</label
+            >
+            <input
+              type="time"
+              id="hora"
+              v-model="ordenTrabajo.hora"
+              class="form-control"
+              required
+            />
           </div>
 
           <!-- Número de Orden -->
           <div class="form-group mb-3 d-flex align-items-center">
-            <label for="numeroOrden" class="w-25"><i class="bi bi-file-earmark"></i> Número de Orden</label>
-            <input v-if="!ver_orden" type="text" id="numeroOrden" v-model="ordenTrabajo.numeroOrden" class="form-control"
-              placeholder="Número de Orden" required minlength="3" />
-            <label v-else for="numeroOrdenVer" class="w-25">{{ ordenTrabajo.numeroOrden }}</label>
+            <label for="numeroOrden" class="w-25"
+              ><i class="bi bi-file-earmark"></i> Número de Orden</label
+            >
+            <input
+              v-if="!ver_orden"
+              type="text"
+              id="numeroOrden"
+              v-model="ordenTrabajo.numeroOrden"
+              class="form-control"
+              placeholder="Número de Orden"
+              required
+              minlength="3"
+            />
+            <label v-else for="numeroOrdenVer" class="w-25">{{
+              ordenTrabajo.numeroOrden
+            }}</label>
           </div>
 
           <!-- Descripción -->
           <div class="form-group mb-3 d-flex align-items-center">
-            <label for="descripcion" class="w-25"><i class="bi bi-file-earmark-text"></i> Descripción</label>
-            <textarea id="descripcion" v-model="ordenTrabajo.descripcion" class="form-control" placeholder="Descripción"
-              required minlength="10"></textarea>
+            <label for="descripcion" class="w-25"
+              ><i class="bi bi-file-earmark-text"></i> Descripción</label
+            >
+            <textarea
+              id="descripcion"
+              v-model="ordenTrabajo.descripcion"
+              class="form-control"
+              placeholder="Descripción"
+              required
+              minlength="10"
+            ></textarea>
           </div>
 
           <!-- Área -->
           <div class="form-group mb-3 d-flex align-items-center">
-            <label for="area" class="w-25"><i class="bi bi-geo-alt-fill"></i> Área</label>
-            <input type="text" id="area" v-model="ordenTrabajo.area" class="form-control" placeholder="Área" required
-              minlength="3" />
+            <label for="area" class="w-25"
+              ><i class="bi bi-geo-alt-fill"></i> Área</label
+            >
+            <input
+              type="text"
+              id="area"
+              v-model="ordenTrabajo.area"
+              class="form-control"
+              placeholder="Área"
+              required
+              minlength="3"
+            />
           </div>
 
           <!-- Selección de Usuario -->
           <div class="form-group mb-3 d-flex align-items-center">
-            <label for="idUsuarios" class="w-25"><i class="bi bi-person"></i> Usuario</label>
-            <select id="idUsuarios" v-model="ordenTrabajo.idUsuarios" class="form-control" required>
+            <label for="idUsuarios" class="w-25"
+              ><i class="bi bi-person"></i> Usuario</label
+            >
+            <select
+              id="idUsuarios"
+              v-model="ordenTrabajo.idUsuarios"
+              class="form-control"
+              required
+            >
               <option disabled value="">Seleccione un usuario</option>
-              <option v-for="usuario in usuarios" :key="usuario.id" :value="usuario.id">{{ usuario.nombre }}</option>
+              <option
+                v-for="usuario in usuarios"
+                :key="usuario.id"
+                :value="usuario.id"
+              >
+                {{ usuario.nombre }}
+              </option>
             </select>
           </div>
 
           <!-- Selección de Cliente -->
           <div class="form-group mb-3 d-flex align-items-center">
-            <label for="idClientes" class="w-25"><i class="bi bi-person-check"></i> Cliente</label>
-            <select id="idClientes" v-model="ordenTrabajo.idClientes" class="form-control" required>
+            <label for="idClientes" class="w-25"
+              ><i class="bi bi-person-check"></i> Cliente</label
+            >
+            <select
+              id="idClientes"
+              v-model="ordenTrabajo.idClientes"
+              class="form-control"
+              required
+            >
               <option disabled value="">Seleccione un cliente</option>
-              <option v-for="cliente in clientes" :key="cliente.id" :value="cliente.id">{{ cliente.nombre }}</option>
+              <option
+                v-for="cliente in clientes"
+                :key="cliente.id"
+                :value="cliente.id"
+              >
+                {{ cliente.nombre }}
+              </option>
             </select>
           </div>
 
           <!-- Servicios -->
           <div class="form-group mb-3">
             <label><i class="bi bi-tools"></i> Servicios</label>
-            <div v-for="(servicio, index) in ordenTrabajo.servicios" :key="index"
-              class="d-flex gap-2 align-items-center">
-              <input type="text" v-model="servicio.tipoServicio" class="form-control" placeholder="Tipo de Servicio"
-                required minlength="3" />
-              <button type="button" class="btn btn-danger btn-sm" @click="removeServicio(index)">
+            <div
+              v-for="(servicio, index) in ordenTrabajo.servicios"
+              :key="index"
+              class="d-flex gap-2 align-items-center"
+            >
+              <input
+                type="text"
+                v-model="servicio.tipoServicio"
+                class="form-control"
+                placeholder="Tipo de Servicio"
+                required
+                minlength="3"
+              />
+              <button
+                type="button"
+                class="btn btn-danger btn-sm"
+                @click="removeServicio(index)"
+              >
                 <i class="bi bi-trash"></i>
               </button>
             </div>
-            <button type="button" class="btn btn-primary w-100 mt-2 py-2" @click="addServicio">
+            <button
+              type="button"
+              class="btn btn-primary w-100 mt-2 py-2"
+              @click="addServicio"
+            >
               <i class="bi bi-plus-circle"></i> Añadir Servicio
             </button>
           </div>
@@ -85,35 +183,36 @@
 </template>
 
 <script>
-import { buscarOrdenPorId, crearOrdenFachada } from '../helpers/OrdenTrabajoHelper';
+import {
+  actualizarOrdenFachada,
+  buscarOrdenPorId,
+  crearOrdenFachada,
+} from "../helpers/OrdenTrabajoHelper";
 
-import { consultarUsuarioFachada } from '../../Usuario/helpers/UsuarioHelper';
+import { consultarUsuarioFachada } from "../../Usuario/helpers/UsuarioHelper";
 
-import { consultarClienteFachada } from '../../Cliente/helpers/ClienteHelper';
-
+import { consultarClienteFachada } from "../../Cliente/helpers/ClienteHelper";
 export default {
   name: "OrdenTrabajo",
   data() {
     return {
       ordenTrabajo: {
-        fecha: '',
-        hora: '',
-        numeroOrden: '',
-        descripcion: '',
-        area: '',
-        idUsuarios: '',
-        idClientes: '',
+        fecha: "",
+        hora: "",
+        numeroOrden: "",
+        descripcion: "",
+        area: "",
+        idUsuarios: "",
+        idClientes: "",
         servicios: [
-          { tipoServicio: '' }  // Inicialmente un servicio
-        ]
+          { tipoServicio: "" }, // Inicialmente un servicio
+        ],
       },
       usuarios: [],
       clientes: [],
       ordenId: this.$route.params.id,
-      ver_orden: false
+      ver_orden: false,
     };
-
-
   },
   mounted() {
     this.cargarClientes();
@@ -125,59 +224,62 @@ export default {
       try {
         if (this.ordenId) {
           const orden = await buscarOrdenPorId(this.ordenId);
-          console.log(orden)
+          console.log(orden);
           this.ordenTrabajo = {
-            fecha: orden.fecha.split('T')[0],
+            fecha: orden.fecha.split("T")[0],
             hora: orden.hora,
             numeroOrden: orden.numeroOrden,
             descripcion: orden.descripcion,
             area: orden.area,
             idUsuarios: orden.usuario.id,
             idClientes: orden.cliente.id,
-            servicios: orden.servicios
+            servicios: orden.servicios,
           };
-          this.ver_orden = true
+          this.ver_orden = true;
         } else {
-          this.ver_orden = false
+          this.ver_orden = false;
         }
       } catch (error) {
-        console.error('Error al cargar los Formularios IPM:', error);
+        console.error("Error al cargar los Formularios IPM:", error);
       }
     },
     async submitForm() {
       try {
-        console.log('Orden de trabajo creada con éxito:', this.ordenTrabajo);
-        const nuevaOrden = await crearOrdenFachada(this.ordenTrabajo);
-        console.log('Orden de trabajo creada con éxito:', nuevaOrden);
-        this.limpiarFormulario();
+        if (this.ver_orden) {
+          await actualizarOrdenFachada(this.ordenId, this.ordenTrabajo);
+          alert("Cliente actualizado con éxito");
+        } else {
+          await crearOrdenFachada(this.ordenTrabajo);
+          this.limpiarFormulario();
+        }
       } catch (error) {
-        console.error('Error al crear la orden de trabajo:', error);
+        console.error("Error al crear la orden de trabajo:", error);
       }
     },
     addServicio() {
-      this.ordenTrabajo.servicios.push({ tipoServicio: '' });
+      this.ordenTrabajo.servicios.push({ tipoServicio: "" });
     },
     removeServicio(index) {
       this.ordenTrabajo.servicios.splice(index, 1);
     },
     limpiarFormulario() {
       this.ordenTrabajo = {
-        fecha: '',
-        hora: '',
-        numeroOrden: '',
-        descripcion: '',
-        area: '',
-        idUsuarios: '',
-        idClientes: '',
-        servicios: [{ tipoServicio: '' }]
+        fecha: "",
+        hora: "",
+        numeroOrden: "",
+        descripcion: "",
+        area: "",
+        idUsuarios: "",
+        idClientes: "",
+        servicios: [{ tipoServicio: "" }],
       };
     },
     async cargarUsuarios() {
       try {
         this.usuarios = await consultarUsuarioFachada();
       } catch (error) {
-        console.error('Error al cargar los usuarios:', error);
-        alert('Hubo un error al cargar los usuarios.');
+        console.error("Error al cargar los usuarios:", error);
+        alert("Hubo un error al cargar los usuarios.");
       }
     },
 
@@ -186,12 +288,11 @@ export default {
       try {
         this.clientes = await consultarClienteFachada();
       } catch (error) {
-        console.error('Error al cargar los clientes:', error);
-        alert('Hubo un error al cargar los clientes.');
+        console.error("Error al cargar los clientes:", error);
+        alert("Hubo un error al cargar los clientes.");
       }
     },
-
-  }
+  },
 };
 </script>
 
@@ -204,7 +305,8 @@ export default {
 
 main {
   flex-grow: 1;
-  background-image: url('@/assets/fumi.jpg'), linear-gradient(to bottom, #132333, #132333);
+  background-image: url("@/assets/fumi.jpg"),
+    linear-gradient(to bottom, #132333, #132333);
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -213,7 +315,7 @@ main {
 
 /* Indicador de carga */
 main::after {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
