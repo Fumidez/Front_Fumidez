@@ -26,6 +26,7 @@
                   <th>Ruc</th>
                   <th>Dirección</th>
                   <th>Telefono</th>
+                  <th>Acciones</th>
                 </tr>
               </thead>
               <tbody>

@@ -90,12 +90,12 @@
 
 <script>
 // Importamos el helper para manejar la creación y obtención de órdenes de trabajo
-import { crearOrdenFachada, consultarOrdenFachada } from '../helpers/OrdenTrabajoHelper';
+import { crearOrdenFachada, consultarOrdenFachada, actualizarOrdenFachada } from '../helpers/OrdenTrabajoHelper';
 
 import { consultarUsuarioFachada } from '../../Usuario/helpers/UsuarioHelper';
 
 import { consultarClienteFachada } from '../../Cliente/helpers/ClienteHelper';
-
+actualizarOrdenFachada
 import jsPDF from 'jspdf';
 
 export default {

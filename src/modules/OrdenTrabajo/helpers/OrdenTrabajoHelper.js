@@ -16,8 +16,6 @@ export const buscarOrdenPorId = async (id) => {
     return await buscarPorId(id);
 }
 
-
-
 export const actualizarOrdenFachada = async (id, clienteOrden) => {
     return await actualizarOrden(id, clienteOrden);
 }
@@ -38,7 +36,7 @@ const consultarOrden = async () => {
 
 
 const consultarOrdenSimple = async () => {
-    const data = axios.get(API_URL + "/orderS").then(r => r.data);
+    const data = axios.get(API_URL).then(r => r.data);
     return data;
 }
 

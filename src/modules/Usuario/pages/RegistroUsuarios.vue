@@ -77,8 +77,15 @@
                     </div>
 
                     <!-- Botón Guardar -->
-                    <button type="submit" class="btn btn-primary w-100 py-2">
+                    <button v-if="!esEdicion" type="submit" class="btn btn-primary w-100 py-2">
                         Guardar
+                    </button>
+                    <button v-else type="submit" class="btn btn-primary w-100 py-2">
+                        Actualizar
+                    </button>
+                    <button type="button" class="btn btn-secondary w-100 mt-2 py-2"
+                        @click="redirigirListadoUsuario">
+                        Volver al listado
                     </button>
                 </form>
             </div>
@@ -88,98 +95,95 @@
 
 
 <script>
-import { consultarUsuarioFachada, crearUsuarioFachada, obtenerUsuarioFachada } from '../helpers/UsuarioHelper';
-// Importamos el helper que maneja la lógica de crear un usuario.
-
+import router from "@/router";
+import { 
+  consultarUsuarioFachada, 
+  crearUsuarioFachada, 
+  obtenerUsuarioFachada, 
+  actualizarUsuarioFachada 
+} from '../helpers/UsuarioHelper';
 
 export default {
-    name: "Usuarios",
-    data() {
-        return {
-            usuario: {
-                tipo: '',
-                contrasenia: '',
-                nombre: '',
-                correo: '',
-                nCuenta: '',
-                ruc: '',
-                direccion: '',
-                telefono: ''
-            },
-            usuarios: [],
-            roles: ['ADMIN', 'TECNICO'],
-            usuarioId: this.$route.params.id,
-            ver_usuario: false
-        };
+  name: "Usuarios",
+  data() {
+    return {
+      usuario: {
+        tipo: '',
+        contrasenia: '',
+        nombre: '',
+        correo: '',
+        nCuenta: '',
+        ruc: '',
+        direccion: '',
+        telefono: ''
+      },
+      roles: ['ADMIN', 'TECNICO'],
+      usuarioId: this.$route.params.id, // Detecta el ID del usuario desde la URL.
+      esEdicion: false // Variable para determinar si es edición o creación.
+    };
+  },
+  mounted() {
+    this.consultarPorIdUsuario();
+  },
+  methods: {
+    async consultarPorIdUsuario() {
+      try {
+        if (this.usuarioId) {
+          const user = await obtenerUsuarioFachada(this.usuarioId);
+          this.usuario = { 
+            tipo: user.tipo,
+            contrasenia: user.contrasenia,
+            nombre: user.nombre,
+            correo: user.correo,
+            nCuenta: user.ncuenta,
+            ruc: user.ruc,
+            direccion: user.direccion,
+            telefono: user.telefono
+          };
+          this.esEdicion = true; // Es edición porque se encontró un usuario existente.
+        } else {
+          this.esEdicion = false;
+        }
+      } catch (error) {
+        console.error('Error al cargar el usuario:', error);
+      }
     },
+    async submitForm() {
+      try {
+        if (this.esEdicion) {
+          // Llama al método de actualización
+          await actualizarUsuarioFachada(this.usuarioId, this.usuario);
+          console.log('Usuario actualizado con éxito');
+          alert("Usuario actualizado con éxito");
 
-    mounted(){
-        this.consultarPorIdUsuario();
+        } else {
+          // Llama al método de creación
+          const nuevoUsuario = await crearUsuarioFachada(this.usuario);
+          console.log('Usuario creado con éxito:', nuevoUsuario);
+        }
+        this.limpiarFormulario();
+      } catch (error) {
+        console.error('Error al procesar el formulario:', error);
+      }
     },
-
-    methods: {
-
-        async consultarPorIdUsuario() {
-            try {
-                if (this.usuarioId) {
-                    const user = await obtenerUsuarioFachada(this.usuarioId);
-                    this.usuario = {
-                        tipo: user.tipo,
-                        contrasenia: user.contrasenia,
-                        nombre: user.nombre,
-                        correo: user.correo,
-                        nCuenta: user.ncuenta,
-                        ruc: user.ruc,
-                        direccion: user.direccion,
-                        telefono: user.telefono
-                    };
-                    this.ver_usuario = true
-                } else {
-                    this.ver_usuario = false
-                }
-            } catch (error) {
-                console.error('Error al cargar los Formularios IPM:', error);
-            }
+    async redirigirListadoUsuario() {
+            const ruta = `/usuarios_lista`;
+            await router.push({ path: ruta });
         },
-        async submitForm() {
-            try {
-                console.log(this.usuario);
-                const nuevoUsuario = await crearUsuarioFachada(this.usuario);
-                console.log('Usuario creado con éxito:', nuevoUsuario);
-                // Aquí puedes hacer algo con la respuesta, como limpiar el formulario o redirigir.
-                this.limpiarFormulario();
-            } catch (error) {
-                console.error('Error al crear el usuario:', error);
-            }
-        },
-        limpiarFormulario() {
-            // Limpia los campos del formulario
-            this.usuario = {
-                tipo: '',
-                contrasenia: '',
-                nombre: '',
-                correo: '',
-                nCuenta: '',
-                ruc: '',
-                direccion: '',
-                telefono: ''
-            };
-        },
-
-
-        async cargarUsuarios() {
-            try {
-                this.usuarios = await consultarUsuarioFachada();
-            } catch (error) {
-                console.error('Error al cargar los usuarios:', error);
-                alert('Hubo un error al cargar los usuarios.');
-            }
-
-            console.log(this.usuarios);
-
-        },
-
+    limpiarFormulario() {
+      this.usuario = {
+        tipo: '',
+        contrasenia: '',
+        nombre: '',
+        correo: '',
+        nCuenta: '',
+        ruc: '',
+        direccion: '',
+        telefono: ''
+      };
+      this.esEdicion = false;
     }
+  }
 };
 </script>
 

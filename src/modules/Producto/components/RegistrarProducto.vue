@@ -36,11 +36,11 @@
                     </div>
 
                     <button type="submit" class="btn btn-primary w-100 py-2">
-                        {{ actualizarDato ? 'Actualizar Producto' : 'Crear Producto' }}
+                        {{ ver_producto ? 'Actualizar Producto' : 'Crear Producto' }}
                     </button>
-                    <button v-if="actualizarDato" type="button" class="btn btn-secondary w-100 mt-2 py-2"
-                        @click="cambiarEstado">
-                        Cambiar a Modo Crear
+                    <button type="button" class="btn btn-secondary w-100 mt-2 py-2"
+                        @click="redirigirListadoProducto">
+                        Volver al listado
                     </button>
                 </form>
 
@@ -50,6 +50,7 @@
     </div>
 </template>
 <script>
+import router from "@/router";
 import { obtenerTodosLosProveedorsFachada } from '../../Proveedor/helpers/proveedoresHelpers';
 import {
     crearProductoFachada,
@@ -98,10 +99,16 @@ export default {
         async ingresar() {
             if (this.producto.nombre && this.producto.cantidad && this.producto.precio && this.producto.idProveedor) {
                 try {
-                    await crearProductoFachada(this.producto);
-                    alert("Producto ingresado");
-                    this.resetProducto();
-                    this.buscarProductos();
+                    if (this.ver_producto) {
+                        // Llama al método de actualización
+                        await actualizarProductoFachada(this.productoId, this.producto);
+                        alert("Producto actualizado con éxito");
+                    } else {
+                        await crearProductoFachada(this.producto);
+                        alert("Producto ingresado");
+                        this.resetProducto();
+                        this.buscarProductos();
+                    }
                 } catch (error) {
                     console.error("Error al ingresar el producto:", error);
                 }
@@ -150,9 +157,9 @@ export default {
                 console.error("Error al cargar los datos del producto:", error);
             }
         },
-        cambiarEstado() {
-            this.actualizarDato = !this.actualizarDato;
-            this.resetProducto();
+        async redirigirListadoProducto() {
+            const ruta = `/productos_lista`;
+            await router.push({ path: ruta });
         },
         resetProducto() {
             this.producto = {

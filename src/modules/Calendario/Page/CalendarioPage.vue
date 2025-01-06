@@ -1,8 +1,12 @@
 <template>
-  <div>
-    <vue-cal :events="events" default-view="month">
+  <div class="calendar-container">
+    <vue-cal :events="events" default-view="month" @event-click="handleEventClick">
       <template #event="{ event }">
-        <div class="vuecal__event-title" v-html="event.title"></div>
+        <div 
+          class="vuecal__event-title" 
+          v-html="event.title" 
+          :class="{'orden-trabajo': event.isOrdenTrabajo}" 
+        ></div>
         <em class="vuecal__event-time">
           <strong>Event start:</strong>
           <span>{{ event.start.formatTime() }}</span>
@@ -12,6 +16,19 @@
         </em>
       </template>
     </vue-cal>
+    <!-- Modal for event details -->
+    <div v-if="selectedEvent" class="event-details-modal">
+      <div class="modal-content">
+        <span class="close-btn" @click="closeModal">&times;</span>
+        <h3>{{ selectedEvent.title }}</h3>
+        <p><strong>Start:</strong> {{ selectedEvent.start.format() }}</p>
+        <p><strong>End:</strong> {{ selectedEvent.end.format() }}</p>
+        <p><strong>Person in charge:</strong> {{ selectedEvent.person }}</p>
+        <p><strong>Client:</strong> {{ selectedEvent.client }}</p> <!-- Added client information -->
+        <p><strong>Description:</strong> {{ selectedEvent.description }}</p>
+        <p><strong>Work hour:</strong> {{ selectedEvent.workHour }}</p>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -20,12 +37,13 @@ import VueCal from "vue-cal";
 import "vue-cal/dist/vuecal.css";
 import axios from "axios";
 import { consultarOrdenSimpleFachada } from "../../OrdenTrabajo/helpers/OrdenTrabajoHelper";
+
 export default {
   components: { VueCal },
   data() {
     return {
-      events: [
-      ],
+      events: [],
+      selectedEvent: null, // Track selected event for modal display
     };
   },
 
@@ -45,33 +63,156 @@ export default {
           const month = String(date.getMonth() + 1).padStart(2, "0");
           const day = String(date.getDate()+1).padStart(2, "0");
 
-          // Divide hour en horas y minutos
+          // Divide hour in hours and minutes
           const [hours, minutes] = hour.split(":");
 
           return `${year}-${month}-${day} ${hours}:${minutes}`;
         };
         const addOneHour = (hourString) => {
-          const [hours, minutes, seconds] = hourString.split(":").map(Number);
-          const date = new Date();
-          date.setHours(hours, minutes, seconds);
-          date.setHours(date.getHours() + 1);
+            const [hours, minutes, seconds] = hourString.split(":").map(Number);
+            const date = new Date();
+            date.setHours(hours, minutes, seconds);
+            date.setHours(date.getHours() + 1);
+  
+            const newHours = String(date.getHours()).padStart(2, "0");
+            const newMinutes = String(date.getMinutes()).padStart(2, "0");
+  
+            return `${newHours}:${newMinutes}:00`;
+          };
 
-          const newHours = String(date.getHours()).padStart(2, "0");
-          const newMinutes = String(date.getMinutes()).padStart(2, "0");
+        const startFormatted = formatDate(startDate, orden.hora);
+        const endFormatted = formatDate(endDate, addOneHour(orden.hora));
 
-          return `${newHours}:${newMinutes}:00`;
-        };
+        // Calculate the duration (work hour) by subtracting start and end dates
+        const startTime = new Date(startFormatted);
+        const endTime = new Date(endFormatted);
+        const durationMinutes = (endTime - startTime) / 60000; // Duration in minutes
+        const hours = Math.floor(durationMinutes / 60);
+        const minutes = durationMinutes % 60;
+        const workHour = `${hours}h ${minutes}m`;
 
         return {
-          start: formatDate(startDate, orden.hora),
-          end: formatDate(endDate, addOneHour(orden.hora)),
+          start: startFormatted,
+          end: endFormatted,
           title: `Orden #${orden.numeroOrden}`,
+          person: `${orden.idClientes.personaEncargada}`,
+          client: `${orden.idClientes.nombreCliente}`, // Added client information
+          description: orden.descripcion || "No description available", // Add description if available
+          workHour: workHour, // Calculated work hour
+          isOrdenTrabajo: true, // Indicador para aplicar un estilo especial
         };
-
       });
 
       console.log(this.events);
     },
+
+    // Handle event click to show a modal with event details
+    handleEventClick(event) {
+      this.selectedEvent = event;
+    },
+
+    // Close the event details modal
+    closeModal() {
+      this.selectedEvent = null;
+    },
   },
 };
 </script>
+
+<style scoped>
+/* General styling for the calendar container */
+.calendar-container {
+  margin: 0 auto;
+  width: 95%;
+  max-width: 1200px;
+  font-family: Arial, sans-serif;
+  position: relative;
+}
+
+/* Styling for each event */
+.vuecal__event {
+  padding: 20px;
+  font-size: 18px;
+  border-radius: 8px;
+  background-color: #0078d4;
+  color: white;
+  margin-bottom: 15px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  height: 150px;
+  width: 100%;
+}
+
+.vuecal__event:hover {
+  background-color: #005a9e;
+  transform: scale(1.05);
+}
+
+/* Specific styling for orden de trabajo events */
+.vuecal__event.orden-trabajo {
+  background-color: #0078d4;
+  height: 180px;
+  padding: 30px;
+}
+
+/* Styling for the event title */
+.vuecal__event-title {
+  font-weight: bold;
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+
+/* Styling for the event time */
+.vuecal__event-time {
+  font-size: 16px;
+  color: #d3d3d3;
+}
+
+/* Modal styling */
+.event-details-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 80%;
+  max-width: 500px;
+}
+
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+/* Responsive design adjustments */
+@media (max-width: 768px) {
+  .vuecal__day {
+    height: 120px;
+  }
+
+  .vuecal__event {
+    font-size: 14px;
+    padding: 15px;
+  }
+}
+</style>

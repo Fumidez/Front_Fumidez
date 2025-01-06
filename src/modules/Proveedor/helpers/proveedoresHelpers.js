@@ -7,6 +7,7 @@ export const crearProveedorFachada = async (bodyProveedor) => {
   return await crearProveedor(bodyProveedor);
 };
 
+
 const crearProveedor = async (bodyProveedor) => {
   try {
     const response = await axios.post(API_URL, bodyProveedor);

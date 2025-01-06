@@ -74,8 +74,15 @@
                     </div>
 
                     <!-- Botón Guardar -->
-                    <button type="submit" class="btn btn-primary w-100 py-2">
+                    <button v-if="!ver_cliente" type="submit" class="btn btn-primary w-100 py-2">
                         Guardar
+                    </button>
+                    <button v-else type="submit" class="btn btn-primary w-100 py-2">
+                        Actualizar
+                    </button>
+                    <button type="button" class="btn btn-secondary w-100 mt-2 py-2"
+                        @click="redirigirListadoCliente">
+                        Volver al listado
                     </button>
                 </form>
             </div>
@@ -88,6 +95,7 @@
 <script>
 import Footer from '../../../components/Footer.vue';
 import Header from '../../../components/Header.vue';
+import router from "@/router";
 
 import { buscarClientePorIdFachada, consultarClienteFachada, crearClienteFachada, obtenerClienteFachada } from '../helpers/ClienteHelper';
 
@@ -153,6 +161,10 @@ export default {
                     console.log("asdadasdasd");
                     console.log(cli);
             this.limpiarDatosCliente();
+        },
+        async redirigirListadoCliente() {
+            const ruta = `/clientes_lista`;
+            await router.push({ path: ruta });
         },
         limpiarDatosCliente() {
             this.cliente = {
