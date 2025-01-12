@@ -30,7 +30,7 @@ import Home from '../modules/Home/pages/Home.vue';
 
 const routes = [
   { path: '/login', component: Login }, // Página de login
-  { path: '/recuperar_contraseña', component: RecuperarContrasenia}, // Página de login
+  { path: '/recuperar_contrasenia', component: RecuperarContrasenia}, // Página de login
 
   { path: '/clientes', component: Clientes , meta: { requiresAuth: true } },
   { path: '/clientes_lista', component: ListarClientes , meta: { requiresAuth: true } },
@@ -59,7 +59,7 @@ const routes = [
   { path: '/usuario_ver/:id', component: RegistroUsuarios, meta: { requiresAuth: true } },
   { path: '/usuario_registro', component: RegistroUsuarios, meta: { requiresAuth: false } },
   { path: '/informe_ver/:id', component: RegistrarInforme, meta: { requiresAuth: true } },
-  { path: '/cambiar_contrasenia/:correo/:token', component: CambioContrasenia, meta: { requiresAuth: true } },
+  { path: '/cambiar_contrasenia/:correo/:token', component: CambioContrasenia },
   { path: '/inicio', component: Home, meta: { requiresAuth: false } },
 
   { path: '/', redirect: '/inicio' },

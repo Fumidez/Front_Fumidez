@@ -43,7 +43,7 @@
 
 <script>
 import router from "@/router";
-
+import { cambiarContraseniaFachada } from "../helpers/passwordHelper";
 export default {
   data() {
     return {
@@ -73,6 +73,7 @@ export default {
         this.cargando = true;
 
         // Llamada al backend para cambiar la contraseña
+        const respuesta = await cambiarContraseniaFachada(this.correo, this.nuevaContrasenia, this.token);
 
         // Mostrar el mensaje de confirmación si la solicitud es exitosa
         if (respuesta) {

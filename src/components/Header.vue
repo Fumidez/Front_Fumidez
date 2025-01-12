@@ -53,7 +53,7 @@ export default {
 
   computed: {
     isRecuperarContraseniaPage() {
-      return this.$route.path === '/recuperar_contraseña';
+      return this.$route.path === '/recuperar_contrasenia';
     }
   },
 

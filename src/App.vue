@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <Header v-if="!['/login', '/recuperar_contraseña'].includes($route.path)" />
+    <Header v-if="!isExcludedRoute" />
     <router-view />
 
   </div>
@@ -14,6 +14,13 @@ export default {
   components: {
     Header,
     Footer,
+  },
+  computed: {
+    isExcludedRoute() {
+      const excludedRoutes = ['/login', '/recuperar_contrasenia', '/cambiar_contrasenia'];
+      const currentPath = this.$route.path;
+      return excludedRoutes.some(route => currentPath.startsWith(route));
+    },
   },
 };
 </script>
