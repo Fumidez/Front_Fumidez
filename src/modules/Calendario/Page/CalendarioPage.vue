@@ -114,11 +114,11 @@ export default {
       datos.persona = cliente.personaEncargada;
       datos.cliente = cliente.nombre;
       this.selectedEvent = datos;
-      
     },
 
     // Close the event details modal
     closeModal() {
+      // Ensure to reset the modal state to null
       this.selectedEvent = null;
     },
   },
@@ -140,7 +140,7 @@ export default {
   padding: 20px;
   font-size: 18px;
   border-radius: 8px;
-  background-color: #0078d4;
+  background: linear-gradient(145deg, #0078d4, #005a9e);
   color: white;
   margin-bottom: 15px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -156,15 +156,22 @@ export default {
 }
 
 .vuecal__event:hover {
-  background-color: #005a9e;
+  background: linear-gradient(145deg, #005a9e, #0078d4);
   transform: scale(1.05);
 }
 
 /* Specific styling for orden de trabajo events */
 .vuecal__event.orden-trabajo {
-  background-color: #0078d4;
+  background: linear-gradient(145deg, #0078d4, #005a9e);
   height: 180px;
   padding: 30px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.vuecal__event.orden-trabajo:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
 }
 
 /* Styling for the event title */
@@ -172,12 +179,15 @@ export default {
   font-weight: bold;
   font-size: 20px;
   margin-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 /* Styling for the event time */
 .vuecal__event-time {
   font-size: 16px;
   color: #d3d3d3;
+  text-transform: capitalize;
 }
 
 /* Modal styling */
@@ -187,19 +197,22 @@ export default {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.7);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1000;
+  transition: opacity 0.3s ease;
 }
 
 .modal-content {
-  background-color: white;
-  padding: 20px;
-  border-radius: 8px;
+  background-color: #ffffff;
+  padding: 30px;
+  border-radius: 12px;
   width: 80%;
   max-width: 500px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  animation: slideIn 0.3s ease;
 }
 
 .close-btn {
@@ -207,7 +220,15 @@ export default {
   top: 10px;
   right: 10px;
   font-size: 24px;
+  color: #333;
   cursor: pointer;
+  background: transparent;
+  border: none;
+  transition: color 0.3s ease;
+}
+
+.close-btn:hover {
+  color: #ff4d4d;
 }
 
 /* Responsive design adjustments */
@@ -219,6 +240,23 @@ export default {
   .vuecal__event {
     font-size: 14px;
     padding: 15px;
+  }
+
+  .modal-content {
+    padding: 20px;
+    max-width: 90%;
+  }
+}
+
+/* Keyframe animation for modal */
+@keyframes slideIn {
+  from {
+    transform: translateY(-50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
   }
 }
 </style>

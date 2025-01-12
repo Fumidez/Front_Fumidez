@@ -18,23 +18,25 @@
             placeholder="Buscar por nombre, rol o correo"
           />
         </div>
+
+        <!-- Tabla de Usuarios -->
         <div>
           <table class="table table-striped table-hover align-middle">
             <thead class="table-primary text-center">
               <tr>
-                <th>#</th>
-                <th>Nombre</th>
-                <th>Rol</th>
-                <th>Correo</th>
-                <th>N.Cuenta</th>
-                <th>Ruc</th>
-                <th>Dirección</th>
-                <th>Telefono</th>
+                <th @click="ordenar('id')" :class="{'highlighted': columnaOrdenada === 'id'}">#</th>
+                <th @click="ordenar('nombre')" :class="{'highlighted': columnaOrdenada === 'nombre'}">Nombre</th>
+                <th @click="ordenar('tipo')" :class="{'highlighted': columnaOrdenada === 'tipo'}">Rol</th>
+                <th @click="ordenar('correo')" :class="{'highlighted': columnaOrdenada === 'correo'}">Correo</th>
+                <th @click="ordenar('ncuenta')" :class="{'highlighted': columnaOrdenada === 'ncuenta'}">N.Cuenta</th>
+                <th @click="ordenar('ruc')" :class="{'highlighted': columnaOrdenada === 'ruc'}">Ruc</th>
+                <th @click="ordenar('direccion')" :class="{'highlighted': columnaOrdenada === 'direccion'}">Dirección</th>
+                <th @click="ordenar('telefono')" :class="{'highlighted': columnaOrdenada === 'telefono'}">Telefono</th>
                 <th>Acciones</th>
               </tr>
             </thead>
             <tbody>
-              <tr v-for="(usuario, index) in usuariosFiltrados" :key="usuario.id" class="text-center">
+              <tr v-for="(usuario, index) in usuariosPaginados" :key="usuario.id" class="text-center">
                 <td>{{ index + 1 }}</td>
                 <td>{{ usuario.nombre }}</td>
                 <td>{{ usuario.tipo }}</td>
@@ -57,14 +59,24 @@
             </tbody>
           </table>
         </div>
+
+        <!-- Paginación -->
+        <div class="d-flex justify-content-center mt-4">
+          <button :disabled="paginaActual === 1" @click="cambiarPagina(paginaActual - 1)" class="btn btn-outline-primary">
+            Anterior
+          </button>
+          <span class="mx-3">{{ paginaActual }} / {{ totalPaginas }}</span>
+          <button :disabled="paginaActual === totalPaginas" @click="cambiarPagina(paginaActual + 1)" class="btn btn-outline-primary">
+            Siguiente
+          </button>
+        </div>
+
       </div>
     </main>
   </div>
 </template>
 
-
 <script>
-
 import router from "@/router";
 import { consultarUsuarioFachada } from "../helpers/UsuarioHelper";
 
@@ -73,7 +85,11 @@ export default {
   data() {
     return {
       usuarios: [],
-      filtro: "" 
+      filtro: "",
+      paginaActual: 1,
+      usuariosPorPagina: 5, // Número de usuarios por página
+      columnaOrdenada: null, // Inicialmente no hay ninguna columna ordenada
+      ordenAscendente: true, // Orden ascendente o descendente
     };
   },
   computed: {
@@ -84,6 +100,25 @@ export default {
         usuario.tipo.toLowerCase().includes(filtroMinusculas) ||
         usuario.correo.toLowerCase().includes(filtroMinusculas)
       );
+    },
+    usuariosPaginados() {
+      // Ordenar los usuarios filtrados
+      const usuariosOrdenados = [...this.usuariosFiltrados].sort((a, b) => {
+        const valorA = a[this.columnaOrdenada];
+        const valorB = b[this.columnaOrdenada];
+        
+        if (valorA < valorB) return this.ordenAscendente ? -1 : 1;
+        if (valorA > valorB) return this.ordenAscendente ? 1 : -1;
+        return 0;
+      });
+
+      // Paginado: devuelve los usuarios correspondientes a la página actual
+      const inicio = (this.paginaActual - 1) * this.usuariosPorPagina;
+      const fin = inicio + this.usuariosPorPagina;
+      return usuariosOrdenados.slice(inicio, fin);
+    },
+    totalPaginas() {
+      return Math.ceil(this.usuariosFiltrados.length / this.usuariosPorPagina);
     }
   },
   mounted() {
@@ -93,7 +128,6 @@ export default {
     async cargarUsuarios() {
       try {
         this.usuarios = await consultarUsuarioFachada();
-        console.log(this.usuarios);
       } catch (error) {
         console.error('Error al cargar los Usuarios:', error);
       }
@@ -106,9 +140,22 @@ export default {
       const ruta = `/usuario_ver/${id}`;
       await router.push({ path: ruta });
     },
+    ordenar(columna) {
+      // Si la columna es la misma que la actual, cambiar el orden
+      if (this.columnaOrdenada === columna) {
+        this.ordenAscendente = !this.ordenAscendente;
+      } else {
+        this.columnaOrdenada = columna;
+        this.ordenAscendente = true;
+      }
+    },
+    cambiarPagina(nuevaPagina) {
+      if (nuevaPagina >= 1 && nuevaPagina <= this.totalPaginas) {
+        this.paginaActual = nuevaPagina;
+      }
+    }
   }
 };
-
 </script>
 
 <style scoped>
@@ -175,5 +222,12 @@ button:hover {
   .table th, .table td {
     font-size: 0.85rem;
   }
+}
+
+/* Estilo para el encabezado resaltado */
+th.highlighted {
+  background-color: #004080;
+  color: white;
+  border: 2px solid #a9c4f5;
 }
 </style>

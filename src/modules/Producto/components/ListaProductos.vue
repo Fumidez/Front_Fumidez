@@ -18,16 +18,16 @@
                     <table class="table table-striped table-hover align-middle">
                         <thead class="table-primary text-center">
                             <tr>
-                                <th>#</th>
-                                <th>Nombre</th>
-                                <th>Cantidad</th>
-                                <th>Precio</th>
-                                <th>Proveedor</th>
+                                <th @click="ordenar('id')" :class="{'highlighted': columnaOrdenada === 'id'}">#</th>
+                                <th @click="ordenar('nombre')" :class="{'highlighted': columnaOrdenada === 'nombre'}">Nombre</th>
+                                <th @click="ordenar('cantidad')" :class="{'highlighted': columnaOrdenada === 'cantidad'}">Cantidad</th>
+                                <th @click="ordenar('precio')" :class="{'highlighted': columnaOrdenada === 'precio'}">Precio</th>
+                                <th @click="ordenar('idProveedor')" :class="{'highlighted': columnaOrdenada === 'idProveedor'}">Proveedor</th>
                                 <th>Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="(producto, index) in productos" :key="producto.id" class="text-center">
+                            <tr v-for="(producto, index) in productosPaginados" :key="producto.id" class="text-center">
                                 <td>{{ index + 1 }}</td>
                                 <td>{{ producto.nombre }}</td>
                                 <td>{{ producto.cantidad }}</td>
@@ -48,9 +48,24 @@
                                     </div>
                                 </td>
                             </tr>
+                            <tr v-if="productosFiltrados.length === 0">
+                                <td colspan="6" class="text-center">No se encontraron resultados</td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
+
+                <!-- Paginación -->
+                <div class="d-flex justify-content-center mt-4">
+                    <button :disabled="paginaActual === 1" @click="cambiarPagina(paginaActual - 1)" class="btn btn-outline-primary">
+                        Anterior
+                    </button>
+                    <span class="mx-3">{{ paginaActual }} / {{ totalPaginas }}</span>
+                    <button :disabled="paginaActual === totalPaginas" @click="cambiarPagina(paginaActual + 1)" class="btn btn-outline-primary">
+                        Siguiente
+                    </button>
+                </div>
+
             </div>
         </main>
     </div>
@@ -79,8 +94,41 @@ export default {
                 idProveedor: null
             },
             productos: [],
-            proveedores: []
+            proveedores: [],
+            filtro: "",
+            paginaActual: 1,
+            productosPorPagina: 5, // Número de productos por página
+            columnaOrdenada: null, // Inicialmente no hay ninguna columna ordenada
+            ordenAscendente: true, // Orden ascendente o descendente
         };
+    },
+    computed: {
+        productosFiltrados() {
+            const filtroMinusculas = this.filtro.toLowerCase();
+            return this.productos.filter(producto => 
+                producto.nombre.toLowerCase().includes(filtroMinusculas) ||
+                producto.precio.toString().includes(filtroMinusculas)
+            );
+        },
+        productosPaginados() {
+            // Ordenar los productos filtrados
+            const productosOrdenados = [...this.productosFiltrados].sort((a, b) => {
+                const valorA = a[this.columnaOrdenada];
+                const valorB = b[this.columnaOrdenada];
+                
+                if (valorA < valorB) return this.ordenAscendente ? -1 : 1;
+                if (valorA > valorB) return this.ordenAscendente ? 1 : -1;
+                return 0;
+            });
+
+            // Paginado: devuelve los productos correspondientes a la página actual
+            const inicio = (this.paginaActual - 1) * this.productosPorPagina;
+            const fin = inicio + this.productosPorPagina;
+            return productosOrdenados.slice(inicio, fin);
+        },
+        totalPaginas() {
+            return Math.ceil(this.productosFiltrados.length / this.productosPorPagina);
+        }
     },
     methods: {
         async buscarProductos() {
@@ -128,6 +176,20 @@ export default {
             const ruta = `/producto_ver/${id}`;
             await router.push({ path: ruta });
         },
+        ordenar(columna) {
+            // Si la columna es la misma que la actual, cambiar el orden
+            if (this.columnaOrdenada === columna) {
+                this.ordenAscendente = !this.ordenAscendente;
+            } else {
+                this.columnaOrdenada = columna;
+                this.ordenAscendente = true;
+            }
+        },
+        cambiarPagina(nuevaPagina) {
+            if (nuevaPagina >= 1 && nuevaPagina <= this.totalPaginas) {
+                this.paginaActual = nuevaPagina;
+            }
+        }
     },
     mounted() {
         this.buscarProductos();
@@ -170,10 +232,13 @@ h1 {
     border-collapse: collapse;
 }
 
-.table th,
-.table td {
+.table th, .table td {
     text-align: center;
     vertical-align: middle;
+}
+
+.badge {
+    font-size: 0.9rem;
 }
 
 button {
@@ -194,9 +259,15 @@ button:hover {
         font-size: 1.5rem;
     }
 
-    .table th,
-    .table td {
+    .table th, .table td {
         font-size: 0.85rem;
     }
+}
+
+/* Estilo para el encabezado resaltado */
+th.highlighted {
+    background-color: #004080;
+    color: white;
+    border: 2px solid #a9c4f5;
 }
 </style>

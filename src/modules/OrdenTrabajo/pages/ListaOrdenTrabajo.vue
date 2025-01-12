@@ -15,36 +15,29 @@
           </button>
         </div>
 
+        <!-- Tabla de Órdenes de Trabajo -->
         <div>
           <table class="table table-striped table-hover align-middle">
             <thead class="table-primary text-center">
               <tr>
-                <th>#</th>
-                <th>Fecha</th>
-                <th>Hora</th>
-                <th>Número de Orden</th>
-                <th>Descripción</th>
-                <th>Área</th>
-                <th>Servicios</th>
-                <th>Estado</th>
+                <th @click="ordenar('id')" :class="{'highlighted': columnaOrdenada === 'id'}">#</th>
+                <th @click="ordenar('fecha')" :class="{'highlighted': columnaOrdenada === 'fecha'}">Fecha</th>
+                <th @click="ordenar('hora')" :class="{'highlighted': columnaOrdenada === 'hora'}">Hora</th>
+                <th @click="ordenar('numeroOrden')" :class="{'highlighted': columnaOrdenada === 'numeroOrden'}">Número de Orden</th>
+                <th @click="ordenar('descripcion')" :class="{'highlighted': columnaOrdenada === 'descripcion'}">Descripción</th>
+                <th @click="ordenar('area')" :class="{'highlighted': columnaOrdenada === 'area'}">Área</th>
+                <th @click="ordenar('estado')" :class="{'highlighted': columnaOrdenada === 'estado'}">Estado</th>
                 <th>Acciones</th>
               </tr>
             </thead>
             <tbody>
-              <tr v-for="(orden, index) in ordenesFiltradas" :key="orden.id" class="text-center">
+              <tr v-for="(orden, index) in ordenesPaginadas" :key="orden.id" class="text-center">
                 <td>{{ index + 1 }}</td>
                 <td>{{ orden.fecha }}</td>
                 <td>{{ orden.hora }}</td>
                 <td>{{ orden.numeroOrden }}</td>
                 <td>{{ orden.descripcion }}</td>
                 <td>{{ orden.area }}</td>
-                <td>
-                  <ul class="list-unstyled mb-0">
-                    <li v-for="servicio in orden.servicios" :key="servicio.id">
-                      {{ servicio.tipoServicio }}
-                    </li>
-                  </ul>
-                </td>
                 <td>
                   <span v-if="orden.estado === 'confirmado'" class="badge bg-success">
                     <i class="bi bi-check-circle"></i> Confirmado
@@ -79,15 +72,26 @@
             </tbody>
           </table>
         </div>
+
+        <!-- Paginación -->
+        <div class="d-flex justify-content-center mt-4">
+          <button :disabled="paginaActual === 1" @click="cambiarPagina(paginaActual - 1)" class="btn btn-outline-primary">
+            Anterior
+          </button>
+          <span class="mx-3">{{ paginaActual }} / {{ totalPaginas }}</span>
+          <button :disabled="paginaActual === totalPaginas" @click="cambiarPagina(paginaActual + 1)" class="btn btn-outline-primary">
+            Siguiente
+          </button>
+        </div>
+
       </div>
     </main>
   </div>
 </template>
 
-
 <script>
 import { generatePDFOrdenFachada } from '../helpers/generarOrdenPdf';
-import { actualizarOrdenEstadoFachada, actualizarOrdenFachada, buscarOrdenPorId, consultarOrdenFachada } from '../helpers/OrdenTrabajoHelper';
+import { actualizarOrdenEstadoFachada, consultarOrdenFachada } from '../helpers/OrdenTrabajoHelper';
 import router from "@/router";
 
 export default {
@@ -96,10 +100,11 @@ export default {
     return {
       ordenesTrabajo: [],
       filtro: "",
+      paginaActual: 1,
+      ordenesPorPagina: 5, // Número de órdenes por página
+      columnaOrdenada: null, // Inicialmente no hay ninguna columna ordenada
+      ordenAscendente: true, // Orden ascendente o descendente
     };
-  },
-  mounted() {
-    this.cargarOrdenesTrabajo();
   },
   computed: {
     ordenesFiltradas() {
@@ -112,8 +117,26 @@ export default {
         );
       });
     },
+    ordenesPaginadas() {
+      const ordenesOrdenadas = [...this.ordenesFiltradas].sort((a, b) => {
+        const valorA = a[this.columnaOrdenada];
+        const valorB = b[this.columnaOrdenada];
+        
+        if (valorA < valorB) return this.ordenAscendente ? -1 : 1;
+        if (valorA > valorB) return this.ordenAscendente ? 1 : -1;
+        return 0;
+      });
 
-
+      const inicio = (this.paginaActual - 1) * this.ordenesPorPagina;
+      const fin = inicio + this.ordenesPorPagina;
+      return ordenesOrdenadas.slice(inicio, fin);
+    },
+    totalPaginas() {
+      return Math.ceil(this.ordenesFiltradas.length / this.ordenesPorPagina);
+    }
+  },
+  mounted() {
+    this.cargarOrdenesTrabajo();
   },
   methods: {
     async cargarOrdenesTrabajo() {
@@ -143,12 +166,25 @@ export default {
       await actualizarOrdenEstadoFachada(id, estado);
       orden.estado = param;
     },
-  },
+    ordenar(columna) {
+      if (this.columnaOrdenada === columna) {
+        this.ordenAscendente = !this.ordenAscendente;
+      } else {
+        this.columnaOrdenada = columna;
+        this.ordenAscendente = true;
+      }
+    },
+    cambiarPagina(nuevaPagina) {
+      if (nuevaPagina >= 1 && nuevaPagina <= this.totalPaginas) {
+        this.paginaActual = nuevaPagina;
+      }
+    }
+  }
 };
-
 </script>
 
 <style scoped>
+/* El estilo sigue igual que el original */
 .page-container {
   display: flex;
   flex-direction: column;
@@ -182,8 +218,7 @@ h1 {
   border-collapse: collapse;
 }
 
-.table th,
-.table td {
+.table th, .table td {
   text-align: center;
   vertical-align: middle;
 }
@@ -210,9 +245,15 @@ button:hover {
     font-size: 1.5rem;
   }
 
-  .table th,
-  .table td {
+  .table th, .table td {
     font-size: 0.85rem;
   }
+}
+
+/* Estilo para el encabezado resaltado */
+th.highlighted {
+  background-color: #004080;
+  color: white;
+  border: 2px solid #a9c4f5;
 }
 </style>

@@ -24,10 +24,14 @@ import RegistroUsuarios from '../modules/Usuario/pages/RegistroUsuarios.vue';
 import RegistrarInforme from '../modules/InformeIPM/pages/RegistrarInforme.vue';
 
 import CargarArchivo from '../components/CargarArchivo.vue';
-
+import RecuperarContrasenia from '../modules/Login/pages/RecuperarContrasenia.vue';
+import CambioContrasenia from '../modules/Login/pages/CambioContrasenia.vue';
+import Home from '../modules/Home/pages/Home.vue';
 
 const routes = [
   { path: '/login', component: Login }, // Página de login
+  { path: '/recuperar_contraseña', component: RecuperarContrasenia}, // Página de login
+
   { path: '/clientes', component: Clientes , meta: { requiresAuth: true } },
   { path: '/clientes_lista', component: ListarClientes , meta: { requiresAuth: true } },
   { path: '/cliente_registrar', component: RegistroClientes , meta: { requiresAuth: true } },
@@ -51,13 +55,14 @@ const routes = [
   { path: '/producto_registro', component: RegistrarProducto, meta: { requiresAuth: true } },
   { path: '/producto_ver/:id', component: RegistrarProducto, meta: { requiresAuth: true } },
   { path: '/proveedor_ver/:id', component: RegistroProveedor, meta: { requiresAuth: true } },
-  { path: '/usuarios_lista', component: ListarUsuarios, meta: { requiresAuth: true } },
+  { path: '/usuarios_lista', component: ListarUsuarios, meta: { requiresAuth: false } },
   { path: '/usuario_ver/:id', component: RegistroUsuarios, meta: { requiresAuth: true } },
-  { path: '/usuario_registro', component: RegistroUsuarios, meta: { requiresAuth: true } },
+  { path: '/usuario_registro', component: RegistroUsuarios, meta: { requiresAuth: false } },
   { path: '/informe_ver/:id', component: RegistrarInforme, meta: { requiresAuth: true } },
+  { path: '/cambiar_contrasenia/:correo/:token', component: CambioContrasenia, meta: { requiresAuth: true } },
+  { path: '/inicio', component: Home, meta: { requiresAuth: false } },
 
-  { path: '/', redirect: '/clientes' },
-  { path: '/c',  component: CargarArchivo },
+  { path: '/', redirect: '/inicio' },
 ];
 
 const router = createRouter({
@@ -71,7 +76,7 @@ router.beforeEach((to, from, next) => {
   if (to.meta.requiresAuth && !isAuthenticated) {
     next('/login');
   } else if (to.path === '/login' && isAuthenticated) {
-    next('/informe');
+    next('/inicio');
   } else {
     next();
   }

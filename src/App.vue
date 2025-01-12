@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <Header v-if="$route.path !== '/login'"/>
+    <Header v-if="!['/login', '/recuperar_contraseña'].includes($route.path)" />
     <router-view />
 
   </div>
