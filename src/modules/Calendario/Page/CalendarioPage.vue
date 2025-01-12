@@ -2,11 +2,7 @@
   <div class="calendar-container">
     <vue-cal :events="events" default-view="month" @event-click="handleEventClick">
       <template #event="{ event }">
-        <div 
-          class="vuecal__event-title" 
-          v-html="event.title" 
-          :class="{'orden-trabajo': event.isOrdenTrabajo}" 
-        ></div>
+        <div class="vuecal__event-title" v-html="event.title" :class="{ 'orden-trabajo': event.isOrdenTrabajo }"></div>
         <em class="vuecal__event-time">
           <strong>Event start:</strong>
           <span>{{ event.start.formatTime() }}</span>
@@ -61,7 +57,7 @@ export default {
         const formatDate = (date, hour) => {
           const year = date.getFullYear();
           const month = String(date.getMonth() + 1).padStart(2, "0");
-          const day = String(date.getDate()+1).padStart(2, "0");
+          const day = String(date.getDate() + 1).padStart(2, "0");
 
           // Divide hour in hours and minutes
           const [hours, minutes] = hour.split(":");
@@ -69,16 +65,16 @@ export default {
           return `${year}-${month}-${day} ${hours}:${minutes}`;
         };
         const addOneHour = (hourString) => {
-            const [hours, minutes, seconds] = hourString.split(":").map(Number);
-            const date = new Date();
-            date.setHours(hours, minutes, seconds);
-            date.setHours(date.getHours() + 1);
-  
-            const newHours = String(date.getHours()).padStart(2, "0");
-            const newMinutes = String(date.getMinutes()).padStart(2, "0");
-  
-            return `${newHours}:${newMinutes}:00`;
-          };
+          const [hours, minutes, seconds] = hourString.split(":").map(Number);
+          const date = new Date();
+          date.setHours(hours, minutes, seconds);
+          date.setHours(date.getHours() + 1);
+
+          const newHours = String(date.getHours()).padStart(2, "0");
+          const newMinutes = String(date.getMinutes()).padStart(2, "0");
+
+          return `${newHours}:${newMinutes}:00`;
+        };
 
         const startFormatted = formatDate(startDate, orden.hora);
         const endFormatted = formatDate(endDate, addOneHour(orden.hora));
@@ -107,18 +103,25 @@ export default {
       console.log(this.events);
     },
 
-    // Handle event click to show a modal with event details
     async handleEventClick(event) {
-      const datos = event; 
-      const cliente = await buscarClientePorIdFachada(event.cliente);
-      datos.persona = cliente.personaEncargada;
-      datos.cliente = cliente.nombre;
-      this.selectedEvent = datos;
-    },
+      if (!event.cliente) {
+        console.error("El cliente no está definido en el evento:", event);
+        return; 
+      }
 
-    // Close the event details modal
+      try {
+        const cliente = await buscarClientePorIdFachada(event.cliente);
+        const datos = {
+          ...event,
+          persona: cliente.personaEncargada,
+          cliente: cliente.nombre,
+        };
+        this.selectedEvent = datos;
+      } catch (error) {
+        console.error("Error al buscar cliente por ID:", error);
+      }
+    },
     closeModal() {
-      // Ensure to reset the modal state to null
       this.selectedEvent = null;
     },
   },
@@ -254,6 +257,7 @@ export default {
     transform: translateY(-50px);
     opacity: 0;
   }
+
   to {
     transform: translateY(0);
     opacity: 1;

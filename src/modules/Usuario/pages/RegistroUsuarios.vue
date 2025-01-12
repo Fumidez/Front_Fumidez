@@ -52,7 +52,7 @@
                     <div class="form-group mb-3 d-flex align-items-center">
                         <label for="nCuenta" class="w-25"><i class="bi bi-chat-left-dots-fill"></i> Número de
                             Cuenta</label>
-                        <input type="text" id="nCuenta" v-model="usuario.ncuenta" class="form-control"
+                        <input type="number" id="nCuenta" v-model="usuario.ncuenta" class="form-control"
                             placeholder="Número de Cuenta" />
                     </div>
 
