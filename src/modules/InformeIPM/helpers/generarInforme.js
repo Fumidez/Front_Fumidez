@@ -178,7 +178,7 @@ const generatePDF = async (informe, doc) => {
         headerHeight + 60
     );
     doc.text(
-        `FECHA: ${informe.ordenDto.fecha}`,
+        `FECHA: ${informe.ordenDto.fecha.split("T")[0]}`,
         divisionX + 10,
         headerHeight + 80
     );
@@ -629,6 +629,7 @@ const generatePDF = async (informe, doc) => {
             textColor: [37, 123, 205],
             halign: "center",
             fontSize: 10, // Tamaño de la fuente para la cabecera
+            lineColor: [37, 123, 205],
         },
         bodyStyles: {
             textColor: [37, 123, 205],
@@ -636,10 +637,13 @@ const generatePDF = async (informe, doc) => {
             fontSize: 6, // Tamaño de la fuente para el contenido
             cellPadding: 3, // Espacio interno de las celdas
             halign: "center", // Alineación horizontal del contenido
+            lineColor: [37, 123, 205],
         },
         styles: {
             cellWidth: "wrap", // Ajusta el ancho de las celdas al contenido
             overflow: "linebreak", // Permitir saltos de línea en las celdas
+            lineColor: [37, 123, 205],
+            lineWidth: 0.5
         },
         columnStyles: {
             0: { cellWidth: tablaWidth }, // Ancho de la primera columna (título de las áreas)
@@ -648,26 +652,29 @@ const generatePDF = async (informe, doc) => {
     });
 
     datosTabla = [
-        ["AREAS INTERNAS", "1", "2", "3", "4"], // Primera fila
-        ["AREAS EXTERNAS", "1", "2", "3", "4"], // Segunda fila
+        ["AREAS INTERNAS", informe.sanitizacionConfidencialDto.areaInterna == 1 ? "X" : "1" ,
+            informe.sanitizacionConfidencialDto.areaInterna == 2 ? "X" : "2",
+            informe.sanitizacionConfidencialDto.areaInterna == 3 ? "X" : "3",
+            informe.sanitizacionConfidencialDto.areaInterna == 4 ? "X" : "4"], // Primera fila
+        ["AREAS EXTERNAS",  informe.sanitizacionConfidencialDto.areaExterna == 1 ? "X" : "1" ,
+            informe.sanitizacionConfidencialDto.areaExterna == 2 ? "X" : "2",
+            informe.sanitizacionConfidencialDto.areaExterna == 3 ? "X" : "3",
+            informe.sanitizacionConfidencialDto.areaExterna == 4 ? "X" : "4"], // Segunda fila
         [
             informe.sanitizacionConfidencialDto.areaNombreOpc1
                 ? informe.sanitizacionConfidencialDto.areaNombreOpc1
                 : "AREA",
-            "1",
-            "2",
-            "3",
-            "4",
-        ], // Tercera fila
+                informe.sanitizacionConfidencialDto.areaOpc1 == 1 ? "X" : "1" ,
+                informe.sanitizacionConfidencialDto.areaOpc1 == 2 ? "X" : "2",
+                informe.sanitizacionConfidencialDto.areaOpc1 == 3 ? "X" : "3",
+                informe.sanitizacionConfidencialDto.areaOpc1 == 4 ? "X" : "4"], // Tercera fila
         [
             informe.sanitizacionConfidencialDto.areaNombreOpc2
                 ? informe.sanitizacionConfidencialDto.areaNombreOpc2
-                : "AREA",
-            "1",
-            "2",
-            "3",
-            "4",
-        ], // Cuarta fila
+                : "AREA", informe.sanitizacionConfidencialDto.areaOpc2 == 1 ? "X" : "1" ,
+                informe.sanitizacionConfidencialDto.areaOpc2 == 2 ? "X" : "2",
+                informe.sanitizacionConfidencialDto.areaOpc2 == 3 ? "X" : "3",
+                informe.sanitizacionConfidencialDto.areaOpc2 == 4 ? "X" : "4"], // Cuarta fila
     ];
 
     doc.autoTable({
@@ -682,10 +689,14 @@ const generatePDF = async (informe, doc) => {
             fontSize: 6, // Tamaño de la fuente para el contenido
             cellPadding: 3, // Espacio interno de las celdas
             halign: "center", // Alineación horizontal del contenido
+            lineColor: [37, 123, 205],
+
         },
         styles: {
             cellWidth: "wrap", // Ajusta el ancho de las celdas al contenido
             overflow: "linebreak", // Permitir saltos de línea en las celdas
+            lineColor: [37, 123, 205],
+            lineWidth: 0.5
         },
         columnStyles: {
             0: { cellWidth: tablaWidth * 0.6, halign: "left" }, // Ancho de la primera columna (título de las áreas)
@@ -701,7 +712,8 @@ const generatePDF = async (informe, doc) => {
 // Definir posiciones y dimensiones para el nuevo cuadro
 const observacionesY = cuadroY + 95; // Posición Y donde empieza el cuadro
 const observacionesHeight = 130; // Altura fija para el cuadro de observaciones
-
+doc.setDrawColor(37, 123, 205); // Color de la línea (RGB)
+doc.setLineWidth(0.5);
 // Dibuja el cuadro principal
 doc.rect(cuadroX, observacionesY, tablaWidth, observacionesHeight); // Cuadro externo
 
@@ -803,8 +815,6 @@ doc.autoTable({
     procedimientosY = doc.lastAutoTable.finalY; // Ajustamos la posición Y después de la cabecera
 
 
-    let informePorId = await consultarInformePorIdFachada(informe.id);
-
 
     const datosProcedimientos = {
         nebulizador: "",
@@ -820,8 +830,8 @@ doc.autoTable({
         sanitizacion: "",
     };
 
-    if (Array.isArray(informePorId.procediminetos)) {
-        informePorId.procediminetos.forEach((informe) => {
+    if (Array.isArray(informe.procediminetoDtos)) {
+        informe.procediminetoDtos.forEach((informe) => {
             if (informe.tipoProcedimineto == 0) {
                 datosProcedimientos.nebulizador = "X";
             }
@@ -1029,6 +1039,8 @@ doc.autoTable({
             0: {
                 // Define las propiedades de la primera columna
                 cellWidth: pageWidth - cuadroX - 20, // Limita el ancho de la columna
+                lineColor: [37, 123, 205],
+                lineWidth: 0.5
             },
         },
         tableWidth: "wrap", // Ajusta la tabla al contenido

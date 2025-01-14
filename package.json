@@ -22,8 +22,10 @@
     "bootstrap-icons": "^1.11.3",
     "bootstrap-icons-vue": "^1.11.3",
     "bootstrap-vue": "^2.23.1",
+    "dayjs": "^1.11.13",
     "jspdf": "^2.5.2",
     "jspdf-autotable": "^3.8.3",
+    "moment": "^2.30.1",
     "quasar": "^2.17.6",
     "router": "^1.3.8",
     "vue": "^3.4.37",
@@ -31,7 +33,8 @@
     "vue-router": "^4.4.5",
     "vue-toasted": "^1.1.28",
     "vue2-calendar": "^1.0.2",
-    "vue3-calendar": "^0.1.2"
+    "vue3-calendar": "^0.1.2",
+    "vuetify": "^3.7.6"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.1.2",

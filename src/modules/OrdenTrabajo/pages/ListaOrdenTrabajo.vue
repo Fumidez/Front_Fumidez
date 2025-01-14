@@ -91,7 +91,7 @@
 
 <script>
 import { generatePDFOrdenFachada } from '../helpers/generarOrdenPdf';
-import { actualizarOrdenEstadoFachada, consultarOrdenFachada } from '../helpers/OrdenTrabajoHelper';
+import { actualizarOrdenEstadoFachada, buscarOrdenPorId, consultarOrdenFachada } from '../helpers/OrdenTrabajoHelper';
 import router from "@/router";
 
 export default {

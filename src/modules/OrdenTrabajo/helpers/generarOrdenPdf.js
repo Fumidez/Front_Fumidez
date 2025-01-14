@@ -84,30 +84,52 @@ const generatePDF = async (ordenTrabajo) => {
   doc.setFontSize(8);
   doc.setFont('cambria', 'normal');
 
+
   // Lado derecho de la división
   doc.text(`CLIENTE: ${ordenTrabajo.cliente.nombre}`, divisionX + 10, headerHeight + 40);
   doc.text(`RUC / CÉDULA: ${ordenTrabajo.cliente.ruc}`, divisionX + 10, headerHeight + 60);
   doc.text(`TELÉFONO: ${ordenTrabajo.cliente.telefono}`, divisionX + 10, headerHeight + 80);
   doc.text(`DIRECCIÓN: ${ordenTrabajo.cliente.direccion}`, divisionX + 10, headerHeight + 100);
-  doc.text(`FECHA: ${ordenTrabajo.fecha}`, divisionX + 250, headerHeight + 60);
+  doc.text(`FECHA: ${ordenTrabajo.fecha.split("T")[0]}`, divisionX + 250, headerHeight + 60);
   doc.text(`HORA: ${ordenTrabajo.hora}`, divisionX + 250, headerHeight + 80);
-  doc.text(`ATTE: ${ordenTrabajo.hora}`, divisionX + 250, headerHeight + 100);
+  doc.text(`ATTE: ${ordenTrabajo.cliente.personaEncargada}`, divisionX + 250, headerHeight + 100);
 
   // Descripción
   const descriptionYStart = headerHeight + 120;
   doc.setFont('cambria', 'bold');
   doc.setFontSize(11);
 
-  doc.text('DESCRIPCION DEL TRABAJO REALIZADO', 255, descriptionYStart + 20);
+  // Título de la sección
+  //doc.text('DESCRIPCION DEL TRABAJO REALIZADO', 255, descriptionYStart + 20);
 
   const afterDescriptionY = descriptionYStart + 28; // Ajusta el valor según sea necesario
-  doc.setLineWidth(0.75); // Grosor de la línea (ajusta según sea necesario)
-  doc.line(150, afterDescriptionY, pageWidth - 50, afterDescriptionY); // Línea horizontal
+  //doc.setLineWidth(0.75); // Grosor de la línea (ajusta según sea necesario)
+  //.line(150, afterDescriptionY, pageWidth - 50, afterDescriptionY); // Línea horizontal
 
-  doc.setFont('cambria', 'normal');
+  // Configuración de autoTable
+  doc.autoTable({
+    startY: descriptionYStart + 20, // Espacio debajo del título y la línea
+    head: [['DESCRIPCION DEL TRABAJO REALIZADO']], // Encabezado de la tabla
+    body: [[ordenTrabajo.descripcion]], // Contenido de la descripción
+    theme: 'grid', // Estilo de la tabla
+    styles: {
+      font: 'cambria',
+      fontSize: 10,
+      cellPadding: 5,
+      textColor: [0, 0, 0], // Negro
+    },
+    headStyles: {
+      fillColor: [32, 76, 130], // Color de fondo del encabezado
+      textColor: [255, 255, 255], // Blanco
+      fontStyle: 'bold',
+      halign: "center"
+    },
+    columnStyles: {
+      0: { cellWidth: pageWidth - 200 }, // Ajuste del ancho de la columna
+    },
+    margin: { left: 150, right: 50 }, // Márgenes laterales
+  });
 
-
-  doc.text(ordenTrabajo.descripcion, 130, descriptionYStart + 55);
 
 
   // Pie de página con degradado (blanco -> azul -> blanco)
@@ -145,34 +167,38 @@ const generatePDF = async (ordenTrabajo) => {
   doc.text('099 995 4079', doc.internal.pageSize.width - 80, footerY + 15);
   const signatureY = doc.internal.pageSize.height - footerHeight - 50; // Ajustar la posición vertical según sea necesario
 
- // Ajustar posición del bloque "Recibí Conforme"
-const reciboX = pageWidth - 220; // Ajusta la posición horizontal según sea necesario
+  // Ajustar posición del bloque "Recibí Conforme"
+  const reciboX = pageWidth - 220; // Ajusta la posición horizontal según sea necesario
 
-// Subir el texto "Recibí Conforme" y el bloque asociado
-const reciboBaseY = signatureY - 70; // Elevar todo el bloque hacia arriba (ajusta según sea necesario)
+  // Subir el texto "Recibí Conforme" y el bloque asociado
+  let reciboBaseY = signatureY - 150; // Elevar todo el bloque hacia arriba (ajusta según sea necesario)
 
-// Texto "Recibí Conforme"
-doc.setFont('cambria', 'bold');
-doc.setFontSize(10);
-doc.text('Recibí Conforme', reciboX, reciboBaseY); // Subido más arriba
+  // Texto "Recibí Conforme"
+  doc.setFont('cambria', 'bold');
+  doc.setFontSize(10);
+  doc.text('Recibí Conforme', reciboX, reciboBaseY); // Subido más arriba
 
-// Línea para firma debajo de "Recibí Conforme"
-doc.line(reciboX, reciboBaseY + 10, reciboX + 150, reciboBaseY + 10);
+  reciboBaseY = reciboBaseY + 70;
 
-// Texto "FIRMA Y SELLO" debajo de la línea
-doc.setFontSize(10);
-doc.setFont('cambria', 'normal');
-doc.text('FIRMA Y SELLO', reciboX + 50, reciboBaseY + 25); // Asegurando que haya espacio suficiente
+  // Línea para firma debajo de "Recibí Conforme"
+  doc.line(reciboX, reciboBaseY, reciboX + 150, reciboBaseY);
 
-// Línea para el nombre debajo de la firma
-const nombreLineY = reciboBaseY + 55; // Ajustado para que no interfiera
-doc.line(reciboX, nombreLineY, reciboX + 150, nombreLineY);
+  reciboBaseY = reciboBaseY + 10;
 
-// Etiqueta "Nombre:"
-doc.text('Nombre:', reciboX, nombreLineY + 12);
+  // Texto "FIRMA Y SELLO" debajo de la línea
+  doc.setFontSize(10);
+  doc.setFont('cambria', 'normal');
+  doc.text('FIRMA Y SELLO', reciboX + 50, reciboBaseY); // Asegurando que haya espacio suficiente
 
-// Nombre del cliente
-doc.text(ordenTrabajo.cliente.nombre, reciboX + 50, nombreLineY + 12); // Ajustado más abajo
+  // Línea para el nombre debajo de la firma
+  const nombreLineY = reciboBaseY + 55; // Ajustado para que no interfiera
+  doc.line(reciboX, nombreLineY, reciboX + 150, nombreLineY);
+
+  // Etiqueta "Nombre:"
+  doc.text('Nombre:', reciboX, nombreLineY + 12);
+
+  // Nombre del cliente
+  doc.text(ordenTrabajo.cliente.nombre, reciboX + 50, nombreLineY + 12); // Ajustado más abajo
 
   // Guardar PDF
   doc.save(`orden_${ordenTrabajo.numeroOrden}.pdf`);

@@ -19,8 +19,6 @@
           <li><router-link to="/informe_lista">Informes</router-link></li>
           <li><router-link to="/calendario">Calendario</router-link></li>
           <li><router-link to="/clientes_lista">Cliente</router-link></li>
-          <li><router-link to="/cambiar_contraseña">Cambiar</router-link></li>
-          <li><router-link to="/recuperar_contrasenia">Recuperar</router-link></li>
         </ul>
       </nav>
 

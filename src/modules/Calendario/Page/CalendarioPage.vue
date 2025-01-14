@@ -22,6 +22,7 @@
         <p><strong>Cliente:</strong> {{ selectedEvent.cliente }}</p> <!-- Added client information -->
         <p><strong>Descripción:</strong> {{ selectedEvent.descripcion }}</p>
         <p><strong>Work hour:</strong> {{ selectedEvent.workHour }}</p>
+        <p><strong>Usuario:</strong> {{ selectedEvent.usuario }}</p>
       </div>
     </div>
   </div>
@@ -33,6 +34,7 @@ import "vue-cal/dist/vuecal.css";
 import axios from "axios";
 import { consultarOrdenSimpleFachada } from "../../OrdenTrabajo/helpers/OrdenTrabajoHelper";
 import { buscarClientePorIdFachada } from "../../Cliente/helpers/ClienteHelper";
+import { obtenerUsuarioFachada } from "../../Usuario/helpers/UsuarioHelper";
 
 export default {
   components: { VueCal },
@@ -91,9 +93,10 @@ export default {
         return {
           start: startFormatted,
           end: endFormatted,
-          title: `Orden #${orden.numeroOrden}`,
+          title: `Orden ${orden.numeroOrden}`,
           persona: ` `,
           cliente: `${orden.idClientes}`, // Added client information
+          usuario: `${orden.idUsuarios}`, // Added client information
           descripcion: orden.descripcion || "No description available", // Add description if available
           workHour: workHour, // Calculated work hour
           isOrdenTrabajo: true, // Indicador para aplicar un estilo especial
@@ -111,10 +114,12 @@ export default {
 
       try {
         const cliente = await buscarClientePorIdFachada(event.cliente);
+        const usuario = await obtenerUsuarioFachada(event.usuario);
         const datos = {
           ...event,
           persona: cliente.personaEncargada,
           cliente: cliente.nombre,
+          usuario: usuario.nombre,
         };
         this.selectedEvent = datos;
       } catch (error) {
@@ -140,22 +145,24 @@ export default {
 
 /* Styling for each event */
 .vuecal__event {
-  padding: 20px;
-  font-size: 18px;
-  border-radius: 8px;
+  padding: 10px; /* Espaciado interno del evento */
+  font-size: 16px;
   background: linear-gradient(145deg, #0078d4, #005a9e);
   color: white;
-  margin-bottom: 15px;
+  margin-bottom: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start; /* Asegura que el contenido esté al inicio */
   position: relative;
   z-index: 1;
-  overflow: hidden;
+  overflow: visible;
+  height: auto !important; /* Permite que el tamaño del evento se ajuste al contenido */
+  min-height: 520px; /* Altura mínima para eventos más largos */
+  width: 10%;
+  word-break: break-word; /* Permite dividir texto largo */
+  white-space: normal; /* Asegura que el texto largo se ajuste */
   transition: all 0.3s ease;
-  height: 150px;
-  width: 100%;
 }
 
 .vuecal__event:hover {
@@ -166,8 +173,9 @@ export default {
 /* Specific styling for orden de trabajo events */
 .vuecal__event.orden-trabajo {
   background: linear-gradient(145deg, #0078d4, #005a9e);
-  height: 180px;
-  padding: 30px;
+  padding: 15px;
+  min-height: 120px; /* Altura mínima para eventos de orden de trabajo */
+  height: auto !important; /* Ajusta dinámicamente la altura al contenido */
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
@@ -180,10 +188,12 @@ export default {
 /* Styling for the event title */
 .vuecal__event-title {
   font-weight: bold;
-  font-size: 20px;
-  margin-bottom: 10px;
+  font-size: 18px;
+  margin-bottom: 5px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  white-space: normal; /* Permite el ajuste del texto largo */
+  overflow: visible; /* Evita recortes del texto */
 }
 
 /* Styling for the event time */
@@ -191,6 +201,7 @@ export default {
   font-size: 16px;
   color: #d3d3d3;
   text-transform: capitalize;
+  margin-top: 5px;
 }
 
 /* Modal styling */
@@ -237,12 +248,13 @@ export default {
 /* Responsive design adjustments */
 @media (max-width: 768px) {
   .vuecal__day {
-    height: 120px;
+    height: 160px; /* Altura ajustada para días */
   }
 
   .vuecal__event {
     font-size: 14px;
     padding: 15px;
+    min-height: 160px; /* Altura de los eventos más larga */
   }
 
   .modal-content {
