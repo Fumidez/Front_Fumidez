@@ -157,9 +157,6 @@ export default {
         async submitForm() {
             console.log("Datos del cliente:", this.cliente);
             const nuevoCliente = await crearClienteFachada(this.cliente);
-            const cli = await obtenerClienteFachada(this.clienteId);
-                    console.log("asdadasdasd");
-                    console.log(cli);
             this.limpiarDatosCliente();
         },
         async redirigirListadoCliente() {

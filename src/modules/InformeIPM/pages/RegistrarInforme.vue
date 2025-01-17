@@ -19,13 +19,6 @@
               required></textarea>
           </div>
 
-          <!-- Procedimiento -->
-          <div class="form-group mb-3 d-flex align-items-center">
-            <label for="procedimiento" class="w-25"><i class="bi bi-file-earmark"></i> Procedimiento</label>
-            <input type="text" id="procedimiento" v-model="informe.procedimiento" class="form-control"
-              placeholder="Procedimiento" required />
-          </div>
-
           <!-- Recomendaciones -->
           <div class="form-group mb-3 d-flex align-items-center">
             <label for="recomendaciones" class="w-25"><i class="bi bi-file-earmark-check"></i> Recomendaciones</label>

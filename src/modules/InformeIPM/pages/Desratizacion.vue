@@ -77,7 +77,7 @@
                     <tr v-for="(item, index) in registros" :key="item.id">
                         <td>{{ index + 1 }}</td>
                         <td>
-                            <select v-model="item.tipoIdentificadorCordon" @change="actualizarRegistro(item)">
+                            <select v-model="item.tipoIdentificadorCordon" @change="actualizarRegistro(item.id, item)">
                                 <option :value="true">Sí</option>
                                 <option :value="false">No</option>
                             </select>
@@ -85,17 +85,17 @@
                         <td>
                             <div class="form-group mb-3 d-flex align-items-center">
                                 <select id="idConsumo" v-model="item.consumo" class="form-control" required
-                                    @change="actualizarRegistro(item)">
+                                    @change="actualizarRegistro(item.id, item)">
                                     <option v-for="(con) in consumo" :key="con" :value="con">
                                         {{ con }}
                                     </option>
                                 </select>
                             </div>
                         </td>
-                        <td><input type="text" v-model="item.ubicacion" @change="actualizarRegistro(item)" /></td>
-                        <td><input type="text" v-model="item.observaciones" @change="actualizarRegistro(item)" /></td>
+                        <td><input type="text" v-model="item.ubicacion" @change="actualizarRegistro(item.id, item)" /></td>
+                        <td><input type="text" v-model="item.observaciones" @change="actualizarRegistro(item.id, item)" /></td>
                         <td>
-                            <select v-model="item.reemplazoPegaCebo" @change="actualizarRegistro(item)">
+                            <select v-model="item.reemplazoPegaCebo" @change="actualizarRegistro(item.id, item)">
                                 <option :value="true">Sí</option>
                                 <option :value="false">No</option>
                             </select>
@@ -103,7 +103,7 @@
                         <td>
                             <div class="form-group mb-3 d-flex align-items-center">
                                 <select id="idCSP" v-model="item.csp" class="form-control" required
-                                    @change="actualizarRegistro(item)">
+                                    @change="actualizarRegistro(item.id, item)">
                                     <option v-for="(csp) in csp" :key="csp" :value="csp">
                                         {{ csp }}
                                     </option>
@@ -131,13 +131,9 @@
     </div>
 </template>
 <script>
-import { consultarDesratizacionFachadaPorIdInforme, crearDesratizacionFachada } from '../helpers/desratizacionHelper';
-import jsPDF from 'jspdf';
-import JsPDFAutotable from 'jspdf-autotable'
-import router from '@/router';
+import { actualizarFormularioFachada, consultarDesratizacionFachadaPorIdInforme, crearDesratizacionFachada } from '../helpers/desratizacionHelper';
 import Footer from '../../../components/Footer.vue';
 import { generateFormularioIPMFachada } from '../helpers/generarInformeIPM';
-
 
 export default {
     name: "RegistroComponent",
@@ -221,8 +217,8 @@ export default {
                 this.registros = this.registros.filter((reg) => reg.id !== id);
             }
         },
-        async actualizarRegistro(item) {
-            console.log(item);
+        async actualizarRegistro(id,item) {
+            await actualizarFormularioFachada(id, item);
         },
 
         async generatePDF() {

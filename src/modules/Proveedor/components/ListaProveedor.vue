@@ -5,20 +5,16 @@
           <h1 class="text-center text-primary mb-4">Gestión de Proveedores</h1>
   
           <!-- Botón para crear nuevo proveedor -->
-          <div class="mb-4 text-end">
-            <button @click="redirigirCrearProveedor" class="btn btn-primary py-2 px-4">
-              <i class="bi bi-plus-circle"></i> Crear Nuevo Proveedor
-            </button>
-          </div>
-  
-          <!-- Filtro de búsqueda -->
-          <div class="mb-3">
+          <div class="mb-4 d-flex justify-content-between align-items-center">
             <input
               v-model="filtro"
               type="text"
-              class="form-control"
+              class="form-control w-50"
               placeholder="Buscar por nombre, dirección o cuenta"
-            />
+            >
+            <button @click="redirigirCrearProveedor" class="btn btn-primary py-2 px-4">
+              <i class="bi bi-plus-circle"></i> Crear Nuevo Proveedor
+            </button>
           </div>
   
           <!-- Tabla de Proveedores -->
@@ -88,9 +84,9 @@
         proveedores: [],
         filtro: "",
         paginaActual: 1,
-        proveedoresPorPagina: 5, // Número de proveedores por página
-        columnaOrdenada: null, // Inicialmente no hay ninguna columna ordenada
-        ordenAscendente: true, // Orden ascendente o descendente
+        proveedoresPorPagina: 5,
+        columnaOrdenada: null, 
+        ordenAscendente: true, 
       };
     },
     computed: {

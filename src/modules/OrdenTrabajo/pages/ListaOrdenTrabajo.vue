@@ -20,13 +20,15 @@
           <table class="table table-striped table-hover align-middle">
             <thead class="table-primary text-center">
               <tr>
-                <th @click="ordenar('id')" :class="{'highlighted': columnaOrdenada === 'id'}">#</th>
-                <th @click="ordenar('fecha')" :class="{'highlighted': columnaOrdenada === 'fecha'}">Fecha</th>
-                <th @click="ordenar('hora')" :class="{'highlighted': columnaOrdenada === 'hora'}">Hora</th>
-                <th @click="ordenar('numeroOrden')" :class="{'highlighted': columnaOrdenada === 'numeroOrden'}">Número de Orden</th>
-                <th @click="ordenar('descripcion')" :class="{'highlighted': columnaOrdenada === 'descripcion'}">Descripción</th>
-                <th @click="ordenar('area')" :class="{'highlighted': columnaOrdenada === 'area'}">Área</th>
-                <th @click="ordenar('estado')" :class="{'highlighted': columnaOrdenada === 'estado'}">Estado</th>
+                <th @click="ordenar('id')" :class="{ 'highlighted': columnaOrdenada === 'id' }">#</th>
+                <th @click="ordenar('fecha')" :class="{ 'highlighted': columnaOrdenada === 'fecha' }">Fecha</th>
+                <th @click="ordenar('hora')" :class="{ 'highlighted': columnaOrdenada === 'hora' }">Hora</th>
+                <th @click="ordenar('numeroOrden')" :class="{ 'highlighted': columnaOrdenada === 'numeroOrden' }">Número
+                  de Orden</th>
+                <th @click="ordenar('descripcion')" :class="{ 'highlighted': columnaOrdenada === 'descripcion' }">
+                  Descripción</th>
+                <th @click="ordenar('area')" :class="{ 'highlighted': columnaOrdenada === 'area' }">Área</th>
+                <th @click="ordenar('estado')" :class="{ 'highlighted': columnaOrdenada === 'estado' }">Estado</th>
                 <th>Acciones</th>
               </tr>
             </thead>
@@ -75,11 +77,13 @@
 
         <!-- Paginación -->
         <div class="d-flex justify-content-center mt-4">
-          <button :disabled="paginaActual === 1" @click="cambiarPagina(paginaActual - 1)" class="btn btn-outline-primary">
+          <button :disabled="paginaActual === 1" @click="cambiarPagina(paginaActual - 1)"
+            class="btn btn-outline-primary">
             Anterior
           </button>
           <span class="mx-3">{{ paginaActual }} / {{ totalPaginas }}</span>
-          <button :disabled="paginaActual === totalPaginas" @click="cambiarPagina(paginaActual + 1)" class="btn btn-outline-primary">
+          <button :disabled="paginaActual === totalPaginas" @click="cambiarPagina(paginaActual + 1)"
+            class="btn btn-outline-primary">
             Siguiente
           </button>
         </div>
@@ -111,9 +115,9 @@ export default {
       const filtroLower = this.filtro.toLowerCase();
       return this.ordenesTrabajo.filter((orden) => {
         return (
-          String(orden.numeroOrden ?? "").toLowerCase().includes(filtroLower) || 
-          (orden.area ?? "").toLowerCase().includes(filtroLower) || 
-          (orden.estado ?? "").toLowerCase().includes(filtroLower) 
+          String(orden.numeroOrden ?? "").toLowerCase().includes(filtroLower) ||
+          (orden.area ?? "").toLowerCase().includes(filtroLower) ||
+          (orden.estado ?? "").toLowerCase().includes(filtroLower)
         );
       });
     },
@@ -121,7 +125,7 @@ export default {
       const ordenesOrdenadas = [...this.ordenesFiltradas].sort((a, b) => {
         const valorA = a[this.columnaOrdenada];
         const valorB = b[this.columnaOrdenada];
-        
+
         if (valorA < valorB) return this.ordenAscendente ? -1 : 1;
         if (valorA > valorB) return this.ordenAscendente ? 1 : -1;
         return 0;
@@ -218,7 +222,8 @@ h1 {
   border-collapse: collapse;
 }
 
-.table th, .table td {
+.table th,
+.table td {
   text-align: center;
   vertical-align: middle;
 }
@@ -245,7 +250,8 @@ button:hover {
     font-size: 1.5rem;
   }
 
-  .table th, .table td {
+  .table th,
+  .table td {
     font-size: 0.85rem;
   }
 }

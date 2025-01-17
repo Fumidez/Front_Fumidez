@@ -7,22 +7,27 @@
                 <h1 class="text-center text-primary mb-4">Gestión de Productos</h1>
 
                 <!-- Botón para agregar nuevo producto -->
-                <div class="mb-4 text-end">
+                <div class="mb-4 d-flex justify-content-between align-items-center">
+                    <input v-model="filtro" type="text" class="form-control w-50"
+                    placeholder="Buscar por nombre o proveedor">
                     <button @click="redirigirCrearProducto" class="btn btn-primary py-2 px-4">
                         <i class="bi bi-plus-circle"></i> Crear Nuevo Producto
                     </button>
                 </div>
-
                 <!-- Tabla de Productos -->
                 <div>
                     <table class="table table-striped table-hover align-middle">
                         <thead class="table-primary text-center">
                             <tr>
-                                <th @click="ordenar('id')" :class="{'highlighted': columnaOrdenada === 'id'}">#</th>
-                                <th @click="ordenar('nombre')" :class="{'highlighted': columnaOrdenada === 'nombre'}">Nombre</th>
-                                <th @click="ordenar('cantidad')" :class="{'highlighted': columnaOrdenada === 'cantidad'}">Cantidad</th>
-                                <th @click="ordenar('precio')" :class="{'highlighted': columnaOrdenada === 'precio'}">Precio</th>
-                                <th @click="ordenar('idProveedor')" :class="{'highlighted': columnaOrdenada === 'idProveedor'}">Proveedor</th>
+                                <th @click="ordenar('id')" :class="{ 'highlighted': columnaOrdenada === 'id' }">#</th>
+                                <th @click="ordenar('nombre')" :class="{ 'highlighted': columnaOrdenada === 'nombre' }">
+                                    Nombre</th>
+                                <th @click="ordenar('cantidad')"
+                                    :class="{ 'highlighted': columnaOrdenada === 'cantidad' }">Cantidad</th>
+                                <th @click="ordenar('precio')" :class="{ 'highlighted': columnaOrdenada === 'precio' }">
+                                    Precio</th>
+                                <th @click="ordenar('idProveedor')"
+                                    :class="{ 'highlighted': columnaOrdenada === 'idProveedor' }">Proveedor</th>
                                 <th>Acciones</th>
                             </tr>
                         </thead>
@@ -39,7 +44,8 @@
                                             @click="cambiarCampos(producto.id)">
                                             <i class="bi bi-pencil"></i>
                                         </button>
-                                        <button class="btn btn-outline-success btn-sm" @click="verProducto(producto.id)">
+                                        <button class="btn btn-outline-success btn-sm"
+                                            @click="verProducto(producto.id)">
                                             <i class="bi bi-eye"></i>
                                         </button>
                                         <button class="btn btn-outline-danger btn-sm" @click="eliminar(producto.id)">
@@ -57,11 +63,13 @@
 
                 <!-- Paginación -->
                 <div class="d-flex justify-content-center mt-4">
-                    <button :disabled="paginaActual === 1" @click="cambiarPagina(paginaActual - 1)" class="btn btn-outline-primary">
+                    <button :disabled="paginaActual === 1" @click="cambiarPagina(paginaActual - 1)"
+                        class="btn btn-outline-primary">
                         Anterior
                     </button>
                     <span class="mx-3">{{ paginaActual }} / {{ totalPaginas }}</span>
-                    <button :disabled="paginaActual === totalPaginas" @click="cambiarPagina(paginaActual + 1)" class="btn btn-outline-primary">
+                    <button :disabled="paginaActual === totalPaginas" @click="cambiarPagina(paginaActual + 1)"
+                        class="btn btn-outline-primary">
                         Siguiente
                     </button>
                 </div>
@@ -97,15 +105,16 @@ export default {
             proveedores: [],
             filtro: "",
             paginaActual: 1,
-            productosPorPagina: 5, // Número de productos por página
-            columnaOrdenada: null, // Inicialmente no hay ninguna columna ordenada
-            ordenAscendente: true, // Orden ascendente o descendente
+            productosPorPagina: 5, 
+            columnaOrdenada: null,
+            ordenAscendente: true, 
+            filtro: "",
         };
     },
     computed: {
         productosFiltrados() {
             const filtroMinusculas = this.filtro.toLowerCase();
-            return this.productos.filter(producto => 
+            return this.productos.filter(producto =>
                 producto.nombre.toLowerCase().includes(filtroMinusculas) ||
                 producto.precio.toString().includes(filtroMinusculas)
             );
@@ -115,7 +124,7 @@ export default {
             const productosOrdenados = [...this.productosFiltrados].sort((a, b) => {
                 const valorA = a[this.columnaOrdenada];
                 const valorB = b[this.columnaOrdenada];
-                
+
                 if (valorA < valorB) return this.ordenAscendente ? -1 : 1;
                 if (valorA > valorB) return this.ordenAscendente ? 1 : -1;
                 return 0;
@@ -232,7 +241,8 @@ h1 {
     border-collapse: collapse;
 }
 
-.table th, .table td {
+.table th,
+.table td {
     text-align: center;
     vertical-align: middle;
 }
@@ -259,7 +269,8 @@ button:hover {
         font-size: 1.5rem;
     }
 
-    .table th, .table td {
+    .table th,
+    .table td {
         font-size: 0.85rem;
     }
 }

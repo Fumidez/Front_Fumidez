@@ -14,7 +14,9 @@
         <h1 class="text-center text-primary mb-4">Informes IPM Registrados</h1>
 
         <!-- Botón para crear nuevo informe -->
-        <div class="mb-4 text-end">
+        <div class="mb-4 d-flex justify-content-between align-items-center">
+          <input v-model="filtro" type="text" class="form-control w-50"
+            placeholder="Buscar por número de informe o cliente" />
           <button @click="redirigirCrearInforme" class="btn btn-primary py-2 px-4">
             <i class="bi bi-plus-circle"></i> Crear Nuevo Informe
           </button>
@@ -33,7 +35,7 @@
               </tr>
             </thead>
             <tbody>
-              <tr v-for="(informe, index) in informes" :key="informe.id" class="text-center">
+              <tr v-for="(informe, index) in informesPaginados" :key="informe.id" class="text-center">
                 <td>{{ index + 1 }}</td>
                 <td>{{ informe.numFactura }}</td>
                 <td>{{ informe.frecuencia }}</td>
@@ -60,6 +62,9 @@
                     </button>
                   </div>
                 </td>
+              </tr>
+              <tr v-if="informesFiltrados.length === 0">
+                <td colspan="5" class="text-center">No se encontraron resultados</td>
               </tr>
             </tbody>
           </table>
@@ -114,7 +119,38 @@ export default {
       isModalOpen: false,
       archivos: [],
       informeSeleccionado: null,
+      filtro: "",
+      paginaActual: 1,
+      informesPorPagina: 5,
+      columnaOrdenada: null,
+      ordenAscendente: true,
     };
+  },
+  computed: {
+    informesFiltrados() {
+      const filtroMinusculas = this.filtro.toLowerCase();
+      return this.informes.filter(
+        (informe) =>
+          informe.numFactura.toLowerCase().includes(filtroMinusculas) ||
+          informe.frecuencia.toLowerCase().includes(filtroMinusculas)
+      );
+    },
+    informesPaginados() {
+      // Ordenar los proveedores filtrados
+      const informesOrdenados = [...this.informesFiltrados].sort((a, b) => {
+        const valorA = a[this.columnaOrdenada];
+        const valorB = b[this.columnaOrdenada];
+
+        if (valorA < valorB) return this.ordenAscendente ? -1 : 1;
+        if (valorA > valorB) return this.ordenAscendente ? 1 : -1;
+        return 0;
+      });
+
+      // Paginado: devuelve los proveedores correspondientes a la página actual
+      const inicio = (this.paginaActual - 1) * this.informesPorPagina;
+      const fin = inicio + this.informesPorPagina;
+      return informesOrdenados.slice(inicio, fin);
+    },
   },
   mounted() {
     this.cargarInformes();
