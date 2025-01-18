@@ -18,6 +18,10 @@ export const actualizarUsuarioFachada = async (id, clienteUsuario) => {
   return await actualizarUsuario(id, clienteUsuario);
 }
 
+export const eliminarUsuarioFachada = async (idUsuario) => {
+  return await eliminarUsuario(idUsuario);
+};
+
 const actualizarUsuario = async (id, clienteUsuario) => {
   return await axios.put(`${API_URL}/${id}`, clienteUsuario).then(r => r.data);
 }
@@ -42,3 +46,12 @@ const consultarUsuario = async () => {
   return data;
 }
 
+const eliminarUsuario = async (idUsuario) => {
+  try {
+    const response = await axios.delete(`${API_URL}/${idUsuario}`);
+    return response.status === 200;
+  } catch (error) {
+    console.error("Error eliminando Usuario:", error);
+    throw error;
+  }
+}

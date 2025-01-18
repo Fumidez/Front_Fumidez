@@ -614,6 +614,43 @@ const generatePDF = async (informe, doc) => {
         },
         tableWidth: "wrap", // Ajusta la tabla al contenido
     });
+    // --- Agregar Cuadro "Recomendaciones" ---
+
+    // Definir posiciones y dimensiones para el nuevo cuadro "Recomendaciones"
+    const cabecera = [
+        { title: "RECOMENDACIONES:", dataKey: "recomendacion" },
+    ];
+    const text = [{ recomendacion: informe.recomendaciones }];
+    doc.autoTable({
+        head: [cabecera.map((col) => col.title)], // Título de la cabecera
+        body: text.map((item) => [item.recomendacion]), // Datos del cuerpo de la tabla
+        startY: formularioY + 60,
+        margin: { left: distanciaDerecha },
+        theme: "grid",
+        headStyles: {
+            font: "Cambria",
+            fillColor: [255, 255, 255],
+            textColor: [37, 123, 205],
+            halign: "left",
+            fontSize: 10, // Tamaño de la fuente para la cabecera
+        },
+        styles: {
+            textColor: [37, 123, 205],
+            font: "Cambria",
+            fontSize: 7, // Tamaño de la fuente para el contenido
+            cellPadding: 5,
+            overflow: "linebreak", // Permitir saltos de línea en las celdas
+        },
+        columnStyles: {
+            0: {
+                // Define las propiedades de la primera columna
+                cellWidth: tablaWidth, // Limita el ancho de la columna
+                lineColor: [37, 123, 205],
+                lineWidth: 0.5
+            },
+        },
+        tableWidth: "wrap", // Ajusta la tabla al contenido
+    });
 
     // --- Agregar Cuadro "SANITIZACION CONFIDENCIAL" ---
 
@@ -1011,7 +1048,7 @@ doc.autoTable({
     const recomendacionesY = procedimientosY + 40; // 10 puntos de margen debajo del cuadro de procedimientos
     const recomendacionesHeight = 60; // Altura del nuevo cuadro
 
-    const cabecera = [
+   /* const cabecera = [
         { title: "RECOMENDACIONES:", dataKey: "recomendacion" },
     ];
     const text = [{ recomendacion: informe.recomendaciones }];
@@ -1045,7 +1082,7 @@ doc.autoTable({
         },
         tableWidth: "wrap", // Ajusta la tabla al contenido
     });
-
+*/
     // --- Agregar Sección "Firma Supervisor" ---
 
     // Definir posiciones y dimensiones para la firma
@@ -1057,7 +1094,7 @@ doc.autoTable({
     // Dibujar la línea para la firma
     doc.setLineWidth(1);
     doc.line(
-        firmaLineX + 100,
+        firmaLineX ,
         firmaLineY,
         firmaLineX + firmaLineWidth,
         firmaLineY

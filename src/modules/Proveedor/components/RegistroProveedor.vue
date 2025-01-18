@@ -25,12 +25,13 @@
                         <input type="text" id="n_cuenta" v-model="proveedor.n_cuenta" class="form-control"
                             placeholder="Número de Cuenta" required />
                     </div>
-
+                    <div v-if="mensajeConfirmacion" class="alert alert-success mt-3">
+                        {{ mensajeConfirmacion }}
+                    </div>
                     <button type="submit" class="btn btn-primary w-100 py-2">
                         {{ ver_proveedor ? 'Actualizar Proveedor' : 'Crear Proveedor' }}
                     </button>
-                    <button type="button" class="btn btn-secondary w-100 mt-2 py-2"
-                        @click="redirigirListadoProveedor">
+                    <button type="button" class="btn btn-secondary w-100 mt-2 py-2" @click="redirigirListadoProveedor">
                         Volver al listado
                     </button>
                 </form>
@@ -64,7 +65,9 @@ export default {
             proveedores: [],
             actualizarDato: false,
             proveedorId: this.$route.params.id,
-            ver_proveedor: false
+            ver_proveedor: false,
+            mensajeConfirmacion: "",
+
         };
     },
     methods: {
@@ -91,16 +94,17 @@ export default {
                     if (this.ver_proveedor) {
                         // Llama al método de actualización
                         await actualizarProveedorFachada(this.proveedorId, this.proveedor);
-                        alert('Proveedor actualizado con éxito');
+                        this.mensajeConfirmacion = "¡El proveedor ha sido actualizado con exito!";
                     } else {
                         await crearProveedorFachada(this.proveedor);
-                        alert("Proveedor ingresado");
+                        this.mensajeConfirmacion = "¡El proveedor ha sido creado con exito!";
                         this.resetProveedor();
                         this.buscarProveedores();
-                    } }catch (error) {
-                        console.error("Error al ingresar el proveedor:", error);
                     }
-                } else {
+                } catch (error) {
+                    console.error("Error al ingresar el proveedor:", error);
+                }
+            } else {
                 alert("Faltan llenar campos");
             }
         },

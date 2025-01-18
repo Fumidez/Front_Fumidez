@@ -11,12 +11,7 @@
           </button>
         </div>
         <div class="mb-3">
-          <input
-            v-model="filtro"
-            type="text"
-            class="form-control"
-            placeholder="Buscar por nombre, rol o correo"
-          />
+          <input v-model="filtro" type="text" class="form-control" placeholder="Buscar por nombre, rol o correo" />
         </div>
 
         <!-- Tabla de Usuarios -->
@@ -24,14 +19,16 @@
           <table class="table table-striped table-hover align-middle">
             <thead class="table-primary text-center">
               <tr>
-                <th @click="ordenar('id')" :class="{'highlighted': columnaOrdenada === 'id'}">#</th>
-                <th @click="ordenar('nombre')" :class="{'highlighted': columnaOrdenada === 'nombre'}">Nombre</th>
-                <th @click="ordenar('tipo')" :class="{'highlighted': columnaOrdenada === 'tipo'}">Rol</th>
-                <th @click="ordenar('correo')" :class="{'highlighted': columnaOrdenada === 'correo'}">Correo</th>
-                <th @click="ordenar('ncuenta')" :class="{'highlighted': columnaOrdenada === 'ncuenta'}">N.Cuenta</th>
-                <th @click="ordenar('ruc')" :class="{'highlighted': columnaOrdenada === 'ruc'}">Ruc</th>
-                <th @click="ordenar('direccion')" :class="{'highlighted': columnaOrdenada === 'direccion'}">Dirección</th>
-                <th @click="ordenar('telefono')" :class="{'highlighted': columnaOrdenada === 'telefono'}">Telefono</th>
+                <th @click="ordenar('id')" :class="{ 'highlighted': columnaOrdenada === 'id' }">#</th>
+                <th @click="ordenar('nombre')" :class="{ 'highlighted': columnaOrdenada === 'nombre' }">Nombre</th>
+                <th @click="ordenar('tipo')" :class="{ 'highlighted': columnaOrdenada === 'tipo' }">Rol</th>
+                <th @click="ordenar('correo')" :class="{ 'highlighted': columnaOrdenada === 'correo' }">Correo</th>
+                <th @click="ordenar('ncuenta')" :class="{ 'highlighted': columnaOrdenada === 'ncuenta' }">N.Cuenta</th>
+                <th @click="ordenar('ruc')" :class="{ 'highlighted': columnaOrdenada === 'ruc' }">Ruc</th>
+                <th @click="ordenar('direccion')" :class="{ 'highlighted': columnaOrdenada === 'direccion' }">Dirección
+                </th>
+                <th @click="ordenar('telefono')" :class="{ 'highlighted': columnaOrdenada === 'telefono' }">Telefono
+                </th>
                 <th>Acciones</th>
               </tr>
             </thead>
@@ -50,6 +47,9 @@
                     <button class="btn btn-outline-success btn-sm" @click="verUsuario(usuario.id)">
                       <i class="bi bi-eye"></i>
                     </button>
+                    <button class="btn btn-outline-danger btn-sm" @click="eliminarUsuario(usuario.id)">
+                      <i class="bi bi-trash"></i>
+                    </button>
                   </div>
                 </td>
               </tr>
@@ -62,11 +62,13 @@
 
         <!-- Paginación -->
         <div class="d-flex justify-content-center mt-4">
-          <button :disabled="paginaActual === 1" @click="cambiarPagina(paginaActual - 1)" class="btn btn-outline-primary">
+          <button :disabled="paginaActual === 1" @click="cambiarPagina(paginaActual - 1)"
+            class="btn btn-outline-primary">
             Anterior
           </button>
           <span class="mx-3">{{ paginaActual }} / {{ totalPaginas }}</span>
-          <button :disabled="paginaActual === totalPaginas" @click="cambiarPagina(paginaActual + 1)" class="btn btn-outline-primary">
+          <button :disabled="paginaActual === totalPaginas" @click="cambiarPagina(paginaActual + 1)"
+            class="btn btn-outline-primary">
             Siguiente
           </button>
         </div>
@@ -78,7 +80,7 @@
 
 <script>
 import router from "@/router";
-import { consultarUsuarioFachada } from "../helpers/UsuarioHelper";
+import { consultarUsuarioFachada, eliminarUsuarioFachada } from "../helpers/UsuarioHelper";
 
 export default {
   name: "Usuario",
@@ -90,12 +92,13 @@ export default {
       usuariosPorPagina: 5, // Número de usuarios por página
       columnaOrdenada: null, // Inicialmente no hay ninguna columna ordenada
       ordenAscendente: true, // Orden ascendente o descendente
+      mensajeConfirmacion: "", // Mensaje de confirmación para el usuario
     };
   },
   computed: {
     usuariosFiltrados() {
       const filtroMinusculas = this.filtro.toLowerCase();
-      return this.usuarios.filter(usuario => 
+      return this.usuarios.filter(usuario =>
         usuario.nombre.toLowerCase().includes(filtroMinusculas) ||
         usuario.tipo.toLowerCase().includes(filtroMinusculas) ||
         usuario.correo.toLowerCase().includes(filtroMinusculas)
@@ -106,7 +109,7 @@ export default {
       const usuariosOrdenados = [...this.usuariosFiltrados].sort((a, b) => {
         const valorA = a[this.columnaOrdenada];
         const valorB = b[this.columnaOrdenada];
-        
+
         if (valorA < valorB) return this.ordenAscendente ? -1 : 1;
         if (valorA > valorB) return this.ordenAscendente ? 1 : -1;
         return 0;
@@ -153,7 +156,22 @@ export default {
       if (nuevaPagina >= 1 && nuevaPagina <= this.totalPaginas) {
         this.paginaActual = nuevaPagina;
       }
-    }
+    },
+    mostrarMensajeConfirmacion(mensaje) {
+      this.mensajeConfirmacion = mensaje;
+      setTimeout(() => {
+        this.mostrarMensajeConfirmacion = ""; // Limpia el mensaje después de 3 segundos
+      }, 3000); // Duración en milisegundos
+    },
+    async eliminarUsuario(id) {
+      try {
+        await eliminarUsuarioFachada(id);
+        this.mensajeConfirmacion = 'Usuario eliminado con exito';
+        this.cargarUsuarios();
+      } catch (error) {
+        console.error('Error al eliminar el usuario:', error);
+      }
+    },
   }
 };
 </script>
@@ -192,7 +210,8 @@ h1 {
   border-collapse: collapse;
 }
 
-.table th, .table td {
+.table th,
+.table td {
   text-align: center;
   vertical-align: middle;
 }
@@ -219,7 +238,8 @@ button:hover {
     font-size: 1.5rem;
   }
 
-  .table th, .table td {
+  .table th,
+  .table td {
     font-size: 0.85rem;
   }
 }

@@ -2,9 +2,7 @@
   <div class="page-container d-flex flex-column" style="min-height: 100vh">
     <!-- Contenido Principal -->
     <main class="flex-grow-1 d-flex align-items-center justify-content-center">
-      <div
-        class="card p-5 shadow-lg"
-        style="
+      <div class="card p-5 shadow-lg" style="
           max-width: 800px;
           width: 100%;
           border-radius: 15px;
@@ -12,54 +10,27 @@
           border: 3px solid transparent;
           border-image: linear-gradient(to right, #004080, #a9c4f5);
           border-image-slice: 1;
-        "
-      >
+        ">
         <h1 class="text-center text-primary mb-4">Ingresar Orden de Trabajo</h1>
         <!-- Formulario de Orden de Trabajo -->
         <form @submit.prevent="submitForm">
           <!-- Fecha -->
           <div class="form-group mb-3 d-flex align-items-center">
-            <label for="fecha" class="w-25"
-              ><i class="bi bi-calendar"></i> Fecha</label
-            >
-            <input
-              type="date"
-              id="fecha"
-              v-model="ordenTrabajo.fecha"
-              class="form-control"
-              required
-            />
+            <label for="fecha" class="w-25"><i class="bi bi-calendar"></i> Fecha</label>
+            <input type="date" id="fecha" v-model="ordenTrabajo.fecha" class="form-control" required />
           </div>
 
           <!-- Hora -->
           <div class="form-group mb-3 d-flex align-items-center">
-            <label for="hora" class="w-25"
-              ><i class="bi bi-clock"></i> Hora</label
-            >
-            <input
-              type="time"
-              id="hora"
-              v-model="ordenTrabajo.hora"
-              class="form-control"
-              required
-            />
+            <label for="hora" class="w-25"><i class="bi bi-clock"></i> Hora</label>
+            <input type="time" id="hora" v-model="ordenTrabajo.hora" class="form-control" required />
           </div>
 
           <!-- Número de Orden -->
           <div class="form-group mb-3 d-flex align-items-center">
-            <label for="numeroOrden" class="w-25"
-              ><i class="bi bi-file-earmark"></i> Número de Orden</label
-            >
-            <input
-              v-if="!ver_orden"
-              type="text"
-              id="numeroOrden"
-              v-model="ordenTrabajo.numeroOrden"
-              class="form-control"
-              placeholder="Número de Orden"
-              required
-              minlength="3"
-            />
+            <label for="numeroOrden" class="w-25"><i class="bi bi-file-earmark"></i> Número de Orden</label>
+            <input v-if="!ver_orden" type="text" id="numeroOrden" v-model="ordenTrabajo.numeroOrden"
+              class="form-control" placeholder="Número de Orden" required minlength="3" />
             <label v-else for="numeroOrdenVer" class="w-25">{{
               ordenTrabajo.numeroOrden
             }}</label>
@@ -67,52 +38,24 @@
 
           <!-- Descripción -->
           <div class="form-group mb-3 d-flex align-items-center">
-            <label for="descripcion" class="w-25"
-              ><i class="bi bi-file-earmark-text"></i> Descripción</label
-            >
-            <textarea
-              id="descripcion"
-              v-model="ordenTrabajo.descripcion"
-              class="form-control"
-              placeholder="Descripción"
-              required
-              minlength="10"
-            ></textarea>
+            <label for="descripcion" class="w-25"><i class="bi bi-file-earmark-text"></i> Descripción</label>
+            <textarea id="descripcion" v-model="ordenTrabajo.descripcion" class="form-control" placeholder="Descripción"
+              required minlength="10"></textarea>
           </div>
 
           <!-- Área -->
           <div class="form-group mb-3 d-flex align-items-center">
-            <label for="area" class="w-25"
-              ><i class="bi bi-geo-alt-fill"></i> Área</label
-            >
-            <input
-              type="text"
-              id="area"
-              v-model="ordenTrabajo.area"
-              class="form-control"
-              placeholder="Área"
-              required
-              minlength="3"
-            />
+            <label for="area" class="w-25"><i class="bi bi-geo-alt-fill"></i> Área</label>
+            <input type="text" id="area" v-model="ordenTrabajo.area" class="form-control" placeholder="Área" required
+              minlength="3" />
           </div>
 
           <!-- Selección de Usuario -->
           <div class="form-group mb-3 d-flex align-items-center">
-            <label for="idUsuarios" class="w-25"
-              ><i class="bi bi-person"></i> Usuario</label
-            >
-            <select
-              id="idUsuarios"
-              v-model="ordenTrabajo.idUsuarios"
-              class="form-control"
-              required
-            >
+            <label for="idUsuarios" class="w-25"><i class="bi bi-person"></i> Usuario</label>
+            <select id="idUsuarios" v-model="ordenTrabajo.idUsuarios" class="form-control" required>
               <option disabled value="">Seleccione un usuario</option>
-              <option
-                v-for="usuario in usuarios"
-                :key="usuario.id"
-                :value="usuario.id"
-              >
+              <option v-for="usuario in usuarios" :key="usuario.id" :value="usuario.id">
                 {{ usuario.nombre }}
               </option>
             </select>
@@ -120,21 +63,10 @@
 
           <!-- Selección de Cliente -->
           <div class="form-group mb-3 d-flex align-items-center">
-            <label for="idClientes" class="w-25"
-              ><i class="bi bi-person-check"></i> Cliente</label
-            >
-            <select
-              id="idClientes"
-              v-model="ordenTrabajo.idClientes"
-              class="form-control"
-              required
-            >
+            <label for="idClientes" class="w-25"><i class="bi bi-person-check"></i> Cliente</label>
+            <select id="idClientes" v-model="ordenTrabajo.idClientes" class="form-control" required>
               <option disabled value="">Seleccione un cliente</option>
-              <option
-                v-for="cliente in clientes"
-                :key="cliente.id"
-                :value="cliente.id"
-              >
+              <option v-for="cliente in clientes" :key="cliente.id" :value="cliente.id">
                 {{ cliente.nombre }}
               </option>
             </select>
@@ -143,38 +75,26 @@
           <!-- Servicios -->
           <div class="form-group mb-3">
             <label><i class="bi bi-tools"></i> Servicios</label>
-            <div
-              v-for="(servicio, index) in ordenTrabajo.servicios"
-              :key="index"
-              class="d-flex gap-2 align-items-center"
-            >
-              <input
-                type="text"
-                v-model="servicio.tipoServicio"
-                class="form-control"
-                placeholder="Tipo de Servicio"
-                required
-                minlength="3"
-              />
-              <button
-                type="button"
-                class="btn btn-danger btn-sm"
-                @click="removeServicio(index)"
-              >
+            <div v-for="(servicio, index) in ordenTrabajo.servicios" :key="index"
+              class="d-flex gap-2 align-items-center">
+              <input type="text" v-model="servicio.tipoServicio" class="form-control" placeholder="Tipo de Servicio"
+                required minlength="3" />
+              <button type="button" class="btn btn-danger btn-sm" @click="removeServicio(index)">
                 <i class="bi bi-trash"></i>
               </button>
             </div>
-            <button
-              type="button"
-              class="btn btn-primary w-100 mt-2 py-2"
-              @click="addServicio"
-            >
+            <button type="button" class="btn btn-primary w-100 mt-2 py-2" @click="addServicio">
               <i class="bi bi-plus-circle"></i> Añadir Servicio
             </button>
           </div>
-
+          <div v-if="mensajeConfirmacion" class="alert alert-success mt-3">
+            {{ mensajeConfirmacion }}
+          </div>
           <button type="submit" class="btn btn-primary w-100 py-2">
             Guardar
+          </button>
+          <button type="button" class="btn btn-secondary w-100 mt-2 py-2" @click="redirigirListadoOrden">
+            Volver al listado
           </button>
         </form>
       </div>
@@ -190,7 +110,7 @@ import {
 } from "../helpers/OrdenTrabajoHelper";
 
 import { consultarUsuarioFachada } from "../../Usuario/helpers/UsuarioHelper";
-
+import router from "@/router";
 import { consultarClienteFachada } from "../../Cliente/helpers/ClienteHelper";
 export default {
   name: "OrdenTrabajo",
@@ -212,6 +132,7 @@ export default {
       clientes: [],
       ordenId: this.$route.params.id,
       ver_orden: false,
+      mensajeConfirmacion: "",
     };
   },
   mounted() {
@@ -247,9 +168,10 @@ export default {
       try {
         if (this.ver_orden) {
           await actualizarOrdenFachada(this.ordenId, this.ordenTrabajo);
-          alert("Cliente actualizado con éxito");
+          this.mensajeConfirmacion = "¡La orden de trabajo ha sido actualizado con exito!";
         } else {
           await crearOrdenFachada(this.ordenTrabajo);
+          this.mensajeConfirmacion = "¡La orden de trabajo ha sido creada con exito!";
           this.limpiarFormulario();
         }
       } catch (error) {
@@ -292,7 +214,11 @@ export default {
         alert("Hubo un error al cargar los clientes.");
       }
     },
-  },
+    async redirigirListadoOrden () {
+            const ruta = `/orden_trabajo_lista`;
+            await router.push({ path: ruta });
+        },
+    },
 };
 </script>
 

@@ -81,7 +81,7 @@
 </template>
 
 <script>
-import { consultarClienteFachada } from '../helpers/ClienteHelper';
+import { consultarClienteFachada, eliminarClienteFachada } from '../helpers/ClienteHelper';
 import router from '@/router';
 
 export default {
@@ -146,7 +146,7 @@ export default {
     },
     async eliminarCliente(id) {
       try {
-        await eliminarProveedorFachada(id);
+        await eliminarClienteFachada(id);
         alert('Cliente eliminado con éxito');
         this.cargarClientes();
       } catch (error) {
@@ -165,7 +165,16 @@ export default {
       if (nuevaPagina >= 1 && nuevaPagina <= this.totalPaginas) {
         this.paginaActual = nuevaPagina;
       }
-    }
+    },
+    async eliminarCliente(id) {
+      try {
+        await eliminarClienteFachada(id);
+        this.mensajeConfirmacion = 'Cliente eliminado con exito';
+        this.cargarClientes();
+      } catch (error) {
+        console.error('Error al eliminar el cliente:', error);
+      }
+    },
   }
 };
 </script>

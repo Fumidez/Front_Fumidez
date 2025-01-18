@@ -58,7 +58,7 @@
         </main>
 
         <div class="registro-list mb-4">
-            <h1 class="text-center text-primary mb-4">Registros Registrados</h1>
+            <h1 class="text-center text-primary mb-4">Registros de Formulario IPM</h1>
             <table class="table table-striped table-bordered">
                 <thead>
                     <tr>
@@ -110,6 +110,8 @@
                                 </select>
                             </div>
                         </td>
+                        <td>{{ item.informeId }}</td>
+
                         <td>
                             <button class="btn btn-danger btn-sm" @click="eliminarRegistro(item.id)">
                                 <i class="bi bi-trash"></i> Eliminar
@@ -120,10 +122,7 @@
                             </button>
                         </td>
                     </tr>
-
                 </tbody>
-                <button class="btn btn-danger btn-sm" @click="generatePDF()">
-                    <i class="bi bi-trash"></i> Generar PDF </button>
             </table>
 
         </div>

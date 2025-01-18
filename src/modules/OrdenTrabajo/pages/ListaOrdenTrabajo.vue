@@ -21,7 +21,9 @@
             <thead class="table-primary text-center">
               <tr>
                 <th @click="ordenar('id')" :class="{ 'highlighted': columnaOrdenada === 'id' }">#</th>
-                <th @click="ordenar('fecha')" :class="{ 'highlighted': columnaOrdenada === 'fecha' }">Fecha</th>
+
+                <th @click="ordenar('fecha')" :class="{ 'highlighted': columnaOrdenada === 'fecha' }" class="no-wrap">
+                  Fecha</th>
                 <th @click="ordenar('hora')" :class="{ 'highlighted': columnaOrdenada === 'hora' }">Hora</th>
                 <th @click="ordenar('numeroOrden')" :class="{ 'highlighted': columnaOrdenada === 'numeroOrden' }">Número
                   de Orden</th>
@@ -35,7 +37,7 @@
             <tbody>
               <tr v-for="(orden, index) in ordenesPaginadas" :key="orden.id" class="text-center">
                 <td>{{ index + 1 }}</td>
-                <td>{{ orden.fecha }}</td>
+                <td class="nowrap">{{ formatearFechaHora(orden.fecha) }}</td>
                 <td>{{ orden.hora }}</td>
                 <td>{{ orden.numeroOrden }}</td>
                 <td>{{ orden.descripcion }}</td>
@@ -94,8 +96,10 @@
 </template>
 
 <script>
+import { consultarUsuarioFachada } from '../../Usuario/helpers/UsuarioHelper';
 import { generatePDFOrdenFachada } from '../helpers/generarOrdenPdf';
 import { actualizarOrdenEstadoFachada, buscarOrdenPorId, consultarOrdenFachada } from '../helpers/OrdenTrabajoHelper';
+
 import router from "@/router";
 
 export default {
@@ -107,7 +111,8 @@ export default {
       paginaActual: 1,
       ordenesPorPagina: 5, // Número de órdenes por página
       columnaOrdenada: null, // Inicialmente no hay ninguna columna ordenada
-      ordenAscendente: true, // Orden ascendente o descendente
+      ordenAscendente: true, // Orden ascendente o descendente,
+      usuarios: [],
     };
   },
   computed: {
@@ -141,6 +146,7 @@ export default {
   },
   mounted() {
     this.cargarOrdenesTrabajo();
+    this.cargarUsuario();
   },
   methods: {
     async cargarOrdenesTrabajo() {
@@ -148,6 +154,14 @@ export default {
         this.ordenesTrabajo = await consultarOrdenFachada();
       } catch (error) {
         console.error("Error al cargar las órdenes de trabajo:", error);
+      }
+    },
+    async cargarUsuario() {
+      try {
+        const response = await consultarUsuarioFachada();
+        this.usuarios = response;
+      } catch (error) {
+        console.error("Error al buscar usarios:", error);
       }
     },
     async redirigirCrearOrden() {
@@ -182,6 +196,15 @@ export default {
       if (nuevaPagina >= 1 && nuevaPagina <= this.totalPaginas) {
         this.paginaActual = nuevaPagina;
       }
+    },
+    formatearFechaHora(fecha, hora) {
+      if (!fecha) return "";
+
+      const fechaObj = new Date(fecha);
+      const opcionesFecha = { year: 'numeric', month: '2-digit', day: '2-digit' };
+      const fechaFormateada = fechaObj.toLocaleDateString('es-ES', opcionesFecha);
+
+      return `${fechaFormateada}`;
     }
   }
 };
@@ -261,5 +284,9 @@ th.highlighted {
   background-color: #004080;
   color: white;
   border: 2px solid #a9c4f5;
+}
+
+.no-wrap {
+  white-space: nowrap;
 }
 </style>

@@ -34,12 +34,13 @@
                             </option>
                         </select>
                     </div>
-
+                    <div v-if="mensajeConfirmacion" class="alert alert-success mt-3">
+                        {{ mensajeConfirmacion }}
+                    </div>
                     <button type="submit" class="btn btn-primary w-100 py-2">
                         {{ ver_producto ? 'Actualizar Producto' : 'Crear Producto' }}
                     </button>
-                    <button type="button" class="btn btn-secondary w-100 mt-2 py-2"
-                        @click="redirigirListadoProducto">
+                    <button type="button" class="btn btn-secondary w-100 mt-2 py-2" @click="redirigirListadoProducto">
                         Volver al listado
                     </button>
                 </form>
@@ -74,7 +75,9 @@ export default {
             proveedores: [],
             actualizarDato: false,
             productoId: this.$route.params.id,
-            ver_producto: false
+            ver_producto: false,
+            mensajeConfirmacion: "",
+
         };
     },
     methods: {
@@ -102,10 +105,11 @@ export default {
                     if (this.ver_producto) {
                         // Llama al método de actualización
                         await actualizarProductoFachada(this.productoId, this.producto);
-                        alert("Producto actualizado con éxito");
+                        this.mensajeConfirmacion = "¡El producto ha sido actualizado con exito!";
+
                     } else {
                         await crearProductoFachada(this.producto);
-                        alert("Producto ingresado");
+                        this.mensajeConfirmacion = "¡El producto ha sido creado con exito!";
                         this.resetProducto();
                         this.buscarProductos();
                     }

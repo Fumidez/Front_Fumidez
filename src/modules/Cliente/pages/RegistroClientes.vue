@@ -72,7 +72,9 @@
                                 placeholder="RUC del cliente" />
                         </div>
                     </div>
-
+                    <div v-if="mensajeConfirmacion" class="alert alert-success mt-3">
+                        {{ mensajeConfirmacion }}
+                    </div>
                     <!-- Botón Guardar -->
                     <button v-if="!ver_cliente" type="submit" class="btn btn-primary w-100 py-2">
                         Guardar
@@ -80,8 +82,7 @@
                     <button v-else type="submit" class="btn btn-primary w-100 py-2">
                         Actualizar
                     </button>
-                    <button type="button" class="btn btn-secondary w-100 mt-2 py-2"
-                        @click="redirigirListadoCliente">
+                    <button type="button" class="btn btn-secondary w-100 mt-2 py-2" @click="redirigirListadoCliente">
                         Volver al listado
                     </button>
                 </form>
@@ -97,7 +98,7 @@ import Footer from '../../../components/Footer.vue';
 import Header from '../../../components/Header.vue';
 import router from "@/router";
 
-import { buscarClientePorIdFachada, consultarClienteFachada, crearClienteFachada, obtenerClienteFachada } from '../helpers/ClienteHelper';
+import { actualizarClienteFachada, buscarClientePorIdFachada, consultarClienteFachada, crearClienteFachada, obtenerClienteFachada } from '../helpers/ClienteHelper';
 
 export default {
     name: "IngresarCliente",
@@ -116,10 +117,12 @@ export default {
                 personaEncargada: ''
             },
             clienteId: this.$route.params.id,
-            ver_cliente: false
+            ver_cliente: false,
+            mensajeConfirmacion: '',
+            esEdicion: false, 
         };
     },
-    mounted(){
+    mounted() {
         this.consultarPorIdCliente();
     },
     methods: {
@@ -131,12 +134,12 @@ export default {
                     console.log("asdadasdasd");
                     console.log(cli);
                     this.cliente = {
-                        nombre: cli.nombre ,
-                        telefono: cli.telefono ,
-                        correo:  cli.correo ,
+                        nombre: cli.nombre,
+                        telefono: cli.telefono,
+                        correo: cli.correo,
                         direccion: cli.direccion || '',
-                        ruc: cli.ruc ,
-                        personaEncargada: cli.personaEncargada ,
+                        ruc: cli.ruc,
+                        personaEncargada: cli.personaEncargada,
                     };
                     this.ver_cliente = true;
                 } else {
@@ -155,9 +158,22 @@ export default {
         },
 
         async submitForm() {
-            console.log("Datos del cliente:", this.cliente);
-            const nuevoCliente = await crearClienteFachada(this.cliente);
-            this.limpiarDatosCliente();
+            try {
+                if (this.ver_cliente) {
+                    // Llama al método de actualización
+                    await actualizarClienteFachada(this.clienteId, this.cliente);
+                    console.log('Cliente actualizado con éxito');
+                    this.mensajeConfirmacion = "¡El cliente ha sido actualizado con exito!";
+                    this.consultarPorIdCliente(this.clienteId);
+                } else {
+                    // Llama al método de creación
+                    const nuevoCliente = await crearClienteFachada(this.cliente);
+                    this.mensajeConfirmacion = "¡El cliente ha sido creado con exito!";
+                }
+            } catch (error) {
+                console.error('Error al procesar el formulario:', error);
+
+            }
         },
         async redirigirListadoCliente() {
             const ruta = `/clientes_lista`;
