@@ -69,6 +69,17 @@
             </tbody>
           </table>
         </div>
+        <div class="d-flex justify-content-center mt-4">
+          <button :disabled="paginaActual === 1" @click="cambiarPagina(paginaActual - 1)"
+            class="btn btn-outline-primary">
+            Anterior
+          </button>
+          <span class="mx-3">{{ paginaActual }} / {{ totalPaginas }}</span>
+          <button :disabled="paginaActual === totalPaginas" @click="cambiarPagina(paginaActual + 1)"
+            class="btn btn-outline-primary">
+            Siguiente
+          </button>
+        </div>
       </div>
     </main>
 
@@ -151,11 +162,19 @@ export default {
       const fin = inicio + this.informesPorPagina;
       return informesOrdenados.slice(inicio, fin);
     },
+    totalPaginas() {
+      return Math.ceil(this.informesFiltrados.length / this.informesPorPagina);
+    }
   },
   mounted() {
     this.cargarInformes();
   },
   methods: {
+    cambiarPagina(nuevaPagina) {
+      if (nuevaPagina >= 1 && nuevaPagina <= this.totalPaginas) {
+        this.paginaActual = nuevaPagina;
+      }
+    },
     redirigirCrearInforme() {
       this.$router.push("/informe_registrar");
     },

@@ -867,39 +867,39 @@ doc.autoTable({
         sanitizacion: "",
     };
 
-    if (Array.isArray(informe.procediminetoDtos)) {
-        informe.procediminetoDtos.forEach((informe) => {
-            if (informe.tipoProcedimineto == 0) {
+    if (Array.isArray(informe.procedimientoDtos)) {
+        informe.procedimientoDtos.forEach((informe) => {
+            if (informe.tipoprocedimiento == 0) {
                 datosProcedimientos.nebulizador = "X";
             }
-            if (informe.tipoProcedimineto == 1) {
+            if (informe.tipoprocedimiento == 1) {
                 datosProcedimientos.aspersor = "X";
             }
-            if (informe.tipoProcedimineto == 2) {
+            if (informe.tipoprocedimiento == 2) {
                 datosProcedimientos.uvl = "X";
             }
-            if (informe.tipoProcedimineto == 3) {
+            if (informe.tipoprocedimiento == 3) {
                 datosProcedimientos.mecanico = "X";
             }
-            if (informe.tipoProcedimineto == 4) {
+            if (informe.tipoprocedimiento == 4) {
                 datosProcedimientos.lamparas = "X";
             }
-            if (informe.tipoProcedimineto == 5) {
+            if (informe.tipoprocedimiento == 5) {
                 datosProcedimientos.biomonitores = "X";
             }
-            if (informe.tipoProcedimineto == 6) {
+            if (informe.tipoprocedimiento == 6) {
                 datosProcedimientos.estaciones = "X";
             }
-            if (informe.tipoProcedimineto == 7) {
+            if (informe.tipoprocedimiento == 7) {
                 datosProcedimientos.cordon = "X";
             }
-            if (informe.tipoProcedimineto == 8) {
+            if (informe.tipoprocedimiento == 8) {
                 datosProcedimientos.nUvl = "X";
             }
-            if (informe.tipoProcedimineto == 9) {
+            if (informe.tipoprocedimiento == 9) {
                 datosProcedimientos.nMEc = "X";
             }
-            if (informe.tipoProcedimineto == 10) {
+            if (informe.tipoprocedimiento == 10) {
                 datosProcedimientos.sanitizacion = "X";
             }
         });

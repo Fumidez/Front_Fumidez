@@ -69,9 +69,9 @@
             <div v-for="(procedimiento, index) in informe.procedimientos" :key="index"
               class="d-flex gap-2 align-items-center">
               <select v-model="procedimiento.tipoProcedimiento" class="form-control" required>
-                <option disabled value="">Procedimientos</option>
-                <option v-for="proc in procedimientosLista" :key="proc" :value="proc">
-                  {{ proc }}
+                <option disabled value="">Seleccione un procedimiento</option>
+                <option v-for="(nombre, id) in procedimientosLista" :key="id" :value="id">
+                  {{ nombre }}
                 </option>
               </select>
               <button type="button" class="btn btn-danger btn-sm" @click="removeProcedimiento(index)">
@@ -98,10 +98,11 @@
                 class="producto-group">
                 <select v-model="producto.productoDto" class="form-control" required>
                   <option disabled value="">Seleccione un producto</option>
-                  <option v-for="producto in productos" :key="producto.id" :value="producto">
-                    {{ producto.nombre }}
+                  <option v-for="productoS in productos" :key="productoS.id" :value="productoS">
+                    {{ productoS.nombre }}
                   </option>
                 </select>
+
                 <input type="number" v-model="producto.cantidadProducto" class="form-control" placeholder="Cantidad"
                   min="0" required />
                 <button type="button" class="btn btn-danger btn-sm" @click="removeProducto(plagaIndex, productoIndex)">
@@ -157,8 +158,44 @@
           <button type="submit" class="btn btn-primary w-100 py-2">
             Guardar
           </button>
+          <button class="btn btn-outline-success btn-sm" @click="abrirModal()">
+            <i class="bi bi-images"></i>
+          </button>
         </form>
       </div>
+      <div v-if="isModalOpen" class="modal d-block" tabindex="-1" role="dialog"
+        style="background-color: rgba(0, 0, 0, 0.5)">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Subir Fotos</h5>
+              <button type="button" class="btn-close" @click="cerrarModal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <p>Selecciona una foto para el informe seleccionado.</p>
+              <input type="file" @change="manejarArchivo" accept="image/*" multiple />
+
+              <!-- Contenedor para mostrar las imágenes precargadas -->
+              <div class="image-preview mt-3 d-flex flex-wrap gap-3">
+                <div v-for="(foto, index) in fotos" :key="index" class="position-relative">
+                  <img :src="foto.foto" alt="Imagen subida" class="img-thumbnail"
+                    style="width: 150px; height: 150px; object-fit: cover;" />
+                  <!-- Botón para eliminar la imagen -->
+                  <button type="button" class="btn btn-danger btn-sm position-absolute top-0 start-100 translate-middle"
+                    @click="eliminarFoto(index, foto)">
+                    <i class="bi bi-x-circle"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" @click="cerrarModal">Cancelar</button>
+              <button type="button" class="btn btn-primary" @click="guardarFotos">Guardar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </main>
   </div>
 </template>
@@ -168,6 +205,7 @@ import { obtenerTodosLosProductosFachada } from '../../Producto/helpers/producto
 import { consultarOrdenFachada } from '../../OrdenTrabajo/helpers/OrdenTrabajoHelper';
 import { consultarInformePorIdFachada, crearInformePlagaFachada } from '../helpers/InformeHelper';
 import Footer from '../../../components/Footer.vue';
+import { consultarFotosIdInformeFachada, eliminarFotoFachada, guardarFotosFachada } from '../helpers/fotosHelper';
 
 export default {
   name: "InformeIpm",
@@ -176,6 +214,9 @@ export default {
   },
   data() {
     return {
+      isModalOpen: false,
+      fotos: [],
+      informeId: this.$route.params.id,
       informe: {
         numFactura: '',
         observacion: '',
@@ -207,19 +248,19 @@ export default {
           { tipoProcedimiento: '' } // Inicialmente un procedimiento
         ]
       },
-      procedimientosLista: [
-        'NEBULIZADOR TÉRMICO',
-        'ASPERSOR MANUAL',
-        'NEBULIZADOR UVL ELÉCTRICO DIINA FOG',
-        'NEBULIZADOR MECÁNICO',
-        'LÁMPARAS ELECTROCUTADORAS/ATRAPADORAS',
-        'BIOMONITORES PEGABLES',
-        'ESTACIONES DE CEBADO',
-        'CORDÓN SANITARIO PERIMETRAL',
-        'NEBULIZADOR UVL ELECTRICO',
-        'NEBULIZADOR MECÁNICO',
-        'SANITIZACIÓN'
-      ],
+      procedimientosLista: {
+        0: 'NEBULIZADOR TÉRMICO',
+        1: 'ASPERSOR MANUAL',
+        2: 'NEBULIZADOR UVL ELÉCTRICO DIINA FOG',
+        3: 'NEBULIZADOR MECÁNICO',
+        4: 'LÁMPARAS ELECTROCUTADORAS/ATRAPADORAS',
+        5: 'BIOMONITORES PEGABLES',
+        6: 'ESTACIONES DE CEBADO',
+        7: 'CORDÓN SANITARIO PERIMETRAL',
+        8: 'NEBULIZADOR UVL ELECTRICO',
+        9: 'NEBULIZADOR MECÁNICO',
+        10: 'SANITIZACIÓN'
+      },
       productos: [],
       ordenes: [],
       frecuencias: ['MENSUAL', 'BIMENSUAL', 'TRIMESTRAL', 'OCASIONAL'],
@@ -233,7 +274,6 @@ export default {
     this.consultarPorIdInforme();
   },
   methods: {
-
     async consultarPorIdInforme() {
       try {
         if (this.informeId) {
@@ -245,7 +285,16 @@ export default {
             tiempo: inf.tiempo,
             frecuencia: inf.frecuencia,
             precio: inf.precio,
-            idOrden: inf.idOrden,
+            idOrden: inf.ordenDto.id,
+            sanitizacionConfidenciales: inf.sanitizacionConfidencialDto,
+            plagas: inf.plagaDtos.map(plaga => ({
+              ...plaga,
+              cantidadProductoPlaga: plaga.cantidadProductoPlaga.map(producto => ({
+                cantidadProducto: producto.cantidadProducto,
+                productoDto: this.productos.find(p => p.id === producto.productoDto.id) || '' // Asegurarte que coincida con una referencia exacta
+              }))
+            })),
+            procedimientos: inf.procedimientoDtos
           };
           this.ver_informe = true
         } else {
@@ -257,12 +306,14 @@ export default {
     },
 
     async submitForm() {
+      if (this.isModalOpen) {
+        return;
+      }
       try {
-        console.log('Informe IPM creado con éxito:', this.informe);
         const informeDto = {
           numFactura: this.informe.numFactura,
           observacion: this.informe.observacion,
-          procediminetoDtos: this.informe.procedimientos.map(p => ({
+          procedimientoDtos: this.informe.procedimientos.map(p => ({
             tipoProcedimiento: p.tipoProcedimiento
           })),
           recomendaciones: this.informe.recomendaciones,
@@ -287,10 +338,15 @@ export default {
             areaNombreOpc2: this.informe.sanitizacionConfidenciales.areaNombreOpc2
           }
         };
-        const nuevoInforme = await crearInformePlagaFachada(informeDto);
-        console.log('Informe IPM creado con éxito:', nuevoInforme);
-        this.limpiarFormulario();
-        this.cargarInformes();
+        if (this.ver_informe) {
+          this.mensajeConfirmacion = "¡El informe se ha sido actualizado con exito!";
+        } else {
+          const nuevoInforme = await crearInformePlagaFachada(informeDto);
+          this.informeId = nuevoInforme.id
+          this.guardarFotos();
+          this.informeId = null;
+          this.limpiarFormulario();
+        }
       } catch (error) {
         console.error('Error al crear el informe IPM:', error);
       }
@@ -371,7 +427,75 @@ export default {
         console.error('Error al cargar las órdenes:', error);
         alert('Hubo un error al cargar las órdenes.');
       }
-    }
+    },
+    async abrirModal() {
+      if (this.ver_informe) {
+        try {
+          // Consulta fotos del backend usando el informeId
+          const fotosBackend = await consultarFotosIdInformeFachada(this.informeId);
+          if (fotosBackend.length !== 0) {
+            this.fotos = fotosBackend.map((foto) => {
+              const base64Foto = foto.fotoBase64;
+              const imageData = `data:image/jpeg;base64,${base64Foto}`;
+              return {
+                data: foto,
+                foto: imageData,
+                archivo: null,
+                guardada: true,
+              };
+            });
+          }
+        } catch (error) {
+          console.error("Error al cargar fotos desde el backend:", error);
+        }
+      }
+      this.isModalOpen = true; // Abre el modal
+    },
+    cerrarModal() {
+      this.isModalOpen = false; // Cierra el modal
+    },
+    manejarArchivo(event) {
+      const archivos = event.target.files;
+      for (let i = 0; i < archivos.length; i++) {
+        const lector = new FileReader();
+        lector.onload = (e) => {
+          // Agrega la imagen convertida a base64 al array de fotos
+          this.fotos.push({
+            data: null,
+            foto: e.target.result,
+            archivo: archivos[i],
+            guardada: false,
+          });
+        };
+        lector.readAsDataURL(archivos[i]);
+      }
+    },
+    async eliminarFoto(index, foto) {
+      if (foto.data) {
+        await eliminarFotoFachada(foto.data.id);
+      }
+      this.fotos.splice(index, 1);
+    },
+
+    async guardarFotos() {
+      if (this.informeId) {
+        const formData = new FormData();
+        const listaGuardarFotos = this.fotos.filter((foto) => !foto.guardada);
+        listaGuardarFotos.forEach((foto) => {
+          if (foto.archivo) {
+            formData.append("fotos", foto.archivo);
+          }
+        });
+        formData.append("id", this.informeId);
+
+        try {
+          await guardarFotosFachada(formData);
+        } catch (error) {
+          console.error("Error al guardar las fotos:", error);
+        }
+      }
+      this.cerrarModal();
+    },
   }
 };
 </script>
