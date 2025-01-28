@@ -869,34 +869,34 @@ doc.autoTable({
 
     if (Array.isArray(informe.procedimientoDtos)) {
         informe.procedimientoDtos.forEach((informe) => {
-            if (informe.tipoprocedimiento == 0) {
+            if (informe.tipoProcedimiento == 0) {
                 datosProcedimientos.nebulizador = "X";
             }
-            if (informe.tipoprocedimiento == 1) {
+            if (informe.tipoProcedimiento == 1) {
                 datosProcedimientos.aspersor = "X";
             }
-            if (informe.tipoprocedimiento == 2) {
+            if (informe.tipoProcedimiento == 2) {
                 datosProcedimientos.uvl = "X";
             }
             if (informe.tipoprocedimiento == 3) {
                 datosProcedimientos.mecanico = "X";
             }
-            if (informe.tipoprocedimiento == 4) {
+            if (informe.tipoProcedimiento == 4) {
                 datosProcedimientos.lamparas = "X";
             }
-            if (informe.tipoprocedimiento == 5) {
+            if (informe.tipoProcedimiento == 5) {
                 datosProcedimientos.biomonitores = "X";
             }
-            if (informe.tipoprocedimiento == 6) {
+            if (informe.tipoProcedimiento == 6) {
                 datosProcedimientos.estaciones = "X";
             }
-            if (informe.tipoprocedimiento == 7) {
+            if (informe.tipoProcedimiento == 7) {
                 datosProcedimientos.cordon = "X";
             }
-            if (informe.tipoprocedimiento == 8) {
+            if (informe.tipoProcedimiento == 8) {
                 datosProcedimientos.nUvl = "X";
             }
-            if (informe.tipoprocedimiento == 9) {
+            if (informe.tipoProcedimiento == 9) {
                 datosProcedimientos.nMEc = "X";
             }
             if (informe.tipoprocedimiento == 10) {
