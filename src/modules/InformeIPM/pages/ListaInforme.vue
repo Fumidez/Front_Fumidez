@@ -90,7 +90,8 @@
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title">Subir Fotos</h5>
-            <button type="button" class="btn-close" @click="cerrarModal" aria-label="Close"></button>
+            <button type="button" class="btn-close" @click="cerrarModal" aria-label="Close">
+            </button>
           </div>
           <div class="modal-body">
             <p>Selecciona una foto para el informe seleccionado.</p>
@@ -219,13 +220,13 @@ export default {
       }
 
       const formData = new FormData();
-      formData.append("id", this.informeSeleccionado); // ID del informe
+      formData.append("id", this.informeSeleccionado);
       this.archivos.forEach((archivo) => {
-        formData.append("fotos", archivo); // El campo debe coincidir con el nombre esperado en el backend
+        formData.append("fotos", archivo);
       });
 
       try {
-        await guardarFotosFachada(formData); // enviar `formData` al backend
+        await guardarFotosFachada(formData); 
         this.cerrarModal();
       } catch (error) {
         console.error("Error al guardar las fotos:", error);

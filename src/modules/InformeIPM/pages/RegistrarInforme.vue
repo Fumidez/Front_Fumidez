@@ -181,13 +181,10 @@
             <div class="modal-body">
               <p>Selecciona una foto para el informe seleccionado.</p>
               <input type="file" @change="manejarArchivo" accept="image/*" multiple />
-
-              <!-- Contenedor para mostrar las imágenes precargadas -->
               <div class="image-preview mt-3 d-flex flex-wrap gap-3">
                 <div v-for="(foto, index) in fotos" :key="index" class="position-relative">
                   <img :src="foto.foto" alt="Imagen subida" class="img-thumbnail"
                     style="width: 150px; height: 150px; object-fit: cover;" />
-                  <!-- Botón para eliminar la imagen -->
                   <button type="button" class="btn btn-danger btn-sm position-absolute top-0 start-100 translate-middle"
                     @click="eliminarFoto(index, foto)">
                     <i class="bi bi-x-circle"></i>
@@ -438,7 +435,6 @@ export default {
     async abrirModal() {
       if (this.ver_informe) {
         try {
-          // Consulta fotos del backend usando el informeId
           const fotosBackend = await consultarFotosIdInformeFachada(this.informeId);
           if (fotosBackend.length !== 0) {
             this.fotos = fotosBackend.map((foto) => {
@@ -456,7 +452,7 @@ export default {
           console.error("Error al cargar fotos desde el backend:", error);
         }
       }
-      this.isModalOpen = true; // Abre el modal
+      this.isModalOpen = true; 
     },
     cerrarModal() {
       this.isModalOpen = false; // Cierra el modal
@@ -466,7 +462,6 @@ export default {
       for (let i = 0; i < archivos.length; i++) {
         const lector = new FileReader();
         lector.onload = (e) => {
-          // Agrega la imagen convertida a base64 al array de fotos
           this.fotos.push({
             data: null,
             foto: e.target.result,

@@ -141,7 +141,7 @@ export default {
       const ruta = `/usuario_registro`;
       await router.push({ path: ruta });
     },
-    async verUsuario(id) {
+    async editarUsuario(id) {
       const ruta = `/usuario_ver/${id}`;
       await router.push({ path: ruta });
     },
