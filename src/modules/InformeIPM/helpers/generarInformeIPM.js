@@ -97,6 +97,8 @@ const generateFormularioIPM = async (informe, doc) => {
     let formulariosIPM = await consultarDesratizacionFachadaPorIdInforme(informe.id);
 
     if (Array.isArray(formulariosIPM)) {
+
+      let index = index + 1;
       // Crear el array 'body' para almacenar las filas de la tabla
       const bodyData = formulariosIPM.map((formulario) => {
         let datosFormulario = {

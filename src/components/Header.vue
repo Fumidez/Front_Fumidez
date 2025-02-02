@@ -3,7 +3,8 @@
     <div class="header-container">
       <!-- Logo con redirección al inicio -->
       <div class="logo" @click="goToInicio">
-        <img src="../assets/fumidez_logo.png" alt="Fumidez Logo" />
+        <img src="@/assets/LOGO_FUMIDEZ.webp" alt="Fumidez Logo" style="  max-width: 120px;
+  max-height: 40px;" />
       </div>
 
       <!-- Navbar -->
@@ -12,13 +13,14 @@
           <!--   <li v-if="tipo === 'ADMIN'">
             <router-link to="/clientes">Clientes</router-link>
           </li> -->
+          <li><router-link to="/inicio">Inicio</router-link></li>
           <li><router-link to="/productos_lista">Productos</router-link></li>
           <li><router-link to="/proveedores_lista">Proveedores</router-link></li>
+          <li><router-link to="/clientes_lista">Cliente</router-link></li>
           <li><router-link to="/usuarios_lista">Usuarios</router-link></li>
           <li><router-link to="/orden_trabajo_lista">Ordenes de Trabajo</router-link></li>
           <li><router-link to="/informe_lista">Informes</router-link></li>
           <li><router-link to="/calendario">Calendario</router-link></li>
-          <li><router-link to="/clientes_lista">Cliente</router-link></li>
         </ul>
       </nav>
 
@@ -95,7 +97,9 @@ header {
 
 .logo {
   cursor: pointer;
+
 }
+
 
 /* Navbar */
 .navbar {

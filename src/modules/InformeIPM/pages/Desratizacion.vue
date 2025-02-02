@@ -57,74 +57,72 @@
             </div>
         </main>
 
-        <div class="registro-list mb-4">
-            <h1 class="text-center text-primary mb-4">Registros de Formulario IPM</h1>
-            <table class="table table-striped table-bordered">
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Tipo Identificador Cordon</th>
-                        <th>Consumo</th>
-                        <th>Ubicación</th>
-                        <th>Observaciones</th>
-                        <th>Reemplazo Pega Cebo</th>
-                        <th>CSP</th>
-                        <th>Informe ID</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="(item, index) in registros" :key="item.id">
-                        <td>{{ index + 1 }}</td>
-                        <td>
-                            <select v-model="item.tipoIdentificadorCordon" @change="actualizarRegistro(item.id, item)">
-                                <option :value="true">Sí</option>
-                                <option :value="false">No</option>
-                            </select>
-                        </td>
-                        <td>
-                            <div class="form-group mb-3 d-flex align-items-center">
-                                <select id="idConsumo" v-model="item.consumo" class="form-control" required
-                                    @change="actualizarRegistro(item.id, item)">
-                                    <option v-for="(con) in consumo" :key="con" :value="con">
-                                        {{ con }}
-                                    </option>
-                                </select>
-                            </div>
-                        </td>
-                        <td><input type="text" v-model="item.ubicacion" @change="actualizarRegistro(item.id, item)" /></td>
-                        <td><input type="text" v-model="item.observaciones" @change="actualizarRegistro(item.id, item)" /></td>
-                        <td>
-                            <select v-model="item.reemplazoPegaCebo" @change="actualizarRegistro(item.id, item)">
-                                <option :value="true">Sí</option>
-                                <option :value="false">No</option>
-                            </select>
-                        </td>
-                        <td>
-                            <div class="form-group mb-3 d-flex align-items-center">
-                                <select id="idCSP" v-model="item.csp" class="form-control" required
-                                    @change="actualizarRegistro(item.id, item)">
-                                    <option v-for="(csp) in csp" :key="csp" :value="csp">
-                                        {{ csp }}
-                                    </option>
-                                </select>
-                            </div>
-                        </td>
-                        <td>{{ item.informeId }}</td>
-
-                        <td>
-                            <button class="btn btn-danger btn-sm" @click="eliminarRegistro(item.id)">
-                                <i class="bi bi-trash"></i> Eliminar
-                            </button>
-
-                            <button class="btn btn-info btn-sm" @click="addRow()">
-                                <i class="bi bi-plus-circle"></i> Copiar fila
-                            </button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-
+        <div class="registro-list-container">
+            <div class="card p-4 shadow-lg registro-list">
+                
+                <h1 class="text-center text-primary mb-4">Registros de Formulario IPM</h1>
+                <div class="table-responsive">
+                    <table class="table table-striped table-bordered">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Tipo Identificador Cordon</th>
+                                <th>Consumo</th>
+                                <th>Ubicación</th>
+                                <th>Observaciones</th>
+                                <th>Reemplazo Pega Cebo</th>
+                                <th class="expand">CSP</th>
+                                <th>Informe ID</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="(item, index) in registros" :key="item.id">
+                                <td>{{ index + 1 }}</td>
+                                <td>
+                                    <select v-model="item.tipoIdentificadorCordon" @change="actualizarRegistro(item.id, item)">
+                                        <option :value="true">Sí</option>
+                                        <option :value="false">No</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <select v-model="item.consumo" class="form-control" required @change="actualizarRegistro(item.id, item)">
+                                        <option v-for="(con) in consumo" :key="con" :value="con">
+                                            {{ con }}
+                                        </option>
+                                    </select>
+                                </td>
+                                <td><input type="text" v-model="item.ubicacion" @change="actualizarRegistro(item.id, item)" class="form-control" /></td>
+                                <td><input type="text" v-model="item.observaciones" @change="actualizarRegistro(item.id, item)" class="form-control" /></td>
+                                <td>
+                                    <select v-model="item.reemplazoPegaCebo" @change="actualizarRegistro(item.id, item)">
+                                        <option :value="true">Sí</option>
+                                        <option :value="false">No</option>
+                                    </select>
+                                </td>
+                                <td class="expand">
+                                    <select v-model="item.csp" class="form-control w-100" required @change="actualizarRegistro(item.id, item)">
+                                        <option v-for="(csp) in csp" :key="csp" :value="csp">
+                                            {{ csp }}
+                                        </option>
+                                    </select>
+                                </td>
+                                <td>{{ item.informeId }}</td>
+                                <td>
+                                    <div class="d-flex gap-2 justify-content-center">
+                                        <button class="btn btn-danger btn-sm" @click="eliminarRegistro(item.id)">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                        <button class="btn btn-info btn-sm" @click="addRow()">
+                                            <i class="bi bi-plus-circle"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
 
     </div>
@@ -216,7 +214,7 @@ export default {
                 this.registros = this.registros.filter((reg) => reg.id !== id);
             }
         },
-        async actualizarRegistro(id,item) {
+        async actualizarRegistro(id, item) {
             await actualizarFormularioFachada(id, item);
         },
 
@@ -239,21 +237,6 @@ export default {
     min-height: 100vh;
 }
 
-.form-check-input {
-    width: auto;
-    height: auto;
-    transform: scale(1);
-    /* Ajusta el tamaño del checkbox */
-}
-
-main {
-    flex-grow: 1;
-    background-image: url('@/assets/fumi.jpg'), linear-gradient(to bottom, #132333, #132333);
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-}
-
 .card {
     border: 3px solid transparent;
     border-image: linear-gradient(to right, #004080, #a9c4f5);
@@ -262,29 +245,77 @@ main {
     box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.2);
     background-color: rgba(255, 255, 255, 0.8);
 }
-
-h1 {
-    font-weight: 700;
-    color: #031425;
+/* Estilo para las cabeceras de la tabla */
+.table th {
+    background-color: #a9c4f5;
+  color: rgb(0, 0, 0);
+  border: 2px solid #a9c4f5;
 }
 
-.form-group {
-    margin-bottom: 1rem;
+/* Estilo de las cabeceras cuando se pasan por encima */
+.table th:hover {
+    background-color: #003060; /* Color de fondo más oscuro al pasar el mouse */
 }
 
-label {
-    font-weight: bold;
-    margin-bottom: 0.5rem;
-}
-
-input,
-textarea,
-select {
+.registro-list-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
     width: 100%;
-    padding: 0.5rem;
-    font-size: 0.9rem;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+    overflow-x: auto; /* Permite desplazamiento horizontal */
+}
+
+.registro-list {
+    width: 100%;
+    border-radius: 15px;
+    background-color: rgba(255, 255, 255, 0.9);
+    border: 3px solid transparent;
+    border-image: linear-gradient(to right, #004080, #a9c4f5);
+    border-image-slice: 1;
+}
+
+.table-container {
+    overflow-x: auto; /* Permite desplazamiento horizontal */
+}
+
+.table {
+    width: auto;
+    min-width: 100%;
+    border-collapse: collapse;
+}
+
+.table th,
+.table td {
+    text-align: center;
+    vertical-align: top; /* Alinea el texto en la parte superior de la celda */
+    padding: 8px;
+    white-space: normal !important; /* Permite que el texto se ajuste */
+    word-wrap: break-word !important; /* Evita que el texto se corte */
+    overflow: visible !important; /* Asegura que el contenido se expanda */
+}
+
+.table th {
+    min-width: 120px; /* Asegura un ancho mínimo en las cabeceras */
+}
+
+.table td {
+    min-width: 150px; /* Asegura un ancho mínimo en cada celda */
+    vertical-align: top; /* Alinea el contenido hacia la parte superior de la celda */
+}
+
+input[type="text"], textarea {
+    width: 100%; /* Asegura que los campos ocupen todo el espacio disponible */
+    min-height: 40px; /* Alto mínimo para los inputs */
+    height: auto; /* Permite que el campo se expanda según el texto */
+    padding: 8px;
+}
+
+textarea {
+    min-height: 60px; /* Altura mínima para el campo */
+    max-height: 150px; /* Limita la altura máxima */
+    overflow-y: auto; /* Activar scroll vertical cuando el contenido excede */
+    resize: none; /* Desactiva el redimensionamiento */
+    padding: 8px;
 }
 
 button {
@@ -295,10 +326,6 @@ button:hover {
     background-color: #003060;
 }
 
-button:focus {
-    outline: none;
-}
-
 button.btn-danger {
     background-color: #d9534f;
     border-color: #d9534f;
@@ -306,46 +333,5 @@ button.btn-danger {
 
 button.btn-danger:hover {
     background-color: #c9302c;
-}
-
-.table-striped {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.table-striped th,
-.table-striped td {
-    border: 1px solid #ddd;
-    padding: 8px;
-}
-
-.table-striped th {
-    background-color: #f2f2f2;
-    text-align: left;
-}
-
-.table-striped tr:nth-child(even) {
-    background-color: #f9f9f9;
-}
-
-.table-striped tr:hover {
-    background-color: #ddd;
-}
-
-.table-striped button {
-    margin-right: 5px;
-    background-color: #ff4d4d;
-}
-
-.table-striped button:first-of-type {
-    background-color: #4CAF50;
-}
-
-.table-striped button:nth-of-type(2) {
-    background-color: #ff4d4d;
-}
-
-.table-striped button:nth-of-type(3) {
-    background-color: #17a2b8;
 }
 </style>

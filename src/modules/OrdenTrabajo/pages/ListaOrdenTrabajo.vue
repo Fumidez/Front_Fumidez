@@ -24,7 +24,9 @@
 
                 <th @click="ordenar('fecha')" :class="{ 'highlighted': columnaOrdenada === 'fecha' }" class="no-wrap">
                   Fecha</th>
-                <th @click="ordenar('hora')" :class="{ 'highlighted': columnaOrdenada === 'hora' }">Hora</th>
+                <th @click="ordenar('hora')" :class="{ 'highlighted': columnaOrdenada === 'hora' }">Hora Inicio</th>
+                <th @click="ordenar('horaFin')" :class="{ 'highlighted': columnaOrdenada === 'hora' }">Hora Fin</th>
+
                 <th @click="ordenar('numeroOrden')" :class="{ 'highlighted': columnaOrdenada === 'numeroOrden' }">Número
                   de Orden</th>
                 <th @click="ordenar('descripcion')" :class="{ 'highlighted': columnaOrdenada === 'descripcion' }">
@@ -39,6 +41,7 @@
                 <td>{{ index + 1 }}</td>
                 <td class="nowrap">{{ formatearFechaHora(orden.fecha) }}</td>
                 <td>{{ orden.hora }}</td>
+                <td>{{ orden.horaFin }}</td>
                 <td>{{ orden.numeroOrden }}</td>
                 <td>{{ orden.descripcion }}</td>
                 <td>{{ orden.area }}</td>
@@ -218,13 +221,7 @@ export default {
   min-height: 100vh;
 }
 
-main {
-  flex-grow: 1;
-  background-image: url('@/assets/fumi.jpg'), linear-gradient(to bottom, #132333, #132333);
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-}
+
 
 .card {
   border: 3px solid transparent;

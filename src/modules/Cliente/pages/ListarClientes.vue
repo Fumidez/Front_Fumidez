@@ -12,28 +12,51 @@
           </button>
         </div>
 
-        <!-- Filtro de búsqueda -->
+        <!-- Filtro de búsqueda con icono -->
         <div class="mb-3">
-          <input
-            v-model="filtro"
-            type="text"
-            class="form-control"
-            placeholder="Buscar por nombre, correo, RUC"
-          />
+          <div class="input-group">
+            <input
+              v-model="filtro"
+              type="text"
+              class="form-control"
+              placeholder="Buscar por nombre, correo, RUC"
+              :class="{'border-primary': filtro.length > 0}"
+            />
+            <button class="btn btn-outline-secondary" @click="filtrarClientes">
+              <i class="bi bi-search"></i>
+            </button>
+          </div>
         </div>
 
         <!-- Tabla de Clientes -->
-        <div>
+        <div v-if="clientes.length === 0" class="text-center">
+          <i class="bi bi-hourglass-split fa-spin"></i> Cargando clientes...
+        </div>
+        <div v-else>
           <table class="table table-striped table-hover align-middle">
             <thead class="table-primary text-center">
               <tr>
-                <th @click="ordenar('id')" :class="{'highlighted': columnaOrdenada === 'id'}">#</th>
-                <th @click="ordenar('nombre')" :class="{'highlighted': columnaOrdenada === 'nombre'}">Nombre</th>
-                <th @click="ordenar('correo')" :class="{'highlighted': columnaOrdenada === 'correo'}">Correo</th>
-                <th @click="ordenar('direccion')" :class="{'highlighted': columnaOrdenada === 'direccion'}">Dirección</th>
-                <th @click="ordenar('telefono')" :class="{'highlighted': columnaOrdenada === 'telefono'}">Telefono</th>
-                <th @click="ordenar('ruc')" :class="{'highlighted': columnaOrdenada === 'ruc'}">RUC</th>
-                <th @click="ordenar('personaEncargada')" :class="{'highlighted': columnaOrdenada === 'personaEncargada'}">Persona Encargada</th>
+                <th @click="ordenar('id')" :class="{'highlighted': columnaOrdenada === 'id'}">
+                  # <i v-if="columnaOrdenada === 'id'" :class="ordenAscendente ? 'bi bi-chevron-up' : 'bi bi-chevron-down'"></i>
+                </th>
+                <th @click="ordenar('nombre')" :class="{'highlighted': columnaOrdenada === 'nombre'}">
+                  Nombre <i v-if="columnaOrdenada === 'nombre'" :class="ordenAscendente ? 'bi bi-chevron-up' : 'bi bi-chevron-down'"></i>
+                </th>
+                <th @click="ordenar('correo')" :class="{'highlighted': columnaOrdenada === 'correo'}">
+                  Correo <i v-if="columnaOrdenada === 'correo'" :class="ordenAscendente ? 'bi bi-chevron-up' : 'bi bi-chevron-down'"></i>
+                </th>
+                <th @click="ordenar('direccion')" :class="{'highlighted': columnaOrdenada === 'direccion'}">
+                  Dirección <i v-if="columnaOrdenada === 'direccion'" :class="ordenAscendente ? 'bi bi-chevron-up' : 'bi bi-chevron-down'"></i>
+                </th>
+                <th @click="ordenar('telefono')" :class="{'highlighted': columnaOrdenada === 'telefono'}">
+                  Teléfono <i v-if="columnaOrdenada === 'telefono'" :class="ordenAscendente ? 'bi bi-chevron-up' : 'bi bi-chevron-down'"></i>
+                </th>
+                <th @click="ordenar('ruc')" :class="{'highlighted': columnaOrdenada === 'ruc'}">
+                  RUC <i v-if="columnaOrdenada === 'ruc'" :class="ordenAscendente ? 'bi bi-chevron-up' : 'bi bi-chevron-down'"></i>
+                </th>
+                <th @click="ordenar('personaEncargada')" :class="{'highlighted': columnaOrdenada === 'personaEncargada'}">
+                  Persona Encargada <i v-if="columnaOrdenada === 'personaEncargada'" :class="ordenAscendente ? 'bi bi-chevron-up' : 'bi bi-chevron-down'"></i>
+                </th>
                 <th>Acciones</th>
               </tr>
             </thead>
@@ -67,14 +90,13 @@
         <!-- Paginación -->
         <div class="d-flex justify-content-center mt-4">
           <button :disabled="paginaActual === 1" @click="cambiarPagina(paginaActual - 1)" class="btn btn-outline-primary">
-            Anterior
+            <i class="bi bi-chevron-left"></i> Anterior
           </button>
           <span class="mx-3">{{ paginaActual }} / {{ totalPaginas }}</span>
           <button :disabled="paginaActual === totalPaginas" @click="cambiarPagina(paginaActual + 1)" class="btn btn-outline-primary">
-            Siguiente
+            Siguiente <i class="bi bi-chevron-right"></i>
           </button>
         </div>
-
       </div>
     </main>
   </div>
@@ -166,15 +188,9 @@ export default {
         this.paginaActual = nuevaPagina;
       }
     },
-    async eliminarCliente(id) {
-      try {
-        await eliminarClienteFachada(id);
-        this.mensajeConfirmacion = 'Cliente eliminado con exito';
-        this.cargarClientes();
-      } catch (error) {
-        console.error('Error al eliminar el cliente:', error);
-      }
-    },
+    filtrarClientes() {
+      this.paginaActual = 1; // Resetear a la primera página
+    }
   }
 };
 </script>
@@ -183,15 +199,6 @@ export default {
 .page-container {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
-}
-
-main {
-  flex-grow: 1;
-  background-image: url('@/assets/fumi.jpg'), linear-gradient(to bottom, #132333, #132333);
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
   min-height: 100vh;
 }
 
@@ -213,11 +220,40 @@ h1 {
 button {
   font-size: 1rem;
   font-weight: bold;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s ease, transform 0.2s;
 }
 
 button:hover {
   background-color: #003060;
+  transform: scale(1.05);
+}
+
+input:focus, button:focus {
+  outline: none;
+}
+
+input.border-primary {
+  border-color: #004080 !important;
+}
+
+th.highlighted {
+  background-color: #004080;
+  color: white;
+  border: 2px solid #a9c4f5;
+}
+
+td, th {
+  padding: 0.75rem 1rem;
+  vertical-align: middle;
+}
+
+tr:hover {
+  background-color: #f1f1f1;
+}
+
+.bi-hourglass-split {
+  font-size: 2rem;
+  color: #004080;
 }
 
 @media (max-width: 768px) {
@@ -253,12 +289,5 @@ button:hover {
   .card {
     max-width: 600px;
   }
-}
-
-/* Estilo para el encabezado resaltado */
-th.highlighted {
-  background-color: #004080;
-  color: white;
-  border: 2px solid #a9c4f5;
 }
 </style>

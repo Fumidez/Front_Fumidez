@@ -41,10 +41,6 @@
                                 <td>
                                     <div class="d-flex gap-2 justify-content-center">
                                         <button class="btn btn-outline-success btn-sm"
-                                            @click="cambiarCampos(producto.id)">
-                                            <i class="bi bi-pencil"></i>
-                                        </button>
-                                        <button class="btn btn-outline-success btn-sm"
                                             @click="verProducto(producto.id)">
                                             <i class="bi bi-eye"></i>
                                         </button>
@@ -212,14 +208,6 @@ export default {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
-}
-
-main {
-    flex-grow: 1;
-    background-image: url('@/assets/fumi.jpg'), linear-gradient(to bottom, #132333, #132333);
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
 }
 
 .card {

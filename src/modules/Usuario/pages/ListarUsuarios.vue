@@ -11,24 +11,30 @@
           </button>
         </div>
         <div class="mb-3">
-          <input v-model="filtro" type="text" class="form-control" placeholder="Buscar por nombre, rol o correo" />
+          <div class="input-group">
+            <input v-model="filtro" type="text" class="form-control" placeholder="Buscar por nombre, rol o correo"
+              :class="{'border-primary': filtro.length > 0}" />
+            <button class="btn btn-outline-secondary" @click="filtrarUsuarios">
+              <i class="bi bi-search"></i>
+            </button>
+          </div>
         </div>
 
-        <!-- Tabla de Usuarios -->
-        <div>
+        <div v-if="usuarios.length === 0" class="text-center">
+          <i class="bi bi-hourglass-split fa-spin"></i> Cargando usuarios...
+        </div>
+        <div v-else>
           <table class="table table-striped table-hover align-middle">
             <thead class="table-primary text-center">
               <tr>
-                <th @click="ordenar('id')" :class="{ 'highlighted': columnaOrdenada === 'id' }">#</th>
-                <th @click="ordenar('nombre')" :class="{ 'highlighted': columnaOrdenada === 'nombre' }">Nombre</th>
-                <th @click="ordenar('tipo')" :class="{ 'highlighted': columnaOrdenada === 'tipo' }">Rol</th>
-                <th @click="ordenar('correo')" :class="{ 'highlighted': columnaOrdenada === 'correo' }">Correo</th>
-                <th @click="ordenar('ncuenta')" :class="{ 'highlighted': columnaOrdenada === 'ncuenta' }">N.Cuenta</th>
-                <th @click="ordenar('ruc')" :class="{ 'highlighted': columnaOrdenada === 'ruc' }">Ruc</th>
-                <th @click="ordenar('direccion')" :class="{ 'highlighted': columnaOrdenada === 'direccion' }">Dirección
-                </th>
-                <th @click="ordenar('telefono')" :class="{ 'highlighted': columnaOrdenada === 'telefono' }">Telefono
-                </th>
+                <th @click="ordenar('id')">#</th>
+                <th @click="ordenar('nombre')">Nombre</th>
+                <th @click="ordenar('tipo')">Rol</th>
+                <th @click="ordenar('correo')">Correo</th>
+                <th @click="ordenar('ncuenta')">N.Cuenta</th>
+                <th @click="ordenar('ruc')">Ruc</th>
+                <th @click="ordenar('direccion')">Dirección</th>
+                <th @click="ordenar('telefono')">Teléfono</th>
                 <th>Acciones</th>
               </tr>
             </thead>
@@ -44,7 +50,7 @@
                 <td>{{ usuario.telefono }}</td>
                 <td>
                   <div class="d-flex gap-2 justify-content-center">
-                    <button class="btn btn-outline-success btn-sm" @click="verUsuario(usuario.id)">
+                    <button class="btn btn-outline-success btn-sm" @click="editarUsuario(usuario.id)">
                       <i class="bi bi-eye"></i>
                     </button>
                     <button class="btn btn-outline-danger btn-sm" @click="eliminarUsuario(usuario.id)">
@@ -60,19 +66,15 @@
           </table>
         </div>
 
-        <!-- Paginación -->
         <div class="d-flex justify-content-center mt-4">
-          <button :disabled="paginaActual === 1" @click="cambiarPagina(paginaActual - 1)"
-            class="btn btn-outline-primary">
-            Anterior
+          <button :disabled="paginaActual === 1" @click="cambiarPagina(paginaActual - 1)" class="btn btn-outline-primary">
+            <i class="bi bi-chevron-left"></i> Anterior
           </button>
           <span class="mx-3">{{ paginaActual }} / {{ totalPaginas }}</span>
-          <button :disabled="paginaActual === totalPaginas" @click="cambiarPagina(paginaActual + 1)"
-            class="btn btn-outline-primary">
-            Siguiente
+          <button :disabled="paginaActual === totalPaginas" @click="cambiarPagina(paginaActual + 1)" class="btn btn-outline-primary">
+            Siguiente <i class="bi bi-chevron-right"></i>
           </button>
         </div>
-
       </div>
     </main>
   </div>
@@ -181,14 +183,6 @@ export default {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-}
-
-main {
-  flex-grow: 1;
-  background-image: url('@/assets/fumi.jpg'), linear-gradient(to bottom, #132333, #132333);
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
 }
 
 .card {

@@ -95,29 +95,32 @@
                 </button>
               </div>
               <div v-for="(producto, productoIndex) in plaga.cantidadProductoPlaga" :key="productoIndex"
-                class="producto-group">
-                <select v-model="producto.productoDto" class="form-control" required>
+                class="d-flex align-items-center gap-2 mb-2">
+                <select v-model="producto.productoDto" class="form-select flex-grow-1" required>
                   <option disabled value="">Seleccione un producto</option>
                   <option v-for="productoS in productos" :key="productoS.id" :value="productoS">
                     {{ productoS.nombre }}
                   </option>
                 </select>
 
-                <input type="number" v-model="producto.cantidadProducto" class="form-control" placeholder="Cantidad"
-                  min="0" required />
+                <input type="number" v-model="producto.cantidadProducto" class="form-control w-25"
+                  placeholder="Cantidad" min="0" required />
+
                 <button type="button" class="btn btn-danger btn-sm" @click="removeProducto(plagaIndex, productoIndex)">
                   <i class="bi bi-trash"></i>
                 </button>
               </div>
-              <button type="button" class="btn btn-primary w-100 mt-2 py-2" @click="addProducto(plagaIndex)">
-                <i class="bi bi-plus-circle"></i> Añadir Producto
+
+              <div class="d-flex justify-content-end mt-2">
+                <button type="button" class="btn btn-primary btn-sm" @click="addProducto(plagaIndex)">
+                  <i class="bi bi-plus-circle"></i>
+                </button>
+              </div>
+              <button type="button" class="btn btn-primary w-100 mt-2 py-2" @click="addPlaga">
+                <i class="bi bi-plus-circle"></i> Añadir Plaga
               </button>
             </div>
-            <button type="button" class="btn btn-primary w-100 mt-2 py-2" @click="addPlaga">
-              <i class="bi bi-plus-circle"></i> Añadir Plaga
-            </button>
           </div>
-
           <!-- Sanitización -->
           <div class="sanitizacion-row">
             <div class="input-group mb-3">
@@ -135,7 +138,8 @@
               </select>
             </div>
             <div class="input-group mb-3">
-              <label for="areaNombreOpc1" class="w-25"><i class="bi bi-geo-alt"></i> Nombre del Área Opcional 1</label>
+              <label for="areaNombreOpc1" class="w-25"><i class="bi bi-geo-alt"></i> Nombre del Área Opcional
+                1</label>
               <input v-model="informe.sanitizacionConfidenciales.areaNombreOpc1" type="text" class="form-control"
                 placeholder="Nombre del Área Opcional 1" required />
               <select v-model="informe.sanitizacionConfidenciales.areaOpc1" class="form-control" required>
@@ -144,7 +148,8 @@
               </select>
             </div>
             <div class="input-group mb-3">
-              <label for="areaNombreOpc2" class="w-25"><i class="bi bi-geo-alt"></i> Nombre del Área Opcional 2</label>
+              <label for="areaNombreOpc2" class="w-25"><i class="bi bi-geo-alt"></i> Nombre del Área Opcional
+                2</label>
               <input v-model="informe.sanitizacionConfidenciales.areaNombreOpc2" type="text" class="form-control"
                 placeholder="Nombre del Área Opcional 2" required />
               <select v-model="informe.sanitizacionConfidenciales.areaOpc2" class="form-control" required>
@@ -153,14 +158,16 @@
               </select>
             </div>
           </div>
+          <!-- Botón de ingresar imágenes -->
+          <button type="button" class="btn btn-dark-green mb-3" @click="abrirModal()">
+            <i class="bi bi-images"></i> Ingresar Imágenes a su Informe
+          </button>
 
           <!-- Botón de guardar -->
           <button type="submit" class="btn btn-primary w-100 py-2">
             Guardar
           </button>
-          <button class="btn btn-outline-success btn-sm" @click="abrirModal()">
-            <i class="bi bi-images"></i>
-          </button>
+
         </form>
       </div>
       <div v-if="isModalOpen" class="modal d-block" tabindex="-1" role="dialog"
@@ -511,5 +518,18 @@ export default {
   display: flex;
   gap: 10px;
   align-items: center;
+}
+
+.btn-dark-green {
+  background-color: #006400;
+  /* Verde oscuro */
+  color: white;
+  border-color: #006400;
+}
+
+.btn-dark-green:hover {
+  background-color: #004d00;
+  /* Un tono más oscuro al pasar el mouse */
+  border-color: #004d00;
 }
 </style>

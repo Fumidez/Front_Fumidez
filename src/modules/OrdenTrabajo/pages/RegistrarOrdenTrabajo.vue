@@ -22,10 +22,14 @@
 
           <!-- Hora -->
           <div class="form-group mb-3 d-flex align-items-center">
-            <label for="hora" class="w-25"><i class="bi bi-clock"></i> Hora</label>
+            <label for="hora" class="w-25"><i class="bi bi-clock"></i> Hora Inicio</label>
             <input type="time" id="hora" v-model="ordenTrabajo.hora" class="form-control" required />
           </div>
-
+          <!-- Hora -->
+          <div class="form-group mb-3 d-flex align-items-center">
+            <label for="hora" class="w-25"><i class="bi bi-clock"></i> Hora Fin</label>
+            <input type="time" id="hora" v-model="ordenTrabajo.horaFin" class="form-control" required />
+          </div>
           <!-- Número de Orden -->
           <div class="form-group mb-3 d-flex align-items-center">
             <label for="numeroOrden" class="w-25"><i class="bi bi-file-earmark"></i> Número de Orden</label>
@@ -90,8 +94,11 @@
           <div v-if="mensajeConfirmacion" class="alert alert-success mt-3">
             {{ mensajeConfirmacion }}
           </div>
-          <button type="submit" class="btn btn-primary w-100 py-2">
+          <button v-if="!ver_orden" type="submit" class="btn btn-primary w-100 py-2">
             Guardar
+          </button>
+          <button v-else type="submit" class="btn btn-primary w-100 py-2">
+            Actualizar
           </button>
           <button type="button" class="btn btn-secondary w-100 mt-2 py-2" @click="redirigirListadoOrden">
             Volver al listado
@@ -119,6 +126,7 @@ export default {
       ordenTrabajo: {
         fecha: "",
         hora: "",
+        horaFin: "",
         numeroOrden: "",
         descripcion: "",
         area: "",
@@ -149,6 +157,8 @@ export default {
           this.ordenTrabajo = {
             fecha: orden.fecha.split("T")[0],
             hora: orden.hora,
+            hora: orden.hora,
+            horaFin: orden.horaFin,
             numeroOrden: orden.numeroOrden,
             descripcion: orden.descripcion,
             area: orden.area,
@@ -188,6 +198,7 @@ export default {
       this.ordenTrabajo = {
         fecha: "",
         hora: "",
+        horaFin: "",
         numeroOrden: "",
         descripcion: "",
         area: "",
@@ -214,11 +225,11 @@ export default {
         alert("Hubo un error al cargar los clientes.");
       }
     },
-    async redirigirListadoOrden () {
-            const ruta = `/orden_trabajo_lista`;
-            await router.push({ path: ruta });
-        },
+    async redirigirListadoOrden() {
+      const ruta = `/orden_trabajo_lista`;
+      await router.push({ path: ruta });
     },
+  },
 };
 </script>
 
@@ -229,15 +240,6 @@ export default {
   min-height: 100vh;
 }
 
-main {
-  flex-grow: 1;
-  background-image: url("@/assets/fumi.jpg"),
-    linear-gradient(to bottom, #132333, #132333);
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  position: relative;
-}
 
 /* Indicador de carga */
 main::after {

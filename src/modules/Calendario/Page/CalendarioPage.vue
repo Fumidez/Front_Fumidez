@@ -79,7 +79,7 @@ export default {
         };
 
         const startFormatted = formatDate(startDate, orden.hora);
-        const endFormatted = formatDate(endDate, addOneHour(orden.hora));
+        const endFormatted = formatDate(endDate, orden.horaFin);
 
         // Calculate the duration (work hour) by subtracting start and end dates
         const startTime = new Date(startFormatted);

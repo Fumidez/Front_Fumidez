@@ -247,14 +247,6 @@ export default {
   min-height: 100vh;
 }
 
-main {
-  flex-grow: 1;
-  background-image: url("@/assets/fumi.jpg"),
-    linear-gradient(to bottom, #132333, #132333);
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-}
 
 .card {
   border: 3px solid transparent;

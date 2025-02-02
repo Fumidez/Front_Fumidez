@@ -201,16 +201,6 @@ export default {
     min-height: 100vh;
 }
 
-main {
-    flex-grow: 1;
-    /* Ocupa el espacio restante entre el header y footer */
-    background-image: url('src/assets/fumi.jpg'), linear-gradient(to bottom, #132333, #132333);
-    background-size: cover;
-    /* Hace que la imagen cubra todo el fondo sin distorsionarse */
-    background-position: center;
-    background-repeat: no-repeat;
-    min-height: 100vh;
-}
 
 /* Card Estilo Empresarial */
 .card {
