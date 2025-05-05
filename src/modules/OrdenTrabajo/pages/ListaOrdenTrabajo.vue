@@ -73,6 +73,9 @@
                     <button class="btn btn-outline-danger btn-sm" @click="updateEstado(orden.id, 'cancelado', orden)">
                       <i class="bi bi-x"></i>
                     </button>
+                    <button class="btn btn-outline-danger btn-sm" @click="eliminar(orden.id)">
+                      <i class="bi bi-trash"></i>
+                    </button>
                   </div>
                 </td>
               </tr>
@@ -101,7 +104,7 @@
 <script>
 import { consultarUsuarioFachada } from '../../Usuario/helpers/UsuarioHelper';
 import { generatePDFOrdenFachada } from '../helpers/generarOrdenPdf';
-import { actualizarOrdenEstadoFachada, buscarOrdenPorId, consultarOrdenFachada } from '../helpers/OrdenTrabajoHelper';
+import { actualizarOrdenEstadoFachada, buscarOrdenPorId, consultarOrdenFachada, eliminarOrdenFachada } from '../helpers/OrdenTrabajoHelper';
 
 import router from "@/router";
 
@@ -208,7 +211,16 @@ export default {
       const fechaFormateada = fechaObj.toLocaleDateString('es-ES', opcionesFecha);
 
       return `${fechaFormateada}`;
-    }
+    },
+    async eliminar(id) {
+      try {
+        await eliminarOrdenFachada(id);
+        alert("Orden eliminada");
+        this.cargarOrdenesTrabajo();
+      } catch (error) {
+        console.error("Error al eliminar la orden:", error);
+      }
+    },
   }
 };
 </script>

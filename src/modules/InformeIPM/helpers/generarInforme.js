@@ -137,7 +137,7 @@ const generatePDF = async (informe, doc) => {
     const image4 = "src/assets/seal.png";
     const image5 = "src/assets/oms.png";
 
-    doc.setTextColor(32, 76, 130);
+    doc.setTextColor(37, 123, 205);
     doc.setFont("cambria", "bold");
     doc.setFontSize(8);
 
@@ -470,7 +470,7 @@ const generatePDF = async (informe, doc) => {
     cabeceraFormulario = [
         { title: "CORDON SANITARIO ESTRUCTURAL", dataKey: "servicio" },
     ];
-    formularioY = formularioY + 35;
+    formularioY = formularioY + 34;
 
     doc.autoTable({
         head: [cabeceraFormulario.map((col) => col.title)], // Título de la cabecera

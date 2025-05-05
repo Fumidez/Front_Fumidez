@@ -53,6 +53,10 @@
                     <button type="submit" class="btn btn-primary w-100 py-2">
                         Guardar
                     </button>
+                                 
+              <button type="button" class="btn btn-secondary w-100 mt-2 py-2" @click="redirigirListadoInformes">
+                        Volver al listado
+                    </button>
                 </form>
             </div>
         </main>
@@ -131,6 +135,7 @@
 import { actualizarFormularioFachada, consultarDesratizacionFachadaPorIdInforme, crearDesratizacionFachada } from '../helpers/desratizacionHelper';
 import Footer from '../../../components/Footer.vue';
 import { generateFormularioIPMFachada } from '../helpers/generarInformeIPM';
+import router from "@/router";
 
 export default {
     name: "RegistroComponent",
@@ -222,6 +227,11 @@ export default {
 
             const informeId = await consultarDesratizacionFachadaPorIdInforme(this.registro.informeId);
             await generateFormularioIPMFachada(informeId);
+        },
+
+        async redirigirListadoInformes() {
+            const ruta = `/informe_lista`;
+            await router.push({ path: ruta });
         },
 
 

@@ -167,7 +167,10 @@
           <button type="submit" class="btn btn-primary w-100 py-2">
             Guardar
           </button>
-
+             
+          <button type="button" class="btn btn-secondary w-100 mt-2 py-2" @click="redirigirListadoInforme">
+                        Volver al listado
+                    </button>
         </form>
       </div>
       <div v-if="isModalOpen" class="modal d-block" tabindex="-1" role="dialog"
@@ -195,6 +198,7 @@
             <div class="modal-footer">
               <button type="button" class="btn btn-secondary" @click="cerrarModal">Cancelar</button>
               <button type="button" class="btn btn-primary" @click="guardarFotos">Guardar</button>
+
             </div>
           </div>
         </div>
@@ -210,6 +214,7 @@ import { consultarOrdenFachada } from '../../OrdenTrabajo/helpers/OrdenTrabajoHe
 import { consultarInformePorIdFachada, crearInformePlagaFachada } from '../helpers/InformeHelper';
 import Footer from '../../../components/Footer.vue';
 import { consultarFotosIdInformeFachada, eliminarFotoFachada, guardarFotosFachada } from '../helpers/fotosHelper';
+import router from "@/router";
 
 export default {
   name: "InformeIpm",
@@ -498,6 +503,10 @@ export default {
       }
       this.cerrarModal();
     },
+    async redirigirListadoInforme() {
+            const ruta = `/informe_lista`;
+            await router.push({ path: ruta });
+        },
   }
 };
 </script>

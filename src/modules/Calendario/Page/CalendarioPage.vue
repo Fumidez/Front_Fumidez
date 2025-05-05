@@ -1,25 +1,39 @@
 <template>
   <div class="calendar-container">
-    <vue-cal :events="events" default-view="month" @event-click="handleEventClick">
-      <template #event="{ event }">
-        <div class="vuecal__event-title" v-html="event.title" :class="{ 'orden-trabajo': event.isOrdenTrabajo }"></div>
-        <em class="vuecal__event-time">
-          <strong>Event start:</strong>
-          <span>{{ event.start.formatTime() }}</span>
-          <br />
-          <strong>Event end:</strong>
-          <span>{{ event.end.formatTime() }}</span>
-        </em>
+    <v-calendar
+      ref="calendar"
+      :events="events"
+      color="primary"
+      :event-color="getEventColor"
+      :event-more-text="'Más...'"
+      :show-more
+      :event-overlap-mode="'stack'"
+      :weekdays="[0, 1, 2, 3, 4, 5, 6]"
+      type="month"
+    >
+      <template #event="{ event, timed }">
+        <div
+          class="vcal-event"
+          :class="{ 'orden-trabajo': event.isOrdenTrabajo }"
+          style="cursor: pointer;"
+          @click="handleEventClick({ event })"
+        >
+          <div class="vcal-event-title" v-html="event.title"></div>
+          <em class="vcal-event-time" v-if="timed">
+            <strong>Inicio:</strong> {{ formatTime(event.start) }}<br />
+            <strong>Fin:</strong> {{ formatTime(event.end) }}
+          </em>
+        </div>
       </template>
-    </vue-cal>
-    <!-- Modal for event details -->
-    <div v-if="selectedEvent" class="event-details-modal">
+    </v-calendar>
+
+    <div v-if="selectedEvent" class="event-details-modal" @click.self="closeModal">
       <div class="modal-content">
-        <span class="close-btn" @click="closeModal">&times;</span>
+        <button class="close-btn" @click="closeModal">&times;</button>
         <h3>{{ selectedEvent.title }}</h3>
-        <p><strong>Fecha:</strong> {{ selectedEvent.start.format() }}</p>
+        <p><strong>Fecha:</strong> {{ formatDate(selectedEvent.start) }}</p>
         <p><strong>Persona Encargada:</strong> {{ selectedEvent.persona }}</p>
-        <p><strong>Cliente:</strong> {{ selectedEvent.cliente }}</p> <!-- Added client information -->
+        <p><strong>Cliente:</strong> {{ selectedEvent.cliente }}</p>
         <p><strong>Descripción:</strong> {{ selectedEvent.descripcion }}</p>
         <p><strong>Work hour:</strong> {{ selectedEvent.workHour }}</p>
         <p><strong>Usuario:</strong> {{ selectedEvent.usuario }}</p>
@@ -29,112 +43,111 @@
 </template>
 
 <script>
-import VueCal from "vue-cal";
-import "vue-cal/dist/vuecal.css";
-import axios from "axios";
+import { VCalendar } from "vuetify/labs/VCalendar";
 import { consultarOrdenSimpleFachada } from "../../OrdenTrabajo/helpers/OrdenTrabajoHelper";
 import { buscarClientePorIdFachada } from "../../Cliente/helpers/ClienteHelper";
 import { obtenerUsuarioFachada } from "../../Usuario/helpers/UsuarioHelper";
 
 export default {
-  components: { VueCal },
+  components: {
+    VCalendar,
+  },
   data() {
     return {
       events: [],
-      selectedEvent: null, // Track selected event for modal display
+      selectedEvent: null,
     };
   },
-
   mounted() {
-    this.created();
+    this.loadEvents();
   },
-
   methods: {
-    async created() {
+    async loadEvents() {
       const data = await consultarOrdenSimpleFachada();
-      console.log(data);
+
+      const formatDateTime = (date, hour) => {
+        const [hours, minutes] = hour.split(":");
+        const d = new Date(date);
+        d.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+        return d;
+      };
+
       this.events = data.map((orden) => {
-        const startDate = new Date(orden.fecha);
-        const endDate = new Date(orden.fecha);
-        const formatDate = (date, hour) => {
-          const year = date.getFullYear();
-          const month = String(date.getMonth() + 1).padStart(2, "0");
-          const day = String(date.getDate() + 1).padStart(2, "0");
+        const startFormatted = formatDateTime(orden.fecha, orden.hora);
+        const endFormatted = formatDateTime(orden.fecha, orden.horaFin);
 
-          // Divide hour in hours and minutes
-          const [hours, minutes] = hour.split(":");
-
-          return `${year}-${month}-${day} ${hours}:${minutes}`;
-        };
-        const addOneHour = (hourString) => {
-          const [hours, minutes, seconds] = hourString.split(":").map(Number);
-          const date = new Date();
-          date.setHours(hours, minutes, seconds);
-          date.setHours(date.getHours() + 1);
-
-          const newHours = String(date.getHours()).padStart(2, "0");
-          const newMinutes = String(date.getMinutes()).padStart(2, "0");
-
-          return `${newHours}:${newMinutes}:00`;
-        };
-
-        const startFormatted = formatDate(startDate, orden.hora);
-        const endFormatted = formatDate(endDate, orden.horaFin);
-
-        // Calculate the duration (work hour) by subtracting start and end dates
-        const startTime = new Date(startFormatted);
-        const endTime = new Date(endFormatted);
-        const durationMinutes = (endTime - startTime) / 60000; // Duration in minutes
-        const hours = Math.floor(durationMinutes / 60);
-        const minutes = durationMinutes % 60;
-        const workHour = `${hours}h ${minutes}m`;
-        console.log(orden);
+        const diffMs = endFormatted - startFormatted;
+        const diffHrs = Math.floor(diffMs / 3600000);
+        const diffMins = Math.round((diffMs % 3600000) / 60000);
+        const workHour = `${diffHrs}h ${diffMins}m`;
 
         return {
           start: startFormatted,
           end: endFormatted,
+          name: `Orden ${orden.numeroOrden}`,
           title: `Orden ${orden.numeroOrden}`,
-          persona: ` `,
-          cliente: `${orden.idClientes}`, // Added client information
-          usuario: `${orden.idUsuarios}`, // Added client information
-          descripcion: orden.descripcion || "No description available", // Add description if available
-          workHour: workHour, // Calculated work hour
-          isOrdenTrabajo: true, // Indicador para aplicar un estilo especial
+          persona: "",
+          cliente: orden.idClientes || null,
+          usuario: orden.idUsuarios || null,
+          descripcion: orden.descripcion || "No description available",
+          workHour,
+          isOrdenTrabajo: true,
+          color: "primary",
         };
       });
-
-      console.log(this.events);
     },
 
-    async handleEventClick(event) {
-      if (!event.cliente) {
-        console.error("El cliente no está definido en el evento:", event);
-        return; 
-      }
-
+    async handleEventClick({ event }) {
       try {
-        const cliente = await buscarClientePorIdFachada(event.cliente);
-        const usuario = await obtenerUsuarioFachada(event.usuario);
-        const datos = {
+        let clienteNombre = "Desconocido";
+        let personaEncargada = "Desconocida";
+        let usuarioNombre = "Desconocido";
+
+        if (event.cliente) {
+          const cliente = await buscarClientePorIdFachada(event.cliente);
+          clienteNombre = cliente.nombre || "Desconocido";
+          personaEncargada = cliente.personaEncargada || "Desconocida";
+        }
+        if (event.usuario) {
+          const usuario = await obtenerUsuarioFachada(event.usuario);
+          usuarioNombre = usuario.nombre || "Desconocido";
+        }
+
+        this.selectedEvent = {
           ...event,
-          persona: cliente.personaEncargada,
-          cliente: cliente.nombre,
-          usuario: usuario.nombre,
+          cliente: clienteNombre,
+          persona: personaEncargada,
+          usuario: usuarioNombre,
         };
-        this.selectedEvent = datos;
       } catch (error) {
-        console.error("Error al buscar cliente por ID:", error);
+        this.selectedEvent = { ...event };
       }
     },
+
     closeModal() {
       this.selectedEvent = null;
+    },
+
+    formatTime(date) {
+      if (!date) return "";
+      const d = new Date(date);
+      return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+    },
+
+    formatDate(date) {
+      if (!date) return "";
+      const d = new Date(date);
+      return d.toLocaleDateString();
+    },
+
+    getEventColor(event) {
+      return event.isOrdenTrabajo ? "blue darken-2" : "grey lighten-1";
     },
   },
 };
 </script>
 
 <style scoped>
-/* General styling for the calendar container */
 .calendar-container {
   margin: 0 auto;
   width: 95%;
@@ -143,68 +156,65 @@ export default {
   position: relative;
 }
 
-/* Styling for each event */
-.vuecal__event {
-  padding: 10px; /* Espaciado interno del evento */
-  font-size: 16px;
+.vcal-event {
+  padding: 10px;
+  font-size: 8px;
   background: linear-gradient(145deg, #0078d4, #005a9e);
-  color: white;
+  color: #ffffff;
   margin-bottom: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
-  justify-content: flex-start; /* Asegura que el contenido esté al inicio */
+  justify-content: flex-start;
   position: relative;
   z-index: 1;
   overflow: visible;
-  height: auto !important; /* Permite que el tamaño del evento se ajuste al contenido */
-  min-height: 520px; /* Altura mínima para eventos más largos */
-  width: 10%;
-  word-break: break-word; /* Permite dividir texto largo */
-  white-space: normal; /* Asegura que el texto largo se ajuste */
+  height: auto !important;
+  min-height: 120px;
+  word-break: break-word;
+  white-space: normal;
   transition: all 0.3s ease;
+  border-radius: 6px;
+  cursor: pointer;
 }
 
-.vuecal__event:hover {
+.vcal-event:hover {
   background: linear-gradient(145deg, #005a9e, #0078d4);
   transform: scale(1.05);
 }
 
-/* Specific styling for orden de trabajo events */
-.vuecal__event.orden-trabajo {
+.vcal-event.orden-trabajo {
   background: linear-gradient(145deg, #0078d4, #005a9e);
   padding: 15px;
-  min-height: 120px; /* Altura mínima para eventos de orden de trabajo */
-  height: auto !important; /* Ajusta dinámicamente la altura al contenido */
+  min-height: 120px;
+  height: auto !important;
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
-.vuecal__event.orden-trabajo:hover {
+.vcal-event.orden-trabajo:hover {
   transform: scale(1.05);
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
 }
 
-/* Styling for the event title */
-.vuecal__event-title {
+.vcal-event-title {
   font-weight: bold;
   font-size: 18px;
   margin-bottom: 5px;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  white-space: normal; /* Permite el ajuste del texto largo */
-  overflow: visible; /* Evita recortes del texto */
+  white-space: normal;
+  overflow: visible;
 }
 
-/* Styling for the event time */
-.vuecal__event-time {
+.vcal-event-time {
   font-size: 16px;
-  color: #d3d3d3;
+  color: #ff0000;
   text-transform: capitalize;
   margin-top: 5px;
 }
 
-/* Modal styling */
+/* Modal */
 .event-details-modal {
   position: fixed;
   top: 0;
@@ -220,13 +230,14 @@ export default {
 }
 
 .modal-content {
-  background-color: #ffffff;
+  background-color: #dddbe5;
   padding: 30px;
   border-radius: 12px;
   width: 80%;
   max-width: 500px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   animation: slideIn 0.3s ease;
+  position: relative;
 }
 
 .close-btn {
@@ -242,19 +253,49 @@ export default {
 }
 
 .close-btn:hover {
-  color: #ff4d4d;
+  color: #645a5a;
 }
 
-/* Responsive design adjustments */
-@media (max-width: 768px) {
-  .vuecal__day {
-    height: 160px; /* Altura ajustada para días */
-  }
+/* Botones de navegación visuales del calendario */
+::v-deep(.v-calendar-header__icons button) {
+  background-color: #0078d4 !important;
+  color: rgb(57, 4, 4) !important;
+  border-radius: 50%;
+  width: 45px;
+  height: 45px;
+  padding: 0;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 24px;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  border: none;
+  cursor: pointer;
+  user-select: none;
+}
 
-  .vuecal__event {
+::v-deep(.v-calendar-header__icons button:hover) {
+  background-color: #005a9e !important;
+  transform: scale(1.1);
+}
+
+::v-deep(.v-calendar-header__icons button:active) {
+  background-color: #021e33 !important;
+  transform: scale(0.95);
+}
+
+::v-deep(.v-calendar-header__icons button .v-icon) {
+  color: rgb(105, 0, 0) !important;
+  font-size: 28px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .vcal-event {
     font-size: 14px;
     padding: 15px;
-    min-height: 160px; /* Altura de los eventos más larga */
+    min-height: 160px;
   }
 
   .modal-content {
@@ -263,13 +304,11 @@ export default {
   }
 }
 
-/* Keyframe animation for modal */
 @keyframes slideIn {
   from {
     transform: translateY(-50px);
     opacity: 0;
   }
-
   to {
     transform: translateY(0);
     opacity: 1;

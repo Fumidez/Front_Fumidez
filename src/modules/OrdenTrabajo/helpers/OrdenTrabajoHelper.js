@@ -23,7 +23,19 @@ export const actualizarOrdenFachada = async (id, clienteOrden) => {
 export const actualizarOrdenEstadoFachada = async (id, estado) => {
     return await actualizarOrdenEstado(id, estado);
 }
-
+export const eliminarOrdenFachada = async (id) => {
+    return await eliminarOrden(id);
+  };
+  
+  const eliminarOrden = async (id) => {
+    try {
+      const response = await axios.delete(`${API_URL}/${id}`);
+      return response.data;
+    } catch (error) {
+      console.error("Error eliminando orden:", error);
+      throw error;
+    }
+  };
 const crearOrden = async (clienteOrden) => {
     return await axios.post(API_URL, clienteOrden).then(r => r.data);
 

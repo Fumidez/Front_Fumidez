@@ -98,7 +98,7 @@ const generateFormularioIPM = async (informe, doc) => {
 
     if (Array.isArray(formulariosIPM)) {
 
-      let index = index + 1;
+      let index =1;
       // Crear el array 'body' para almacenar las filas de la tabla
       const bodyData = formulariosIPM.map((formulario) => {
         let datosFormulario = {
