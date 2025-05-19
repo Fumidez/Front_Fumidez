@@ -1,12 +1,9 @@
 # docker build -t axelxavier/fumidez .
+#docker push axelxavier/fumidez
 
 FROM node:lts-alpine
-RUN npm install -g http-server
-RUN mkdir /app
 WORKDIR /app
-COPY package*.json ./
-RUN npm install
 COPY . .
-RUN npm run build
-EXPOSE 8080
-CMD [ "http-server", "dist" ]
+RUN npm install
+RUN npm install -g http-server
+CMD ["http-server", "dist", "-p", "5173"]

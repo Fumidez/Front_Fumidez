@@ -211,7 +211,7 @@
 <script>
 import { obtenerTodosLosProductosFachada } from '../../Producto/helpers/productosHelpers';
 import { consultarOrdenFachada } from '../../OrdenTrabajo/helpers/OrdenTrabajoHelper';
-import { consultarInformePorIdFachada, crearInformePlagaFachada } from '../helpers/InformeHelper';
+import {crearInformePlagaFachada,consultarInformePorIdFachada} from "../helpers/InformeHelper";
 import Footer from '../../../components/Footer.vue';
 import { consultarFotosIdInformeFachada, eliminarFotoFachada, guardarFotosFachada } from '../helpers/fotosHelper';
 import router from "@/router";

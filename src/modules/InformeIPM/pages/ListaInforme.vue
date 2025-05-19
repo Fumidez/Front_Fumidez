@@ -112,16 +112,12 @@
 </template>
 
 <script>
-import {
-  consultarInformeFachada,
-  consultarInformePorIdFachada,
-} from "../helpers/InformeHelper";
+import {consultarInformeFachada,consultarInformePorIdFachada} from "../helpers/InformeHelper";
 import router from "@/router";
 import { generatePDFInformeFachada } from "../helpers/generarInforme";
 import { generateFormularioIPMFachada } from "../helpers/generarInformeIPM";
 import { generateFormularioCompletoFachada } from "../helpers/generarInformeUnido";
 import { guardarFotosFachada } from "../helpers/fotosHelper";
-import { generateFotosPDFData } from "../helpers/formatoFotos";
 
 export default {
   name: "InformeIpm",
