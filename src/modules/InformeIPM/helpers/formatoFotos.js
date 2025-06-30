@@ -2,6 +2,7 @@ import jsPDF from 'jspdf';
 import JsPDFAutotable from 'jspdf-autotable'
 import { consultarFotosIdInformeFachada } from './fotosHelper';
 
+import logo from '/fumidez_logo.png'
 
 export const generateFachadaFotosPDF = async (informeId, doc) => {
     await generateFotos(informeId, doc)
@@ -92,8 +93,8 @@ const generateFotos = async (informeId, doc) => {
         50
     ); // 20% blanco
     // Logo (ajusta la posición y tamaño según sea necesario)
-    const logo = "src/assets/fumidez_logo.png"; // Reemplaza con la ruta de tu logo
-    doc.addImage(logo, "PNG", 10, 14, 125, 40); // X, Y, Width, Height
+   const imageUrl = logo
+    doc.addImage(imageUrl, "PNG", 10, 14, 125, 40); // X, Y, Width, Height
 
     // Texto en el encabezado
     doc.setFont("cambria", "bold");
@@ -202,11 +203,11 @@ const generateFotos = async (informeId, doc) => {
         white,
         50
     ); // 20% blanco
-    const webIcon = "src/assets/web.png"; // Ruta al icono del sitio web
-    const emailIcon = "src/assets/mail.png"; // Ruta al icono de correo
-    const locationIcon = "src/assets/home.png"; // Ruta al icono de ubicación
-    const phoneIcon = "src/assets/phone.png"; // Ruta al icono de teléfono
-    const whatsappIcon = "src/assets/whatsapp.png"; // Ruta al icono de WhatsApp
+    const webIcon = "/web.png"; // Ruta al icono del sitio web
+    const emailIcon = "/mail.png"; // Ruta al icono de correo
+    const locationIcon = "/home.png"; // Ruta al icono de ubicación
+    const phoneIcon = "/phone.png"; // Ruta al icono de teléfono
+    const whatsappIcon = "/whatsapp.png"; // Ruta al icono de WhatsApp
 
     // Añadir textos con iconos
     const footerY = doc.internal.pageSize.height - footerHeight + 20;

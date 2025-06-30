@@ -211,7 +211,7 @@
 <script>
 import { obtenerTodosLosProductosFachada } from '../../Producto/helpers/productosHelpers';
 import { consultarOrdenFachada } from '../../OrdenTrabajo/helpers/OrdenTrabajoHelper';
-import {crearInformePlagaFachada,consultarInformePorIdFachada} from "../helpers/InformeHelper";
+import {crearInformePlagaFachada,consultarInformePorIdFachada} from "../helpers/informeHelper";
 import Footer from '../../../components/Footer.vue';
 import { consultarFotosIdInformeFachada, eliminarFotoFachada, guardarFotosFachada } from '../helpers/fotosHelper';
 import router from "@/router";
@@ -328,6 +328,7 @@ export default {
           recomendaciones: this.informe.recomendaciones,
           frecuencia: this.informe.frecuencia,
           precio: this.informe.precio,
+          tiempo: this.informe.tiempo,
           ordenDto: {
             id: this.informe.idOrden
           },

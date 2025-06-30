@@ -1,11 +1,19 @@
 import jsPDF from 'jspdf';
+import logo from '/fumidez_logo.png'
+import CamaraComercio from '/CamaraComercio.png';
+import RegistroSanitario from '/RegistroSanitario.png';
+import SAQ from '/SAQ.png';
+import seal from '/seal.png';
+import oms from '/oms.png';
+
+
 import JsPDFAutotable from 'jspdf-autotable'
 import { consultarDesratizacionFachadaPorIdInforme } from '../helpers/desratizacionHelper';
 import {
     consultarInformePorIdFachada
 
 
-} from './InformeHelper';
+} from './informeHelper';
 
 export const generatePDFInformeFachada = async (informe) => {
     return await generatePDFData(informe)
@@ -99,8 +107,8 @@ const generatePDF = async (informe, doc) => {
         50
     ); // 20% blanco
     // Logo (ajusta la posición y tamaño según sea necesario)
-    const logo = "src/assets/fumidez_logo.png"; // Reemplaza con la ruta de tu logo
-    doc.addImage(logo, "PNG", 10, 14, 125, 40); // X, Y, Width, Height
+    const imageUrl = logo
+    doc.addImage(imageUrl, "PNG", 10, 14, 125, 40); // X, Y, Width, Height
 
     // Texto en el encabezado
     doc.setFont("cambria", "bold");
@@ -131,11 +139,11 @@ const generatePDF = async (informe, doc) => {
     );
 
     // Imágenes en el lado izquierdo (ajustar rutas y posiciones)
-    const image1 = "src/assets/CamaraComercio.png";
-    const image2 = "src/assets/RegistroSanitario.png";
-    const image3 = "src/assets/SAQ.png";
-    const image4 = "src/assets/seal.png";
-    const image5 = "src/assets/oms.png";
+    const image1 = CamaraComercio;
+    const image2 = RegistroSanitario;
+    const image3 = SAQ;
+    const image4 = seal;
+    const image5 = oms;
 
     doc.setTextColor(37, 123, 205);
     doc.setFont("cambria", "bold");
@@ -295,7 +303,7 @@ const generatePDF = async (informe, doc) => {
     serviciosY = serviciosY + 40;
 
     doc.autoTable({
-        head: [cabeceraPlagas.map((col) => col.title)], // Título de la cabecera
+        head: [cabeceraPlagas.map((col) => col.title),], // Título de la cabecera
         body: filasPlagas,
         startY: serviciosY, // Posición Y donde empieza la tabla
         margin: { left: distanciaDerecha },
@@ -689,11 +697,11 @@ const generatePDF = async (informe, doc) => {
     });
 
     datosTabla = [
-        ["AREAS INTERNAS", informe.sanitizacionConfidencialDto.areaInterna == 1 ? "X" : "1" ,
+        ["AREAS INTERNAS", informe.sanitizacionConfidencialDto.areaInterna == 1 ? "X" : "1",
             informe.sanitizacionConfidencialDto.areaInterna == 2 ? "X" : "2",
             informe.sanitizacionConfidencialDto.areaInterna == 3 ? "X" : "3",
             informe.sanitizacionConfidencialDto.areaInterna == 4 ? "X" : "4"], // Primera fila
-        ["AREAS EXTERNAS",  informe.sanitizacionConfidencialDto.areaExterna == 1 ? "X" : "1" ,
+        ["AREAS EXTERNAS", informe.sanitizacionConfidencialDto.areaExterna == 1 ? "X" : "1",
             informe.sanitizacionConfidencialDto.areaExterna == 2 ? "X" : "2",
             informe.sanitizacionConfidencialDto.areaExterna == 3 ? "X" : "3",
             informe.sanitizacionConfidencialDto.areaExterna == 4 ? "X" : "4"], // Segunda fila
@@ -701,17 +709,17 @@ const generatePDF = async (informe, doc) => {
             informe.sanitizacionConfidencialDto.areaNombreOpc1
                 ? informe.sanitizacionConfidencialDto.areaNombreOpc1
                 : "AREA",
-                informe.sanitizacionConfidencialDto.areaOpc1 == 1 ? "X" : "1" ,
-                informe.sanitizacionConfidencialDto.areaOpc1 == 2 ? "X" : "2",
-                informe.sanitizacionConfidencialDto.areaOpc1 == 3 ? "X" : "3",
-                informe.sanitizacionConfidencialDto.areaOpc1 == 4 ? "X" : "4"], // Tercera fila
+            informe.sanitizacionConfidencialDto.areaOpc1 == 1 ? "X" : "1",
+            informe.sanitizacionConfidencialDto.areaOpc1 == 2 ? "X" : "2",
+            informe.sanitizacionConfidencialDto.areaOpc1 == 3 ? "X" : "3",
+            informe.sanitizacionConfidencialDto.areaOpc1 == 4 ? "X" : "4"], // Tercera fila
         [
             informe.sanitizacionConfidencialDto.areaNombreOpc2
                 ? informe.sanitizacionConfidencialDto.areaNombreOpc2
-                : "AREA", informe.sanitizacionConfidencialDto.areaOpc2 == 1 ? "X" : "1" ,
-                informe.sanitizacionConfidencialDto.areaOpc2 == 2 ? "X" : "2",
-                informe.sanitizacionConfidencialDto.areaOpc2 == 3 ? "X" : "3",
-                informe.sanitizacionConfidencialDto.areaOpc2 == 4 ? "X" : "4"], // Cuarta fila
+                : "AREA", informe.sanitizacionConfidencialDto.areaOpc2 == 1 ? "X" : "1",
+            informe.sanitizacionConfidencialDto.areaOpc2 == 2 ? "X" : "2",
+            informe.sanitizacionConfidencialDto.areaOpc2 == 3 ? "X" : "3",
+            informe.sanitizacionConfidencialDto.areaOpc2 == 4 ? "X" : "4"], // Cuarta fila
     ];
 
     doc.autoTable({
@@ -744,51 +752,51 @@ const generatePDF = async (informe, doc) => {
         },
         tableWidth: "wrap", // Ajusta la tabla al contenido
     });
- // --- Agregar Cuadro "Observaciones" ---
+    // --- Agregar Cuadro "Observaciones" ---
 
-// Definir posiciones y dimensiones para el nuevo cuadro
-const observacionesY = cuadroY + 95; // Posición Y donde empieza el cuadro
-const observacionesHeight = 130; // Altura fija para el cuadro de observaciones
-doc.setDrawColor(37, 123, 205); // Color de la línea (RGB)
-doc.setLineWidth(0.5);
-// Dibuja el cuadro principal
-doc.rect(cuadroX, observacionesY, tablaWidth, observacionesHeight); // Cuadro externo
+    // Definir posiciones y dimensiones para el nuevo cuadro
+    const observacionesY = cuadroY + 95; // Posición Y donde empieza el cuadro
+    const observacionesHeight = 130; // Altura fija para el cuadro de observaciones
+    doc.setDrawColor(37, 123, 205); // Color de la línea (RGB)
+    doc.setLineWidth(0.5);
+    // Dibuja el cuadro principal
+    doc.rect(cuadroX, observacionesY, tablaWidth, observacionesHeight); // Cuadro externo
 
-// Añade el texto dentro del cuadro
-const cabeceraObservacion = [
-    { title: "OBSERVACIONES", dataKey: "observacion" },
-];
-const textObservacion = [{ observacion: informe.observacion || "" }]; // Asegúrate de que siempre haya un valor
+    // Añade el texto dentro del cuadro
+    const cabeceraObservacion = [
+        { title: "OBSERVACIONES", dataKey: "observacion" },
+    ];
+    const textObservacion = [{ observacion: informe.observacion || "" }]; // Asegúrate de que siempre haya un valor
 
-doc.autoTable({
-    head: [cabeceraObservacion.map((col) => col.title)], // Título de la cabecera
-    body: textObservacion.map((item) => [item.observacion]), // Datos del cuerpo de la tabla
-    startY: observacionesY + 5, // Añade un margen de 5 debajo del cuadro principal
-    margin: { left: cuadroX + 2 }, // Margen izquierdo ajustado
-    theme: "plain", // Tema sin bordes internos
-    headStyles: {
-        font: "Cambria",
-        fillColor: [255, 255, 255], // Fondo blanco
-        textColor: [37, 123, 205], // Color del texto
-        halign: "center", // Alineación central del texto
-        fontSize: 10, // Tamaño de la fuente
-        cellPadding: 0, // Sin relleno interno para evitar sobreposición
-    },
-    styles: {
-        textColor: [37, 123, 205],
-        font: "Cambria",
-        fontSize: 8, // Tamaño de la fuente del contenido
-        cellPadding: 3, // Espaciado interno para el contenido
-        overflow: "linebreak", // Permitir saltos de línea
-    },
-    columnStyles: {
-        0: {
-            cellWidth: tablaWidth - 4, // Ajusta el ancho para evitar bordes
-            valign: "top", // Alineación superior
+    doc.autoTable({
+        head: [cabeceraObservacion.map((col) => col.title)], // Título de la cabecera
+        body: textObservacion.map((item) => [item.observacion]), // Datos del cuerpo de la tabla
+        startY: observacionesY + 5, // Añade un margen de 5 debajo del cuadro principal
+        margin: { left: cuadroX + 2 }, // Margen izquierdo ajustado
+        theme: "plain", // Tema sin bordes internos
+        headStyles: {
+            font: "Cambria",
+            fillColor: [255, 255, 255], // Fondo blanco
+            textColor: [37, 123, 205], // Color del texto
+            halign: "center", // Alineación central del texto
+            fontSize: 10, // Tamaño de la fuente
+            cellPadding: 0, // Sin relleno interno para evitar sobreposición
         },
-    },
-    tableWidth: tablaWidth - 4, // Mantener dentro del cuadro principal
-});
+        styles: {
+            textColor: [37, 123, 205],
+            font: "Cambria",
+            fontSize: 8, // Tamaño de la fuente del contenido
+            cellPadding: 3, // Espaciado interno para el contenido
+            overflow: "linebreak", // Permitir saltos de línea
+        },
+        columnStyles: {
+            0: {
+                cellWidth: tablaWidth - 4, // Ajusta el ancho para evitar bordes
+                valign: "top", // Alineación superior
+            },
+        },
+        tableWidth: tablaWidth - 4, // Mantener dentro del cuadro principal
+    });
 
 
     // --- Agregar Cuadro "Procedimientos" ---
@@ -878,8 +886,8 @@ doc.autoTable({
             if (informe.tipoProcedimiento == 2) {
                 datosProcedimientos.uvl = "X";
             }
-            if (informe.tipoprocedimiento == 3) {
-                datosProcedimientos.mecanico = "X";
+            if (informe.tipoProcedimiento == 3) {
+                datosProcedimientos.mecanico = "X ";
             }
             if (informe.tipoProcedimiento == 4) {
                 datosProcedimientos.lamparas = "X";
@@ -899,7 +907,7 @@ doc.autoTable({
             if (informe.tipoProcedimiento == 9) {
                 datosProcedimientos.nMEc = "X";
             }
-            if (informe.tipoprocedimiento == 10) {
+            if (informe.tipoProcedimiento == 10) {
                 datosProcedimientos.sanitizacion = "X";
             }
         });
@@ -911,10 +919,7 @@ doc.autoTable({
             [datosProcedimientos.aspersor, "ASPERSOR MANUAL"], // Segunda fila
             [datosProcedimientos.uvl, "NEBULIZADOR UVL ELÉCTRICO DIINA FOG"], // Tercera fila
             [datosProcedimientos.mecanico, "NEBULIZADOR MECÁNICO"], // Cuarta fila
-            [
-                datosProcedimientos.lamparas,
-                "LÁMPARAS ELECTROCUTADORAS/ATRAPADORAS",
-            ], // Quinta fila
+            [datosProcedimientos.lamparas, "LÁMPARAS ELECTROCUTADORAS/ATRAPADORAS",], // Quinta fila
         ],
         startY: procedimientosY, // Posición Y donde empieza la tabla
         margin: { left: cuadroX + 30 }, // Mueve el cuerpo 20 unidades más a la derecha
@@ -1048,41 +1053,41 @@ doc.autoTable({
     const recomendacionesY = procedimientosY + 40; // 10 puntos de margen debajo del cuadro de procedimientos
     const recomendacionesHeight = 60; // Altura del nuevo cuadro
 
-   /* const cabecera = [
-        { title: "RECOMENDACIONES:", dataKey: "recomendacion" },
-    ];
-    const text = [{ recomendacion: informe.recomendaciones }];
-    doc.autoTable({
-        head: [cabecera.map((col) => col.title)], // Título de la cabecera
-        body: text.map((item) => [item.recomendacion]), // Datos del cuerpo de la tabla
-        startY: recomendacionesY + 10,
-        margin: { left: cuadroX },
-        theme: "grid",
-        headStyles: {
-            font: "Cambria",
-            fillColor: [255, 255, 255],
-            textColor: [37, 123, 205],
-            halign: "left",
-            fontSize: 10, // Tamaño de la fuente para la cabecera
-        },
-        styles: {
-            textColor: [37, 123, 205],
-            font: "Cambria",
-            fontSize: 7, // Tamaño de la fuente para el contenido
-            cellPadding: 5,
-            overflow: "linebreak", // Permitir saltos de línea en las celdas
-        },
-        columnStyles: {
-            0: {
-                // Define las propiedades de la primera columna
-                cellWidth: pageWidth - cuadroX - 20, // Limita el ancho de la columna
-                lineColor: [37, 123, 205],
-                lineWidth: 0.5
-            },
-        },
-        tableWidth: "wrap", // Ajusta la tabla al contenido
-    });
-*/
+    /* const cabecera = [
+         { title: "RECOMENDACIONES:", dataKey: "recomendacion" },
+     ];
+     const text = [{ recomendacion: informe.recomendaciones }];
+     doc.autoTable({
+         head: [cabecera.map((col) => col.title)], // Título de la cabecera
+         body: text.map((item) => [item.recomendacion]), // Datos del cuerpo de la tabla
+         startY: recomendacionesY + 10,
+         margin: { left: cuadroX },
+         theme: "grid",
+         headStyles: {
+             font: "Cambria",
+             fillColor: [255, 255, 255],
+             textColor: [37, 123, 205],
+             halign: "left",
+             fontSize: 10, // Tamaño de la fuente para la cabecera
+         },
+         styles: {
+             textColor: [37, 123, 205],
+             font: "Cambria",
+             fontSize: 7, // Tamaño de la fuente para el contenido
+             cellPadding: 5,
+             overflow: "linebreak", // Permitir saltos de línea en las celdas
+         },
+         columnStyles: {
+             0: {
+                 // Define las propiedades de la primera columna
+                 cellWidth: pageWidth - cuadroX - 20, // Limita el ancho de la columna
+                 lineColor: [37, 123, 205],
+                 lineWidth: 0.5
+             },
+         },
+         tableWidth: "wrap", // Ajusta la tabla al contenido
+     });
+ */
     // --- Agregar Sección "Firma Supervisor" ---
 
     // Definir posiciones y dimensiones para la firma
@@ -1094,7 +1099,7 @@ doc.autoTable({
     // Dibujar la línea para la firma
     doc.setLineWidth(1);
     doc.line(
-        firmaLineX ,
+        firmaLineX,
         firmaLineY,
         firmaLineX + firmaLineWidth,
         firmaLineY
@@ -1158,11 +1163,11 @@ doc.autoTable({
         white,
         50
     ); // 20% blanco
-    const webIcon = "src/assets/web.png"; // Ruta al icono del sitio web
-    const emailIcon = "src/assets/mail.png"; // Ruta al icono de correo
-    const locationIcon = "src/assets/home.png"; // Ruta al icono de ubicación
-    const phoneIcon = "src/assets/phone.png"; // Ruta al icono de teléfono
-    const whatsappIcon = "src/assets/whatsapp.png"; // Ruta al icono de WhatsApp
+    const webIcon = "/web.png"; // Ruta al icono del sitio web
+    const emailIcon = "/mail.png"; // Ruta al icono de correo
+    const locationIcon = "/home.png"; // Ruta al icono de ubicación
+    const phoneIcon = "/phone.png"; // Ruta al icono de teléfono
+    const whatsappIcon = "/whatsapp.png"; // Ruta al icono de WhatsApp
 
     // Añadir textos con iconos
     const footerY = doc.internal.pageSize.height - footerHeight + 20;

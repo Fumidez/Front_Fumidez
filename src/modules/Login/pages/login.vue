@@ -4,7 +4,7 @@
       
       <!-- Logo de la empresa -->
       <div class="text-center mb-4">
-        <img src="../../../assets/fumidez_logo.png" alt="Logo de la empresa" class="logo" />
+        <img src="/fumidez_logo.png" alt="Logo de la empresa" class="logo" />
       </div>
 
       <h1 class="text-center text-primary mb-4">Iniciar Sesión</h1>

@@ -91,6 +91,11 @@
 <script>
 // Importamos el helper para manejar la creación y obtención de órdenes de trabajo
 import { crearOrdenFachada, consultarOrdenFachada, actualizarOrdenFachada } from '../helpers/OrdenTrabajoHelper';
+import CamaraComercio from '/CamaraComercio.png';
+import RegistroSanitario from '/RegistroSanitario.png';
+import SAQ from '/SAQ.png';
+import seal from '/seal.png';
+import oms from '/oms.png';
 
 import { consultarUsuarioFachada } from '../../Usuario/helpers/UsuarioHelper';
 
@@ -216,7 +221,7 @@ export default {
       drawGradient(doc, sectionWidth * 5.1, 0, sectionWidth * 2.9, headerHeight, blue, white, 50); // 29% azul a blanco
       drawGradient(doc, sectionWidth * 8, 0, sectionWidth * 2, headerHeight, white, white, 50); // 20% blanco
       // Logo (ajusta la posición y tamaño según sea necesario)
-      const logo = 'src/assets/fumidez_logo.png'; // Reemplaza con la ruta de tu logo
+      const logo = '/fumidez_logo.png'; // Reemplaza con la ruta de tu logo
       doc.addImage(logo, 'PNG', 10, 14, 125, 40); // X, Y, Width, Height
 
       // Texto en el encabezado
@@ -233,11 +238,11 @@ export default {
       doc.line(divisionX, headerHeight, divisionX, doc.internal.pageSize.height - footerHeight);
 
       // Imágenes en el lado izquierdo (ajustar rutas y posiciones)
-      const image1 = 'src/assets/CamaraComercio.png';
-      const image2 = 'src/assets/RegistroSanitario.png';
-      const image3 = 'src/assets/SAQ.png';
-      const image4 = 'src/assets/seal.png';
-      const image5 = 'src/assets/oms.png';
+  const image1 = CamaraComercio;
+    const image2 = RegistroSanitario;
+    const image3 = SAQ;
+    const image4 = seal;
+    const image5 = oms;
 
       doc.setTextColor(32, 76, 130);
       doc.setFont('cambria', 'bold');
@@ -295,11 +300,11 @@ export default {
       drawGradient(doc, sectionWidth * 4.9, doc.internal.pageSize.height - footerHeight, sectionWidth * 0.2, footerHeight, blue, blue, 50); // 2% azul
       drawGradient(doc, sectionWidth * 5.1, doc.internal.pageSize.height - footerHeight, sectionWidth * 2.9, footerHeight, blue, white, 50); // 29% azul a blanco
       drawGradient(doc, sectionWidth * 8, doc.internal.pageSize.height - footerHeight, sectionWidth * 2, footerHeight, white, white, 50); // 20% blanco
-      const webIcon = 'src/assets/web.png'; // Ruta al icono del sitio web
-      const emailIcon = 'src/assets/mail.png'; // Ruta al icono de correo
-      const locationIcon = 'src/assets/home.png'; // Ruta al icono de ubicación
-      const phoneIcon = 'src/assets/phone.png'; // Ruta al icono de ubicación
-      const whatsappIcon = 'src/assets/whatsapp.png'; // Ruta al icono de ubicación
+      const webIcon = '/web.png'; // Ruta al icono del sitio web
+      const emailIcon = '/mail.png'; // Ruta al icono de correo
+      const locationIcon = '/home.png'; // Ruta al icono de ubicación
+      const phoneIcon = '/phone.png'; // Ruta al icono de ubicación
+      const whatsappIcon = '/whatsapp.png'; // Ruta al icono de ubicación
 
       // Añadir textos con iconos
       const footerY = doc.internal.pageSize.height - footerHeight + 20;

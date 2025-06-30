@@ -2,6 +2,12 @@ import jsPDF from 'jspdf';
 import JsPDFAutotable from 'jspdf-autotable'
 import { consultarDesratizacionFachadaPorIdInforme } from './desratizacionHelper';
 
+import logo from '/fumidez_logo.png';
+import web from '/web.png';
+import mail from '/mail.png';
+import home from '/home.png';
+import phone from '/phone.png';
+import whatsapp from '/whatsapp.png';
 
 //Se debe mandar el informe dtto, no el normal
 export const generateFormularioIPMFachada = async (informe) => {
@@ -55,10 +61,12 @@ const generateFormularioIPM = async (informe, doc) => {
     drawGradient(doc, sectionWidth * 8, 0, sectionWidth * 2, headerHeight, white, white, 50); // 20% blanco
 
     // Logo (ajusta la posición y tamaño según sea necesario)
-    const logo = 'src/assets/fumidez_logo.png'; // Reemplaza con la ruta de tu logo
+    
     // Asegúrate de que las imágenes estén en base64 o accesibles
     // Puedes usar una promesa para cargar imágenes si es necesario
-    doc.addImage(logo, 'PNG', 10, 14, 125, 40); // X, Y, Width, Height
+    
+    const imageUrl = logo
+    doc.addImage(imageUrl, 'PNG', 10, 14, 125, 40); // X, Y, Width, Height
 
     // Texto en el encabezado
     doc.setFont('cambria', 'bold');
@@ -240,11 +248,11 @@ const generateFormularioIPM = async (informe, doc) => {
         50
       ); // 20% blanco
 
-      const webIcon = 'src/assets/web.png'; // Ruta al icono del sitio web
-      const emailIcon = 'src/assets/mail.png'; // Ruta al icono de correo
-      const locationIcon = 'src/assets/home.png'; // Ruta al icono de ubicación
-      const phoneIcon = 'src/assets/phone.png'; // Ruta al icono de teléfono
-      const whatsappIcon = 'src/assets/whatsapp.png'; // Ruta al icono de WhatsApp
+      const webIcon = web; // Ruta al icono del sitio web
+      const emailIcon = mail; // Ruta al icono de correo
+      const locationIcon = home; // Ruta al icono de ubicación
+      const phoneIcon = phone; // Ruta al icono de teléfono
+      const whatsappIcon = whatsapp; // Ruta al icono de WhatsApp
 
       // Añadir textos con iconos
       const footerY = pageHeight - footerHeight + 20;

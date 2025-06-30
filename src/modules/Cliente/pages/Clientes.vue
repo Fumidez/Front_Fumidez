@@ -146,7 +146,7 @@ export default {
 
 main {
   flex-grow: 1;
-  background-image: url('src/assets/fumidezBackground.jpg'), linear-gradient(to bottom, #132333, #132333);
+  background-image: url('@/assets/fumidezBackground.jpg'), linear-gradient(to bottom, #132333, #132333);
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;

@@ -112,7 +112,7 @@
 </template>
 
 <script>
-import {consultarInformeFachada,consultarInformePorIdFachada} from "../helpers/InformeHelper";
+import { consultarInformeFachada, consultarInformePorIdFachada } from "../helpers/informeHelper";
 import router from "@/router";
 import { generatePDFInformeFachada } from "../helpers/generarInforme";
 import { generateFormularioIPMFachada } from "../helpers/generarInformeIPM";
@@ -135,14 +135,20 @@ export default {
     };
   },
   computed: {
+
     informesFiltrados() {
-      const filtroMinusculas = this.filtro.toLowerCase();
-      return this.informes.filter(
-        (informe) =>
-          informe.numFactura.toLowerCase().includes(filtroMinusculas) ||
-          informe.frecuencia.toLowerCase().includes(filtroMinusculas)
-      );
-    },
+  try {
+    const filtroMinusculas = (this.filtro || "").toLowerCase();
+    return this.informes.filter((informe) => {
+      const numFactura = (informe.numFactura || "").toLowerCase();
+      const frecuencia = (informe.frecuencia || "").toLowerCase();
+      return numFactura.includes(filtroMinusculas) || frecuencia.includes(filtroMinusculas);
+    });
+  } catch (error) {
+    console.error("Error en informesFiltrados:", error);
+    return []; // Devuelve una lista vacía si hay error
+  }
+},
     informesPaginados() {
       // Ordenar los proveedores filtrados
       const informesOrdenados = [...this.informesFiltrados].sort((a, b) => {
@@ -178,8 +184,10 @@ export default {
     async cargarInformes() {
       try {
         this.informes = await consultarInformeFachada();
+        console.log(this.informes);
       } catch (error) {
         console.error("Error al cargar los informes IPM:", error);
+
       }
     },
     async redirigirFormularioIPM(id) {
@@ -222,7 +230,7 @@ export default {
       });
 
       try {
-        await guardarFotosFachada(formData); 
+        await guardarFotosFachada(formData);
         this.cerrarModal();
       } catch (error) {
         console.error("Error al guardar las fotos:", error);
