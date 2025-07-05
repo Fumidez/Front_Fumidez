@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from 'vue-router';
+import { createRouter, createWebHashHistory } from 'vue-router';
 import Clientes from '../modules/Cliente/pages/Clientes.vue';
 import Usuarios from '../modules/Usuario/pages/Usuarios.vue';
 import OrdenTrabajo from '../modules/OrdenTrabajo/pages/OrdenTrabajo.vue';
@@ -59,16 +59,17 @@ const routes = [
   { path: '/usuario_ver/:id', component: RegistroUsuarios, meta: { requiresAuth: true } },
   { path: '/usuario_registro', component: RegistroUsuarios, meta: { requiresAuth: false } },
   { path: '/informe_ver/:id', component: RegistrarInforme, meta: { requiresAuth: true } },
-  { path: '/cambiar_contrasenia/:correo/:token', component: CambioContrasenia },
-  { path: '/inicio', component: Home, meta: { requiresAuth: false } },
+  { path: '/cambiar_contrasenia/:correo/:token', component: CambioContrasenia, meta: { requiresAuth: false } },
+  { path: '/inicio', component: Home, meta: { requiresAuth: false }, meta: { requiresAuth: true } },
 
   { path: '/', redirect: '/inicio' },
 ];
 
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHashHistory(),
   routes,
 });
+
 
 router.beforeEach((to, from, next) => {
   const isAuthenticated = !!localStorage.getItem('token');
