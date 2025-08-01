@@ -219,21 +219,6 @@ th.highlighted {
   border: 2px solid #a9c4f5;
 }
 
-/* Responsividad */
-@media (max-width: 768px) {
-  .card {
-    padding: 2rem 1.5rem;
-  }
-
-  h1 {
-    font-size: 1.5rem;
-  }
-
-  .table th,
-  .table td {
-    font-size: 0.85rem;
-  }
-
   .alert {
     padding: 12px;
     margin-top: 20px;
@@ -248,7 +233,20 @@ th.highlighted {
     background-color: #dc3545;
     color: white;
   }
+/* Responsividad */
+@media (max-width: 768px) {
+  .card {
+    padding: 2rem 1.5rem;
+  }
 
+  h1 {
+    font-size: 1.5rem;
+  }
+
+  .table th,
+  .table td {
+    font-size: 0.85rem;
+  }
 
 }
 </style>
