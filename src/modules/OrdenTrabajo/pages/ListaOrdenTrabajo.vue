@@ -81,6 +81,9 @@
               </tr>
             </tbody>
           </table>
+          <div v-if="mensajeExito" class="alert alert-danger text-center mt-3">
+            {{ mensajeExito }}
+          </div>
         </div>
 
         <!-- Paginación -->
@@ -112,6 +115,7 @@ export default {
   name: "OrdenTrabajo",
   data() {
     return {
+      mensajeExito: "",
       ordenesTrabajo: [],
       filtro: "",
       paginaActual: 1,
@@ -215,8 +219,11 @@ export default {
     async eliminar(id) {
       try {
         await eliminarOrdenFachada(id);
-        alert("Orden eliminada");
+        this.mensajeExito = 'Orden de trabajo eliminada con exito';
         this.cargarOrdenesTrabajo();
+        setTimeout(() => {
+          this.mensajeExito = "";
+        }, 5000);
       } catch (error) {
         console.error("Error al eliminar la orden:", error);
       }
@@ -286,6 +293,21 @@ button:hover {
   .table td {
     font-size: 0.85rem;
   }
+}
+
+.alert {
+  padding: 12px;
+  margin-top: 20px;
+  border-radius: 5px;
+  text-align: center;
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+/* Cambia el fondo a rojo */
+.alert-danger {
+  background-color: #dc3545;
+  color: white;
 }
 
 /* Estilo para el encabezado resaltado */

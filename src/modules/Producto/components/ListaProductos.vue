@@ -9,7 +9,7 @@
                 <!-- Botón para agregar nuevo producto -->
                 <div class="mb-4 d-flex justify-content-between align-items-center">
                     <input v-model="filtro" type="text" class="form-control w-50"
-                    placeholder="Buscar por nombre o proveedor">
+                        placeholder="Buscar por nombre o proveedor">
                     <button @click="redirigirCrearProducto" class="btn btn-primary py-2 px-4">
                         <i class="bi bi-plus-circle"></i> Crear Nuevo Producto
                     </button>
@@ -55,8 +55,11 @@
                             </tr>
                         </tbody>
                     </table>
-                </div>
 
+                </div>
+                <div v-if="mensajeExito" class="alert alert-danger text-center mt-3">
+                    {{ mensajeExito }}
+                </div>
                 <!-- Paginación -->
                 <div class="d-flex justify-content-center mt-4">
                     <button :disabled="paginaActual === 1" @click="cambiarPagina(paginaActual - 1)"
@@ -71,8 +74,11 @@
                 </div>
 
             </div>
+
+
         </main>
     </div>
+
 </template>
 
 <script>
@@ -90,6 +96,7 @@ export default {
     name: "ListarProducto",
     data() {
         return {
+            mensajeExito: "",
             producto: {
                 id: null,
                 nombre: "",
@@ -101,9 +108,9 @@ export default {
             proveedores: [],
             filtro: "",
             paginaActual: 1,
-            productosPorPagina: 5, 
+            productosPorPagina: 5,
             columnaOrdenada: null,
-            ordenAscendente: true, 
+            ordenAscendente: true,
             filtro: "",
         };
     },
@@ -147,8 +154,11 @@ export default {
         async eliminar(id) {
             try {
                 await eliminarProductoFachada(id);
-                alert("Producto eliminado");
+                this.mensajeExito = "El producto ha sido eliminado con exito";
                 this.buscarProductos();
+                setTimeout(() => {
+                    this.mensajeExito = "";
+                }, 5000);
             } catch (error) {
                 console.error("Error al eliminar el producto:", error);
             }
@@ -268,5 +278,20 @@ th.highlighted {
     background-color: #004080;
     color: white;
     border: 2px solid #a9c4f5;
+}
+
+.alert {
+    padding: 12px;
+    margin-top: 20px;
+    border-radius: 5px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 1rem;
+}
+
+/* Cambia el fondo a rojo */
+.alert-danger {
+    background-color: #dc3545;
+    color: white;
 }
 </style>

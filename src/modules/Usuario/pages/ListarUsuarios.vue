@@ -64,8 +64,10 @@
               </tr>
             </tbody>
           </table>
+            <div v-if="mensajeExito" class="alert alert-danger text-center mt-3">
+          {{ mensajeExito }}
         </div>
-
+        </div>
         <div class="d-flex justify-content-center mt-4">
           <button :disabled="paginaActual === 1" @click="cambiarPagina(paginaActual - 1)" class="btn btn-outline-primary">
             <i class="bi bi-chevron-left"></i> Anterior
@@ -88,6 +90,7 @@ export default {
   name: "Usuario",
   data() {
     return {
+      mensajeExito: "",
       usuarios: [],
       filtro: "",
       paginaActual: 1,
@@ -168,8 +171,11 @@ export default {
     async eliminarUsuario(id) {
       try {
         await eliminarUsuarioFachada(id);
-        this.mensajeConfirmacion = 'Usuario eliminado con exito';
+        this.mensajeExito = 'Usuario eliminado con exito';
         this.cargarUsuarios();
+             setTimeout(() => {
+          this.mensajeExito = "";
+        }, 5000);
       } catch (error) {
         console.error('Error al eliminar el usuario:', error);
       }
@@ -179,6 +185,21 @@ export default {
 </script>
 
 <style scoped>
+ .alert {
+    padding: 12px;
+    margin-top: 20px;
+    border-radius: 5px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 1rem;
+  }
+
+  /* Cambia el fondo a rojo */
+  .alert-danger {
+    background-color: #dc3545;
+    color: white;
+  }
+
 .page-container {
   display: flex;
   flex-direction: column;

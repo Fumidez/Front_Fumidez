@@ -2,7 +2,8 @@
   <div class="page-container d-flex flex-column" style="min-height: 100vh;">
     <!-- Contenido Principal -->
     <main class="flex-grow-1 d-flex align-items-center justify-content-center">
-      <div class="card p-5 shadow-lg" style="max-width: 1200px; width: 100%; border-radius: 15px; background-color: rgba(255, 255, 255, 0.9); border: 3px solid transparent; border-image: linear-gradient(to right, #004080, #a9c4f5); border-image-slice: 1;">
+      <div class="card p-5 shadow-lg"
+        style="max-width: 1200px; width: 100%; border-radius: 15px; background-color: rgba(255, 255, 255, 0.9); border: 3px solid transparent; border-image: linear-gradient(to right, #004080, #a9c4f5); border-image-slice: 1;">
         <h1 class="text-center text-primary mb-4">Gestión de Clientes</h1>
 
         <!-- Botón para crear nuevo cliente -->
@@ -15,13 +16,8 @@
         <!-- Filtro de búsqueda con icono -->
         <div class="mb-3">
           <div class="input-group">
-            <input
-              v-model="filtro"
-              type="text"
-              class="form-control"
-              placeholder="Buscar por nombre, correo, RUC"
-              :class="{'border-primary': filtro.length > 0}"
-            />
+            <input v-model="filtro" type="text" class="form-control" placeholder="Buscar por nombre, correo, RUC"
+              :class="{ 'border-primary': filtro.length > 0 }" />
             <button class="btn btn-outline-secondary" @click="filtrarClientes">
               <i class="bi bi-search"></i>
             </button>
@@ -36,26 +32,34 @@
           <table class="table table-striped table-hover align-middle">
             <thead class="table-primary text-center">
               <tr>
-                <th @click="ordenar('id')" :class="{'highlighted': columnaOrdenada === 'id'}">
-                  # <i v-if="columnaOrdenada === 'id'" :class="ordenAscendente ? 'bi bi-chevron-up' : 'bi bi-chevron-down'"></i>
+                <th @click="ordenar('id')" :class="{ 'highlighted': columnaOrdenada === 'id' }">
+                  # <i v-if="columnaOrdenada === 'id'"
+                    :class="ordenAscendente ? 'bi bi-chevron-up' : 'bi bi-chevron-down'"></i>
                 </th>
-                <th @click="ordenar('nombre')" :class="{'highlighted': columnaOrdenada === 'nombre'}">
-                  Nombre <i v-if="columnaOrdenada === 'nombre'" :class="ordenAscendente ? 'bi bi-chevron-up' : 'bi bi-chevron-down'"></i>
+                <th @click="ordenar('nombre')" :class="{ 'highlighted': columnaOrdenada === 'nombre' }">
+                  Nombre <i v-if="columnaOrdenada === 'nombre'"
+                    :class="ordenAscendente ? 'bi bi-chevron-up' : 'bi bi-chevron-down'"></i>
                 </th>
-                <th @click="ordenar('correo')" :class="{'highlighted': columnaOrdenada === 'correo'}">
-                  Correo <i v-if="columnaOrdenada === 'correo'" :class="ordenAscendente ? 'bi bi-chevron-up' : 'bi bi-chevron-down'"></i>
+                <th @click="ordenar('correo')" :class="{ 'highlighted': columnaOrdenada === 'correo' }">
+                  Correo <i v-if="columnaOrdenada === 'correo'"
+                    :class="ordenAscendente ? 'bi bi-chevron-up' : 'bi bi-chevron-down'"></i>
                 </th>
-                <th @click="ordenar('direccion')" :class="{'highlighted': columnaOrdenada === 'direccion'}">
-                  Dirección <i v-if="columnaOrdenada === 'direccion'" :class="ordenAscendente ? 'bi bi-chevron-up' : 'bi bi-chevron-down'"></i>
+                <th @click="ordenar('direccion')" :class="{ 'highlighted': columnaOrdenada === 'direccion' }">
+                  Dirección <i v-if="columnaOrdenada === 'direccion'"
+                    :class="ordenAscendente ? 'bi bi-chevron-up' : 'bi bi-chevron-down'"></i>
                 </th>
-                <th @click="ordenar('telefono')" :class="{'highlighted': columnaOrdenada === 'telefono'}">
-                  Teléfono <i v-if="columnaOrdenada === 'telefono'" :class="ordenAscendente ? 'bi bi-chevron-up' : 'bi bi-chevron-down'"></i>
+                <th @click="ordenar('telefono')" :class="{ 'highlighted': columnaOrdenada === 'telefono' }">
+                  Teléfono <i v-if="columnaOrdenada === 'telefono'"
+                    :class="ordenAscendente ? 'bi bi-chevron-up' : 'bi bi-chevron-down'"></i>
                 </th>
-                <th @click="ordenar('ruc')" :class="{'highlighted': columnaOrdenada === 'ruc'}">
-                  RUC <i v-if="columnaOrdenada === 'ruc'" :class="ordenAscendente ? 'bi bi-chevron-up' : 'bi bi-chevron-down'"></i>
+                <th @click="ordenar('ruc')" :class="{ 'highlighted': columnaOrdenada === 'ruc' }">
+                  RUC <i v-if="columnaOrdenada === 'ruc'"
+                    :class="ordenAscendente ? 'bi bi-chevron-up' : 'bi bi-chevron-down'"></i>
                 </th>
-                <th @click="ordenar('personaEncargada')" :class="{'highlighted': columnaOrdenada === 'personaEncargada'}">
-                  Persona Encargada <i v-if="columnaOrdenada === 'personaEncargada'" :class="ordenAscendente ? 'bi bi-chevron-up' : 'bi bi-chevron-down'"></i>
+                <th @click="ordenar('personaEncargada')"
+                  :class="{ 'highlighted': columnaOrdenada === 'personaEncargada' }">
+                  Persona Encargada <i v-if="columnaOrdenada === 'personaEncargada'"
+                    :class="ordenAscendente ? 'bi bi-chevron-up' : 'bi bi-chevron-down'"></i>
                 </th>
                 <th>Acciones</th>
               </tr>
@@ -86,14 +90,18 @@
             </tbody>
           </table>
         </div>
-
+        <div v-if="mensajeExito" class="alert alert-danger text-center mt-3">
+          {{ mensajeExito }}
+        </div>
         <!-- Paginación -->
         <div class="d-flex justify-content-center mt-4">
-          <button :disabled="paginaActual === 1" @click="cambiarPagina(paginaActual - 1)" class="btn btn-outline-primary">
+          <button :disabled="paginaActual === 1" @click="cambiarPagina(paginaActual - 1)"
+            class="btn btn-outline-primary">
             <i class="bi bi-chevron-left"></i> Anterior
           </button>
           <span class="mx-3">{{ paginaActual }} / {{ totalPaginas }}</span>
-          <button :disabled="paginaActual === totalPaginas" @click="cambiarPagina(paginaActual + 1)" class="btn btn-outline-primary">
+          <button :disabled="paginaActual === totalPaginas" @click="cambiarPagina(paginaActual + 1)"
+            class="btn btn-outline-primary">
             Siguiente <i class="bi bi-chevron-right"></i>
           </button>
         </div>
@@ -110,6 +118,7 @@ export default {
   name: "IngresarCliente",
   data() {
     return {
+      mensajeExito: "",
       clientes: [],
       filtro: "",
       paginaActual: 1,
@@ -121,7 +130,7 @@ export default {
   computed: {
     clientesFiltrados() {
       const filtroMinusculas = this.filtro.toLowerCase();
-      return this.clientes.filter(cliente => 
+      return this.clientes.filter(cliente =>
         cliente.nombre.toLowerCase().includes(filtroMinusculas) ||
         cliente.correo.toLowerCase().includes(filtroMinusculas) ||
         cliente.ruc.toLowerCase().includes(filtroMinusculas)
@@ -132,7 +141,7 @@ export default {
       const clientesOrdenados = [...this.clientesFiltrados].sort((a, b) => {
         const valorA = a[this.columnaOrdenada];
         const valorB = b[this.columnaOrdenada];
-        
+
         if (valorA < valorB) return this.ordenAscendente ? -1 : 1;
         if (valorA > valorB) return this.ordenAscendente ? 1 : -1;
         return 0;
@@ -169,11 +178,15 @@ export default {
     async eliminarCliente(id) {
       try {
         await eliminarClienteFachada(id);
-        alert('Cliente eliminado con éxito');
+        this.mensajeExito = "El cliente ha sido eliminado con exito";
         this.cargarClientes();
+        setTimeout(() => {
+          this.mensajeExito = "";
+        }, 5000);
       } catch (error) {
         console.error('Error al eliminar el cliente:', error);
       }
+
     },
     ordenar(columna) {
       if (this.columnaOrdenada === columna) {
@@ -196,6 +209,21 @@ export default {
 </script>
 
 <style scoped>
+.alert {
+  padding: 12px;
+  margin-top: 20px;
+  border-radius: 5px;
+  text-align: center;
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+/* Cambia el fondo a rojo */
+.alert-danger {
+  background-color: #dc3545;
+  color: white;
+}
+
 .page-container {
   display: flex;
   flex-direction: column;
@@ -228,7 +256,8 @@ button:hover {
   transform: scale(1.05);
 }
 
-input:focus, button:focus {
+input:focus,
+button:focus {
   outline: none;
 }
 
@@ -242,7 +271,8 @@ th.highlighted {
   border: 2px solid #a9c4f5;
 }
 
-td, th {
+td,
+th {
   padding: 0.75rem 1rem;
   vertical-align: middle;
 }

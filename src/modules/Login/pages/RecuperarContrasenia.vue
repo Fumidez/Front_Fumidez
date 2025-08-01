@@ -25,6 +25,10 @@
         <div v-if="mensajeConfirmacion" class="alert alert-success mt-3">
           {{ mensajeConfirmacion }}
         </div>
+        <!-- Mensaje de error -->
+        <div v-if="mensajeError" class="alert alert-danger mt-3">
+          {{ mensajeError }}
+        </div>
 
         <!-- Botón de redirección a login -->
         <button v-if="mensajeConfirmacion" @click="redirigirLogin" class="btn btn-primary w-100 py-2">
@@ -44,6 +48,7 @@ export default {
     return {
       email: null,
       mensajeConfirmacion: "", // Mensaje de confirmación para el usuario
+      mensajeError: "",
       cargando: false, // Estado de carga
     };
   },
@@ -52,12 +57,13 @@ export default {
       try {
         // Validación del correo
         if (!this.email) {
-          alert("Por favor, ingrese un correo electrónico válido.");
+          this.mensajeError = "Por favor, ingrese un correo electrónico válido.";
           return;
         }
 
         // Establecer cargando a true para mostrar el spinner
         this.cargando = true;
+        this.mensajeError = ""; // Limpiar errores anteriores
 
         // Llamada al backend para enviar el enlace de recuperación
         const respuesta = await recuperarContraseniaFachada(this.email);
@@ -67,20 +73,20 @@ export default {
           this.mensajeConfirmacion = "¡El enlace de recuperación ha sido enviado a tu correo electrónico!";
           this.email = ""; // Limpiar el campo de correo
         } else {
-          alert("No se pudo enviar el enlace de recuperación.");
+          this.mensajeError = "No se pudo enviar el enlace de recuperación. Verifique el correo ingresado.";
         }
       } catch (error) {
         // Manejo de errores
-        alert(`Error: ${error.message}`);
+        this.mensajeError = "No se pudo enviar el enlace de recuperación. Verifique el correo ingresado.";
       } finally {
         // Establecer cargando a false después de la solicitud
         this.cargando = false;
       }
     },
     async redirigirLogin() {
-            const ruta = `/login`;
-            await router.push({ path: ruta });
-        },
+      const ruta = `/login`;
+      await router.push({ path: ruta });
+    },
   },
 };
 </script>
@@ -161,9 +167,19 @@ button:hover {
 .alert {
   padding: 10px;
   margin-top: 15px;
-  background-color: #28a745;
-  color: white;
   border-radius: 5px;
   text-align: center;
+}
+
+/* Estilo para mensajes de éxito */
+.alert-success {
+  background-color: #28a745;
+  color: white;
+}
+
+/* Estilo para mensajes de error */
+.alert-danger {
+  background-color: #dc3545;
+  color: white;
 }
 </style>
