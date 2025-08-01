@@ -1,17 +1,25 @@
-# docker build -t axelxavier/fumidez .
-#docker push axelxavier/fumidez
+# Stage 1: Build la app con Node
+FROM node:lts-alpine AS build
 
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm install
+
+COPY . .
+RUN npm run build
+
+# Stage 2: Servir con Express (server.js)
 FROM node:lts-alpine
 
 WORKDIR /app
 
-COPY . .
+COPY --from=build /app/dist ./dist
+COPY --from=build /app/server.js ./server.js
+COPY --from=build /app/package*.json ./
 
-RUN npm install
+RUN npm install express
 
-# Este paso es crucial para que se genere el directorio dist correctamente
-RUN npm run build
+EXPOSE 5173
 
-RUN npm install -g http-server
-
-CMD ["http-server", "dist", "-p", "5173"]
+CMD ["node", "server.js"]
