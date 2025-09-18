@@ -15,9 +15,9 @@
           </li> -->
           <li><router-link to="/inicio">Inicio</router-link></li>
           <li><router-link to="/productos_lista">Productos</router-link></li>
-          <li><router-link to="/proveedores_lista">Proveedores</router-link></li>
-          <li><router-link to="/clientes_lista">Cliente</router-link></li>
-          <li><router-link to="/usuarios_lista">Usuarios</router-link></li>
+          <li v-if="tipo === 'ADMIN'"><router-link to="/proveedores_lista">Proveedores</router-link></li>
+          <li v-if="tipo === 'ADMIN'"><router-link to="/clientes_lista">Cliente</router-link></li>
+          <li v-if="tipo === 'ADMIN'"><router-link to="/usuarios_lista">Usuarios</router-link></li>
           <li><router-link to="/orden_trabajo_lista">Ordenes de Trabajo</router-link></li>
           <li><router-link to="/informe_lista">Informes</router-link></li>
           <li><router-link to="/calendario">Calendario</router-link></li>
