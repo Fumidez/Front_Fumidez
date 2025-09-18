@@ -10,10 +10,7 @@
       <!-- Navbar -->
       <nav class="navbar" :class="{ 'navbar-open': isNavbarOpen }">
         <ul>
-          <!--   <li v-if="tipo === 'ADMIN'">
-            <router-link to="/clientes">Clientes</router-link>
-          </li> -->
-          <li><router-link to="/inicio">Inicio</router-link></li>
+          <li v-if="tipo === 'ADMIN'"><router-link to="/inicio">Inicio</router-link></li>
           <li><router-link to="/productos_lista">Productos</router-link></li>
           <li v-if="tipo === 'ADMIN'"><router-link to="/proveedores_lista">Proveedores</router-link></li>
           <li v-if="tipo === 'ADMIN'"><router-link to="/clientes_lista">Cliente</router-link></li>
@@ -64,7 +61,11 @@ export default {
   methods: {
     // Método para redirigir al inicio cuando se hace clic en el logo
     goToInicio() {
-      this.$router.push('/inicio');
+      if ( this.tipo === 'ADMIN'){
+        this.$router.push('/inicio');
+      }else{
+        this.$router.push('/calendario');
+      }
     },
 
     toggleNavbar() {

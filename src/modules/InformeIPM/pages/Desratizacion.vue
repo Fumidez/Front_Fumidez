@@ -50,6 +50,10 @@
                         </select>
                     </div>
 
+                    <div v-if="mensajeConfirmacion" class="alert alert-success mt-3">
+                        {{ mensajeConfirmacion }}
+                    </div>
+
                     <button type="submit" class="btn btn-primary w-100 py-2">
                         Guardar
                     </button>
@@ -154,6 +158,7 @@ export default {
                 csp: "",
                 informeId: this.$route.params.id,
             },
+            mensajeConfirmacion: "",
             // Lista para almacenar los registros existentes
             registros: [],
             consumo: ['DAÑO', 'SI', 'NO'],
@@ -185,6 +190,8 @@ export default {
             ) {
                 // Simulación de guardar el registro (puedes reemplazar esto con una llamada a la API)
                 const nuevoRegistro = await crearDesratizacionFachada(this.registro)
+                this.mensajeConfirmacion = "¡Registro guardado con exito!";
+
 
                 // Reiniciar el formulario
                 this.registro = {
@@ -198,10 +205,8 @@ export default {
 
                 };
                 this.consultarPorIdInforme();
-                alert("Registro guardado exitosamente.");
 
             } else {
-                alert("Por favor, completa los campos obligatorios.");
             }
         },
 

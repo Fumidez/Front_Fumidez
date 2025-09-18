@@ -141,8 +141,8 @@
               <label for="areaNombreOpc1" class="w-25"><i class="bi bi-geo-alt"></i> Nombre del Área Opcional
                 1</label>
               <input v-model="informe.sanitizacionConfidenciales.areaNombreOpc1" type="text" class="form-control"
-                placeholder="Nombre del Área Opcional 1" required />
-              <select v-model="informe.sanitizacionConfidenciales.areaOpc1" class="form-control" required>
+                placeholder="Nombre del Área Opcional 1" />
+              <select v-model="informe.sanitizacionConfidenciales.areaOpc1" class="form-control">
                 <option disabled value="">Seleccione una opción</option>
                 <option v-for="n in 4" :key="n" :value="n">{{ n }}</option>
               </select>
@@ -151,8 +151,8 @@
               <label for="areaNombreOpc2" class="w-25"><i class="bi bi-geo-alt"></i> Nombre del Área Opcional
                 2</label>
               <input v-model="informe.sanitizacionConfidenciales.areaNombreOpc2" type="text" class="form-control"
-                placeholder="Nombre del Área Opcional 2" required />
-              <select v-model="informe.sanitizacionConfidenciales.areaOpc2" class="form-control" required>
+                placeholder="Nombre del Área Opcional 2" />
+              <select v-model="informe.sanitizacionConfidenciales.areaOpc2" class="form-control">
                 <option disabled value="">Seleccione una opción</option>
                 <option v-for="n in 4" :key="n" :value="n">{{ n }}</option>
               </select>
@@ -163,6 +163,9 @@
             <i class="bi bi-images"></i> Ingresar Imágenes a su Informe
           </button>
 
+          <div v-if="mensajeConfirmacion" class="alert alert-success mt-3">
+            {{ mensajeConfirmacion }}
+          </div>
           <!-- Botón de guardar -->
           <button type="submit" class="btn btn-primary w-100 py-2">
             Guardar
@@ -224,6 +227,7 @@ export default {
   data() {
     return {
       isModalOpen: false,
+      mensajeConfirmacion: "",
       fotos: [],
       informeId: this.$route.params.id,
       informe: {
@@ -355,6 +359,7 @@ export default {
           this.informeId = nuevoInforme.id
           this.guardarFotos();
           this.informeId = null;
+          this.mensajeConfirmacion = "¡El informe se ha sido creado con exito!";
           this.limpiarFormulario();
         }
       } catch (error) {
@@ -427,7 +432,6 @@ export default {
         this.productos = await obtenerTodosLosProductosFachada();
       } catch (error) {
         console.error('Error al cargar los productos:', error);
-        alert('Hubo un error al cargar los productos.');
       }
     },
     async cargarOrdenes() {
@@ -435,7 +439,6 @@ export default {
         this.ordenes = await consultarOrdenFachada(); // Asegúrate de que este método esté definido y disponible
       } catch (error) {
         console.error('Error al cargar las órdenes:', error);
-        alert('Hubo un error al cargar las órdenes.');
       }
     },
     async abrirModal() {

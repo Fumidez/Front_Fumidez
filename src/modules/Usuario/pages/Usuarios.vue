@@ -134,7 +134,6 @@ import { consultarUsuarioFachada, crearUsuarioFachada } from '../helpers/Usuario
         this.usuarios = await consultarUsuarioFachada();
       } catch (error) {
         console.error('Error al cargar los usuarios:', error);
-        alert('Hubo un error al cargar los usuarios.');
       }
 
       console.log(this.usuarios);

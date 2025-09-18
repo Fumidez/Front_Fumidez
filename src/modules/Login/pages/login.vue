@@ -91,7 +91,11 @@ export default {
         if (response && response.constrasenia) {
           localStorage.setItem('token', response.constrasenia);
           localStorage.setItem('userType', response.tipo);
-          this.$router.push('/');
+          if (response.tipo === 'ADMIN'){ 
+            this.$router.push('/inicio');
+          } else {
+            this.$router.push('/calendario');
+          }
         } else {
           this.errorMessage = 'Error en la autenticación, por favor revisa tus credenciales.';
         }

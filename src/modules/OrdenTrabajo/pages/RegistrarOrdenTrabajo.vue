@@ -212,7 +212,6 @@ export default {
         this.usuarios = await consultarUsuarioFachada();
       } catch (error) {
         console.error("Error al cargar los usuarios:", error);
-        alert("Hubo un error al cargar los usuarios.");
       }
     },
 

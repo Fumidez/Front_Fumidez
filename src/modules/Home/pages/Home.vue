@@ -36,12 +36,14 @@
 </template>
 
 <script>
+import { comprobarTipoUsuario } from "../../Login/helpers/rolesHelper";
 import router from "@/router";
 
 export default {
   name: "PaginaInicio",
   data() {
     return {
+      tipo: '',
       modulos: [
         { nombre: "Usuarios", ruta: "/usuarios_lista", icono: "fas fa-users" },
         { nombre: "Clientes", ruta: "/clientes_lista", icono: "fas fa-user-tie" },
@@ -52,6 +54,9 @@ export default {
         { nombre: "Calendario", ruta: "/calendario", icono: "fas fa-calendar-alt" },
       ],
     };
+  },
+  mounted() {
+    this.tipo = comprobarTipoUsuario();
   },
   methods: {
     redirigir(ruta) {
