@@ -20,7 +20,7 @@
               </button>
               <ul class="dropdown-menu w-100">
                 <li v-for="rol in roles" :key="rol">
-                  <a class="dropdown-item" href="#" @click="usuario.tipo = rol">{{ rol }}</a>
+                  <a class="dropdown-item" href="#" @click.prevent="usuario.tipo = rol">{{ rol }}</a>
                 </li>
               </ul>
             </div>
